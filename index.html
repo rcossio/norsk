@@ -350,15 +350,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="fb" id="sound-fb"></div>
 </section>
 
-<!-- 6 ANCLA -->
-<section class="panel" id="p-anchor" role="tabpanel">
-  <div class="panel-head"><h2>Ancla</h2><p>Al revés que siempre: te doy la muleta y tenés que sacar la palabra noruega. Este es el modo que te enseña a usar el método, no solo la lista.</p></div>
-  <div class="card" id="anchor-q"></div>
-  <div class="opts" id="anchor-opts"></div>
-  <div class="fb" id="anchor-fb"></div>
-</section>
-
-<!-- 7 CATEGORÍAS -->
+<!-- 6 CATEGORÍAS -->
 <section class="panel" id="p-cat" role="tabpanel">
   <div class="panel-head"><h2>Categorías</h2><p>Doce palabras, tres cajones. Tocá una palabra y después el cajón donde va. Sirve para agrupar por campo semántico, que es como se acuerdan mejor.</p></div>
   <div class="pool" id="cat-pool"></div>
@@ -367,7 +359,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="row" style="margin-top:14px"><button class="btn ghost" id="cat-new">Ronda nueva</button></div>
 </section>
 
-<!-- 8 FRASES -->
+<!-- 7 FRASES -->
 <section class="panel" id="p-sent" role="tabpanel">
   <div class="panel-head"><h2>Frases</h2><p>Armá la oración noruega tocando las palabras en orden. El orden del noruego no es el del castellano y acá se ve.</p></div>
   <div class="sent-es" id="sent-es"></div>
@@ -381,7 +373,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   </div>
 </section>
 
-<!-- 9 CONTRARRELOJ -->
+<!-- 8 CONTRARRELOJ -->
 <section class="panel" id="p-race" role="tabpanel">
   <div class="panel-head"><h2>Contrarreloj</h2><p>Sesenta segundos. No pienses el ancla, respondé de reflejo: acá se mide lo que ya tenés automatizado.</p></div>
   <div class="row"><div class="big-num" id="race-clock">60</div><div style="margin-left:20px"><div class="hint">Puntos</div><div class="big-num" id="race-score">0</div></div></div>
@@ -391,7 +383,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="row" style="margin-top:14px"><button class="btn primary" id="race-start">Arrancar</button></div>
 </section>
 
-<!-- 10 SUPERVIVENCIA -->
+<!-- 9 SUPERVIVENCIA -->
 <section class="panel" id="p-surv" role="tabpanel">
   <div class="panel-head"><h2>Supervivencia</h2><p>Tres vidas, modos mezclados sin aviso: a veces elegís, a veces escribís, a veces te doy solo el ancla. Perdés una vida por error.</p></div>
   <div class="row"><div class="lives" id="surv-lives">●●●</div><span class="hint" id="surv-count">racha 0</span></div>
@@ -401,7 +393,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="row" style="margin-top:14px"><button class="btn primary" id="surv-start">Empezar de nuevo</button></div>
 </section>
 
-<!-- 11 LISTA -->
+<!-- 10 LISTA -->
 <section class="panel" id="p-list" role="tabpanel">
   <div class="panel-head"><h2>Lista</h2><p>Las 107 con su ancla. Buscá por cualquier campo: noruego, castellano, o incluso por el idioma del ancla.</p></div>
   <div class="legend">
@@ -647,7 +639,6 @@ const TABS = [
  ["Escribí","p-type",()=>typeNew()],
  ["Pares","p-pairs",()=>pairsNew()],
  ["Sonido","p-sound",()=>soundNew()],
- ["Ancla","p-anchor",()=>anchorNew()],
  ["Categorías","p-cat",()=>catNew()],
  ["Frases","p-sent",()=>sentNew()],
  ["Contrarreloj","p-race",()=>raceReset()],
@@ -869,35 +860,7 @@ function soundNew(){
   });
 }
 
-/* =====================  6. ANCLA  ===================== */
-let anchW=null, anchLock=false;
-function anchorNew(){
-  anchW=rnd(W); anchLock=false;
-  $('#anchor-fb').textContent=''; $('#anchor-fb').className='fb';
-  $('#anchor-q').innerHTML=`<span class="tag">${esc(anchW.cat)}</span>`+
-    `<div class="anchor" style="padding-top:0;margin-top:6px"><span class="anchor-lbl">el ancla dice</span><span class="anchor-txt" style="font-size:21px">${esc(anchW.an)}</span></div>`+
-    `<div class="es-word" style="font-size:22px;margin-top:16px">${esc(anchW.es)}</div>`;
-  const opts=shuffle([anchW,...distractors(anchW,'no',3)]);
-  const box=$('#anchor-opts'); box.innerHTML='';
-  opts.forEach((o,i)=>{
-    const b=document.createElement('button'); b.className='opt';
-    b.innerHTML=`<span class="k">${i+1}</span><span>${esc(o.no)}</span>`;
-    b.onclick=()=>{
-      if(anchLock)return; anchLock=true;
-      const good=o===anchW; score(good);
-      [...box.children].forEach(x=>{x.disabled=true;
-        if(x.lastElementChild.textContent===anchW.no)x.classList.add('right');
-        else if(x===b)x.classList.add('wrong');});
-      const fb=$('#anchor-fb'); fb.className='fb '+(good?'ok':'no');
-      fb.innerHTML='<b>'+esc(anchW.no)+'</b> se dice '+esc(anchW.pron)+'. '+playBtn(anchW.no,'sm');
-      autoSay(anchW.no);
-      setTimeout(anchorNew, good?900:2200);
-    };
-    box.appendChild(b);
-  });
-}
-
-/* =====================  7. CATEGORÍAS  ===================== */
+/* =====================  6. CATEGORÍAS  ===================== */
 let catSel=null, catLeft=0, catMap={};
 function catNew(){
   const cats = shuffle([...new Set(W.map(w=>w.cat))].filter(c=>W.filter(w=>w.cat===c).length>=4)).slice(0,3);
@@ -937,7 +900,7 @@ function catDrop(c,d){
 }
 $('#cat-new').onclick=catNew;
 
-/* =====================  8. FRASES  ===================== */
+/* =====================  7. FRASES  ===================== */
 let sentCur=null, sentBuilt=[];
 function sentNew(){
   sentCur=rnd(SENT); sentBuilt=[];
@@ -977,7 +940,7 @@ $('#sent-clear').onclick=()=>{ const keep=sentCur; sentCur=keep; sentBuilt=[];
     b.onclick=()=>{sentBuilt.push(tok);b.remove();renderSlot();};pool.appendChild(b);}); };
 $('#sent-next').onclick=sentNew;
 
-/* =====================  9. CONTRARRELOJ  ===================== */
+/* =====================  8. CONTRARRELOJ  ===================== */
 let raceT=null, raceLeft=60, raceScore=0, raceW=null, raceOn=false;
 function raceReset(){
   raceStop(); raceLeft=60; raceScore=0; raceOn=false;
@@ -1017,7 +980,7 @@ function raceQ(){
   });
 }
 
-/* =====================  10. SUPERVIVENCIA  ===================== */
+/* =====================  9. SUPERVIVENCIA  ===================== */
 let survLives=3, survStreak=0, survW=null, survMode='choice', survLock=false;
 function survStart(){
   survLives=3; survStreak=0;
@@ -1074,7 +1037,7 @@ function survAnswer(good){
 }
 $('#surv-start').onclick=survStart;
 
-/* =====================  11. LISTA  ===================== */
+/* =====================  10. LISTA  ===================== */
 function listRender(q){
   const t=norm(q);
   const rows=W.filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')+' '+(w.sil||'')).includes(t));
@@ -1095,7 +1058,7 @@ document.addEventListener('keydown',e=>{
     if(e.key==='ArrowRight'){e.preventDefault();flashNew();}
   }
   if(['1','2','3','4'].includes(e.key)){
-    const box = id==='p-choice'?$('#choice-opts'): id==='p-sound'?$('#sound-opts'): id==='p-anchor'?$('#anchor-opts'): id==='p-race'?$('#race-opts'):null;
+    const box = id==='p-choice'?$('#choice-opts'): id==='p-sound'?$('#sound-opts'): id==='p-race'?$('#race-opts'):null;
     if(box&&box.children[+e.key-1]) box.children[+e.key-1].click();
   }
 });
