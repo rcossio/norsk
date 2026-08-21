@@ -666,6 +666,22 @@ function audioKeys(){
   if(!AUDIO_KEYS) AUDIO_KEYS = new Set([...W.map(w=>w.no), ...SENT.map(s=>s.no)].map(slug));
   return AUDIO_KEYS;
 }
+// lee una frase cualquiera con la voz de Google Translate.
+// Un <audio> no necesita CORS, así que se puede apuntar directo al endpoint.
+function playPhrase(text, btn){
+  const t = text.trim();
+  const caer = ()=>{ if(btn) btn.classList.remove('playing'); playSeq(t.split(/\s+/), btn); };
+  if(!t || t.length > 190) return caer();
+  if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
+  document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
+  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(t));
+  curAudio = a;
+  if(btn) btn.classList.add('playing');
+  a.onended = ()=>{ if(btn) btn.classList.remove('playing'); };
+  a.onerror = caer;                       // si Google no responde, cadena de grabaciones propias
+  a.play().catch(caer);
+}
+
 // encadena varias grabaciones sueltas para armar una frase
 function playSeq(tokens, btn){
   const keys = tokens.map(slug).filter(k => audioKeys().has(k));
@@ -1240,7 +1256,7 @@ function talkRender(text, interim){
   const modelo = exact
     ? `<div class="say-row">${playBtn(exact.no,'big')}</div><div class="mic-state">así lo dice la grabación</div>`
     : `<div class="say-row"><button class="say big" id="talk-model" aria-label="Escuchar la versión modelo">${ICON}</button></div>`+
-      `<div class="mic-state">así suena palabra por palabra, para comparar</div>`;
+      `<div class="mic-state">así suena la frase entera, para comparar</div>`;
   out.innerHTML =
     `<div class="heard" style="margin-top:18px">${esc(text)}</div>`+
     modelo+
@@ -1248,7 +1264,7 @@ function talkRender(text, interim){
     `<div class="hint" style="margin-top:8px">tocá cualquier palabra para escucharla sola</div>`+
     `<div class="trad"><span class="trad-lbl">traducción</span><span id="trad-txt">traduciendo…</span></div>`;
   const mb = $('#talk-model');
-  if(mb) mb.onclick = e=>{ e.stopPropagation(); playSeq(toks, e.currentTarget); };
+  if(mb) mb.onclick = e=>{ e.stopPropagation(); playPhrase(text, e.currentTarget); };
   translate(text).then(tr=>{
     const el = $('#trad-txt'); if(!el) return;
     el.textContent = tr || 'No pude traducir la frase entera ahora, pero arriba tenés el desglose palabra por palabra.';
