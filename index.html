@@ -706,10 +706,10 @@ if('speechSynthesis' in window) speechSynthesis.getVoices();
 
 /* ---------- muestreo con tope ----------
    Sigue siendo azar puro: se elige una palabra al azar y se acepta salvo que ya
-   haya salido más de dos veces por encima de la que menos salió, en cuyo caso se
+   haya salido más de tres veces por encima de la que menos salió, en cuyo caso se
    vuelve a tirar. No es un mazo (el orden no está fijado de antemano) pero corta
    las rachas de diez repeticiones. Cuesta un contador por palabra y nada más. */
-const TOPE = 2;
+const TOPE = 3;
 const counts = {}, lastPick = {};
 function pick(key, pool){
   pool = pool || W;
