@@ -84,6 +84,7 @@ nav{position:sticky;top:0;z-index:20;background:rgba(6,20,32,.94);backdrop-filte
   letter-spacing:.06em;padding:8px 12px;cursor:pointer;text-transform:uppercase;
 }
 .seg button[aria-pressed="true"]{background:var(--kant);color:var(--sno)}
+.seg .fl{font-size:15px;line-height:1;vertical-align:-1px}
 .seg button:focus-visible{outline:2px solid var(--gull);outline-offset:-2px}
 .btn{
   font-family:var(--display);font-weight:600;font-size:15px;
@@ -321,9 +322,9 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="panel-head"><h2>Tarjetas</h2><p>Mirás una cara, la pensás, revelás. Si te trabaste, el ancla aparece siempre abajo.</p></div>
   <div class="row">
     <div class="seg" id="flash-dir">
-      <button data-d="no" aria-pressed="true">no → es</button>
-      <button data-d="es" aria-pressed="false">es → no</button>
-      <button data-d="mix" aria-pressed="false">mezclado</button>
+      <button data-d="no" aria-pressed="true"><span class="fl">🇳🇴</span> → <span class="fl">🇪🇸</span></button>
+      <button data-d="es" aria-pressed="false"><span class="fl">🇪🇸</span> → <span class="fl">🇳🇴</span></button>
+      <button data-d="mix" aria-pressed="false"><span class="fl">🇳🇴</span> ⇄ <span class="fl">🇪🇸</span></button>
     </div>
     <span class="hint">enter = la sabía · espacio = no la sabía · flecha derecha = siguiente</span>
   </div>
@@ -340,9 +341,9 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="panel-head"><h2>Elegí</h2><p>Cuatro opciones, una sola sirve. Cuando errás te muestro el ancla de la palabra correcta.</p></div>
   <div class="row">
     <div class="seg" id="choice-dir">
-      <button data-d="no" aria-pressed="true">no → es</button>
-      <button data-d="es" aria-pressed="false">es → no</button>
-      <button data-d="mix" aria-pressed="false">mezclado</button>
+      <button data-d="no" aria-pressed="true"><span class="fl">🇳🇴</span> → <span class="fl">🇪🇸</span></button>
+      <button data-d="es" aria-pressed="false"><span class="fl">🇪🇸</span> → <span class="fl">🇳🇴</span></button>
+      <button data-d="mix" aria-pressed="false"><span class="fl">🇳🇴</span> ⇄ <span class="fl">🇪🇸</span></button>
     </div>
     <span class="hint">teclas 1 · 2 · 3 · 4</span>
   </div>
@@ -356,9 +357,9 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="panel-head"><h2>Escribí</h2><p>Lo más duro y lo que más fija. Te acepto la palabra sin å, ø ni æ, pero después te muestro cómo se escribe de verdad.</p></div>
   <div class="row">
     <div class="seg" id="type-dir">
-      <button data-d="oir" aria-pressed="true">escuchá y escribí</button>
-      <button data-d="es" aria-pressed="false">es → no</button>
-      <button data-d="no" aria-pressed="false">no → es</button>
+      <button data-d="oir" aria-pressed="true">🎧 → <span class="fl">🇳🇴</span></button>
+      <button data-d="es" aria-pressed="false"><span class="fl">🇪🇸</span> → <span class="fl">🇳🇴</span></button>
+      <button data-d="no" aria-pressed="false"><span class="fl">🇳🇴</span> → <span class="fl">🇪🇸</span></button>
     </div>
   </div>
   <div class="card" id="type-q"></div>
