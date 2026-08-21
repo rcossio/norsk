@@ -649,7 +649,8 @@ function say(text, btn, slow){
   curAudio = a;
   if(btn){ btn.classList.add('playing'); a.onended = a.onpause = ()=>btn.classList.remove('playing'); }
   a.currentTime = 0;
-  a.playbackRate = slow ? 0.65 : 1;
+  const rate = slow ? 0.62 : 1;
+  a.defaultPlaybackRate = rate; a.playbackRate = rate;
   a.play().catch(err=>{
     if(btn) btn.classList.remove('playing');
     // AbortError = lo cortamos nosotros al pedir otra palabra, no es un fallo real
@@ -678,10 +679,15 @@ function playPhrase(text, btn, slow){
   if(!t || t.length > 190) return caer();
   if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
-  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no'+
-                      (slow?'&ttsspeed=0.24':'')+'&q='+encodeURIComponent(t));
+  // mismo audio en los dos casos: el ttsspeed de Google frena apenas un 18% y además
+  // mete pausas entre palabras. La velocidad la maneja el reproductor.
+  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(t));
   curAudio = a;
-  a.playbackRate = slow ? 0.8 : 1;   // el ttsspeed de Google frena poco; esto termina el trabajo
+  const rate = slow ? 0.62 : 1;
+  // al cargar el recurso el navegador vuelve playbackRate a defaultPlaybackRate,
+  // así que hay que fijar los dos y reafirmarlo cuando ya hay metadatos
+  a.defaultPlaybackRate = rate; a.playbackRate = rate;
+  a.onloadedmetadata = ()=>{ a.playbackRate = rate; }
   if(btn) btn.classList.add('playing');
   a.onended = ()=>{ if(btn) btn.classList.remove('playing'); };
   a.onerror = caer;                       // si Google no responde, cadena de grabaciones propias
