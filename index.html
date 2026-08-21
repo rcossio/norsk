@@ -301,7 +301,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="cross" aria-hidden="true"></div>
   <div class="hdr-inner">
     <h1>Ankeret<span>.</span></h1>
-    <p class="sub">107 palabras de noruego, cada una atada a algo que ya sabés en inglés, italiano, francés, portugués o castellano. El ancla es la parte que importa: si la recordás, la palabra viene sola.</p>
+    <p class="sub">110 palabras de noruego, cada una atada a algo que ya sabés en inglés, italiano, francés, portugués o castellano. El ancla es la parte que importa: si la recordás, la palabra viene sola.</p>
     <div class="meter">
       <span>Aciertos <b id="m-ok">0</b> / <b id="m-tot">0</b></span>
       <span>Racha <i id="m-streak">0</i></span>
@@ -449,7 +449,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
 
 <!-- 11 LISTA -->
 <section class="panel" id="p-list" role="tabpanel">
-  <div class="panel-head"><h2>Lista</h2><p>Las 107 con su ancla. Buscá por cualquier campo: noruego, castellano, o incluso por el idioma del ancla.</p></div>
+  <div class="panel-head"><h2>Lista</h2><p>Solo palabras sueltas, con su ancla. Las frases hechas como <i>vær så snill</i> o <i>god morgen</i> no aparecen acá: viven en los juegos. Buscá por cualquier campo, incluso por el idioma del ancla.</p></div>
   <div class="legend">
     <h3>Cómo leer la columna "suena"</h3>
     <ul>
@@ -466,7 +466,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <table><thead><tr><th>Noruego</th><th>Suena</th><th>Castellano</th><th>Ancla</th></tr></thead><tbody id="list-body"></tbody></table>
 </section>
 
-<footer>Ankeret · 107 palabras · sin cuentas, sin servidor, sin guardar nada</footer>
+<footer>Ankeret · 110 palabras · sin cuentas, sin servidor, sin guardar nada</footer>
 </div>
 
 <script>
@@ -521,6 +521,9 @@ const W = [
 {no:"tog",pron:"tog",es:"tren",an:"inglés tow: la locomotora que remolca",cat:"Viaje"},
 {no:"fly",pron:"flü",es:"avión",an:"inglés fly",cat:"Viaje"},
 {no:"penger",pron:"pénguer",es:"dinero",an:"inglés penny, pence",cat:"Cosas y lugares"},
+{no:"engelsk",pron:"énguelsk",es:"inglés",an:"inglés English, con la g dura",cat:"Cosas y lugares"},
+{no:"norsk",pron:"norsk",es:"noruego",an:"inglés Norse, los nórdicos",cat:"Cosas y lugares"},
+{no:"mye",pron:"mü-e",es:"mucho",an:"inglés much",cat:"Descripciones"},
 {no:"ting",pron:"ting",es:"cosa",an:"inglés thing",cat:"Cosas y lugares"},
 {no:"en",pron:"en",es:"un, una",an:"inglés an y one: en ting, una cosa",cat:"Gramática"},
 {no:"et",pron:"et",es:"un, una (neutro)",an:"el mismo un, pero con t: et hus, et egg, et barn",cat:"Gramática"},
@@ -701,6 +704,33 @@ $('#snd-toggle').onclick = e=>{
 };
 if('speechSynthesis' in window) speechSynthesis.getVoices();
 
+/* ---------- muestreo con tope ----------
+   Sigue siendo azar puro: se elige una palabra al azar y se acepta salvo que ya
+   haya salido más de dos veces por encima de la que menos salió, en cuyo caso se
+   vuelve a tirar. No es un mazo (el orden no está fijado de antemano) pero corta
+   las rachas de diez repeticiones. Cuesta un contador por palabra y nada más. */
+const TOPE = 2;
+const counts = {}, lastPick = {};
+function pick(key, pool){
+  pool = pool || W;
+  let c = counts[key];
+  if(!c || c.size !== pool.length){ c = counts[key] = new Map(); pool.forEach(x=>c.set(x,0)); }
+  let min = Infinity;
+  c.forEach(v=>{ if(v < min) min = v; });
+  const cap = min + TOPE;
+  let x, tries = 0;
+  do{ x = pool[Math.floor(Math.random()*pool.length)]; }
+  while((c.get(x) > cap || (x === lastPick[key] && pool.length > 1)) && ++tries < 40);
+  c.set(x, (c.get(x)||0) + 1);
+  lastPick[key] = x;
+  return x;
+}
+function pickMany(key, n){
+  const out = []; let guard = 0;
+  while(out.length < n && guard++ < 200){ const x = pick(key); if(!out.includes(x)) out.push(x); }
+  return out;
+}
+
 /* marcador global */
 const S = {ok:0,tot:0,streak:0,best:0};
 function score(good){
@@ -749,7 +779,7 @@ $('#flash-dir').onclick = e=>{const b=e.target.closest('button'); if(!b)return;
   flashDir=b.dataset.d; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));
   flashNew();};
 function flashNew(){
-  flashW=rnd(W); flashShown=false;
+  flashW=pick('flash'); flashShown=false;
   flashSide = flashDir==='mix' ? (Math.random()<.5?'no':'es') : flashDir;
   $('#flash-knew').style.display=''; $('#flash-miss').style.display='';
   $('#flash-next').style.display='none';
@@ -788,7 +818,7 @@ $('#choice-dir').onclick = e=>{const b=e.target.closest('button'); if(!b)return;
   choiceDir=b.dataset.d; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));
   choiceNew();};
 function choiceNew(){
-  choiceW=rnd(W); choiceLock=false;
+  choiceW=pick('choice'); choiceLock=false;
   choiceSide = choiceDir==='mix' ? (Math.random()<.5?'no':'es') : choiceDir;
   const w=choiceW, ask = choiceSide==='no';
   $('#choice-fb').textContent=''; $('#choice-fb').className='fb';
@@ -833,7 +863,7 @@ $('#type-dir').onclick = e=>{const b=e.target.closest('button'); if(!b)return;
   typeDir=b.dataset.d; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));
   typeNew();};
 function typeNew(){
-  typeW=rnd(W); typeLock=false;
+  typeW=pick('type'); typeLock=false;
   const w=typeW;
   $('#type-fb').textContent=''; $('#type-fb').className='fb';
   $('#type-in').value=''; $('#type-in').disabled=false;
@@ -877,7 +907,7 @@ $('#type-keys').onclick=e=>{const b=e.target.closest('button');if(!b)return;
 /* =====================  4. PARES  ===================== */
 let pairSel=null, pairLeft=0;
 function pairsNew(){
-  const set = shuffle(W).slice(0,6);
+  const set = pickMany('pairs',6);
   pairLeft = 6; pairSel=null;
   $('#pairs-fb').textContent=''; $('#pairs-fb').className='fb';
   const tiles = shuffle(set.map(w=>({w,side:'no'})).concat(set.map(w=>({w,side:'es'}))));
@@ -920,7 +950,7 @@ $('#pairs-new').onclick=pairsNew;
 /* =====================  5. SONIDO  ===================== */
 let soundW=null, soundLock=false;
 function soundNew(){
-  soundW=rnd(W); soundLock=false;
+  soundW=pick('sound'); soundLock=false;
   $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
   $('#sound-q').innerHTML=`<span class="tag">escuchá</span><div class="say-row">${playBtn(soundW.no,'big')}</div>`+
     `<div id="sound-pron" class="pron" style="margin-top:14px;font-size:clamp(20px,5vw,32px);min-height:34px"></div>`+
@@ -993,7 +1023,7 @@ $('#cat-new').onclick=catNew;
 /* =====================  7. FRASES  ===================== */
 let sentCur=null, sentBuilt=[];
 function sentNew(){
-  sentCur=rnd(SENT); sentBuilt=[];
+  sentCur=pick('sent',SENT); sentBuilt=[];
   $('#sent-es').innerHTML=esc(sentCur.es)+' '+playBtn(sentCur.no,'sm');
   $('#sent-fb').textContent=''; $('#sent-fb').className='fb';
   $('#sent-slot').innerHTML='';
@@ -1052,7 +1082,7 @@ $('#race-start').onclick=()=>{
 };
 function raceQ(){
   if(!raceOn) return;
-  raceW=rnd(W);
+  raceW=pick('race');
   const ask = Math.random()<.5;
   $('#race-q').innerHTML = ask? `<div class="no-word">${esc(raceW.no)}</div>` : `<div class="es-word">${esc(raceW.es)}</div>`;
   const key=ask?'es':'no';
@@ -1083,7 +1113,7 @@ function survQ(){
     $('#surv-body').innerHTML=''; $('#surv-fb').className='fb'; $('#surv-fb').textContent='Dale a empezar de nuevo.';
     return;
   }
-  survLock=false; survW=rnd(W);
+  survLock=false; survW=pick('surv');
   survMode = rnd(['choice','choice','type','anchor']);
   $('#surv-fb').textContent=''; $('#surv-fb').className='fb';
   const body=$('#surv-body'); body.innerHTML='';
@@ -1280,7 +1310,7 @@ $('#mic-btn').onclick = ()=>{
 /* =====================  11. LISTA  ===================== */
 function listRender(q){
   const t=norm(q);
-  const rows=W.filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')+' '+(w.sil||'')).includes(t));
+  const rows=W.filter(w=>!/\s/.test(w.no)).filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')+' '+(w.sil||'')).includes(t));
   $('#list-body').innerHTML = rows.map(w=>
     `<tr><td class="no">${playBtn(w.no,'sm')} ${esc(w.no)}${w.inf?'<div class="inf">'+esc(w.inf)+'</div>':''}</td>
       <td class="pr">${esc(w.pron)}${w.sil?'<div class="sil">'+esc(w.sil)+'</div>':''}</td><td class="es">${esc(w.es)}</td><td class="an">${esc(w.an)}</td></tr>`).join('');
