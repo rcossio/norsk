@@ -327,7 +327,11 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
     <div class="keys" id="type-keys"><button data-c="å">å</button><button data-c="ø">ø</button><button data-c="æ">æ</button></div>
   </div>
   <div class="fb" id="type-fb"></div>
-  <div class="row" style="margin-top:12px"><button class="btn primary" id="type-go">Corregir</button><button class="btn ghost" id="type-skip">No sé, mostrame</button></div>
+  <div class="row" style="margin-top:12px">
+    <button class="btn primary" id="type-go">Corregir</button>
+    <button class="btn ghost" id="type-skip">No sé, mostrame</button>
+    <button class="btn primary" id="type-next" style="display:none">Siguiente</button>
+  </div>
 </section>
 
 <!-- 4 PARES -->
@@ -702,8 +706,11 @@ function choiceNew(){
   const w=choiceW, ask = choiceSide==='no';
   $('#choice-fb').textContent=''; $('#choice-fb').className='fb';
   $('#choice-q').innerHTML = `<span class="tag">${esc(w.cat)}</span>`+
-    (ask ? `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>`
+    (ask ? `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>`+
+           (w.sil?`<div class="sil">${esc(w.sil)}</div>`:'')+
+           `<div class="say-row">${playBtn(w.no,'big')}</div>`
          : `<div class="es-word">${esc(w.es)}</div>`);
+  if(ask) autoSay(w.no);
   const key = ask?'es':'no';
   const opts = shuffle([w, ...distractors(w,key,3)]);
   const box=$('#choice-opts'); box.innerHTML='';
@@ -743,6 +750,8 @@ function typeNew(){
   const w=typeW;
   $('#type-fb').textContent=''; $('#type-fb').className='fb';
   $('#type-in').value=''; $('#type-in').disabled=false;
+  $('#type-go').style.display=''; $('#type-skip').style.display='';
+  $('#type-next').style.display='none';
   $('#type-keys').style.display = typeDir==='no'?'none':'flex';
   $('#type-q').innerHTML = `<span class="tag">${esc(w.cat)}</span>`+
     (typeDir==='oir' ? `<div class="say-row">${playBtn(w.no,'big')}</div><div class="inf" style="margin-top:12px">escuchá y escribilo en noruego</div>`
@@ -761,14 +770,19 @@ function typeCheck(){
   fb.innerHTML = (good?'Correcto. ':'No. ') +
     'Se escribe <b>'+esc(typeW.no)+'</b> ('+esc(typeW.pron)+') = '+esc(typeW.es)+'. '+(typeW.sil?typeW.sil+'. ':'')+'Ancla: '+esc(typeW.an)+'. '+playBtn(typeW.no,'sm');
   autoSay(typeW.no);
-  setTimeout(typeNew, good?1300:3200);
+  typeDone();
+}
+function typeDone(){
+  $('#type-go').style.display='none'; $('#type-skip').style.display='none';
+  const n=$('#type-next'); n.style.display=''; n.focus();
 }
 $('#type-go').onclick=typeCheck;
 $('#type-skip').onclick=()=>{if(typeLock)return;typeLock=true;score(false);
   const fb=$('#type-fb');fb.className='fb no';
   fb.innerHTML='<b>'+esc(typeW.no)+'</b> ('+esc(typeW.pron)+') = '+esc(typeW.es)+'. Ancla: '+esc(typeW.an)+'. '+playBtn(typeW.no,'sm');
   autoSay(typeW.no);
-  setTimeout(typeNew,2800);};
+  typeDone();};
+$('#type-next').onclick=typeNew;
 $('#type-in').addEventListener('keydown',e=>{if(e.key==='Enter')typeCheck();});
 $('#type-keys').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   const inp=$('#type-in');inp.value+=b.dataset.c;inp.focus();};
@@ -1061,6 +1075,7 @@ document.addEventListener('keydown',e=>{
   const tag=(e.target.tagName||'').toLowerCase();
   if(tag==='input'||tag==='textarea') return;
   const id=TABS[active][1];
+  if(id==='p-type' && typeLock && (e.key==='Enter'||e.code==='Space')){ e.preventDefault(); typeNew(); return; }
   if(id==='p-flash'){
     if(e.code==='Space'){e.preventDefault();$('#flash-reveal').click();}
     if(e.key==='ArrowRight'){e.preventDefault();flashNew();}
