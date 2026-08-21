@@ -359,7 +359,6 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
     <div class="seg" id="type-dir">
       <button data-d="oir" aria-pressed="true">🎧 → <span class="fl">🇳🇴</span></button>
       <button data-d="es" aria-pressed="false"><span class="fl">🇪🇸</span> → <span class="fl">🇳🇴</span></button>
-      <button data-d="no" aria-pressed="false"><span class="fl">🇳🇴</span> → <span class="fl">🇪🇸</span></button>
     </div>
   </div>
   <div class="card" id="type-q"></div>
@@ -619,9 +618,6 @@ function norm(s){
    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
    .replace(/\s+/g,' ');
 }
-function esMatch(input, word){
-  return word.es.split(',').some(p => norm(p)===norm(input)) || norm(input)===norm(word.es);
-}
 function distractors(w, key, n){
   const pool = shuffle(W.filter(x => x!==w && x[key]!==w[key]));
   return pool.slice(0,n);
@@ -869,11 +865,10 @@ function typeNew(){
   $('#type-in').value=''; $('#type-in').disabled=false;
   $('#type-go').style.display=''; $('#type-skip').style.display='';
   $('#type-next').style.display='none';
-  $('#type-keys').style.display = typeDir==='no'?'none':'flex';
+  $('#type-keys').style.display = 'flex';
   $('#type-q').innerHTML = `<span class="tag">${esc(w.cat)}</span>`+
     (typeDir==='oir' ? `<div class="say-row">${playBtn(w.no,'big')}</div><div class="inf" style="margin-top:12px">escuchá y escribilo en noruego</div>`
-     : typeDir==='es' ? `<div class="es-word">${esc(w.es)}</div><div class="inf">escribilo en noruego</div>`
-     : `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>${w.sil?'<div class="sil">'+esc(w.sil)+'</div>':''}<div class="inf">escribilo en castellano</div>`);
+                     : `<div class="es-word">${esc(w.es)}</div><div class="inf">escribilo en noruego</div>`);
   if(typeDir==='oir') say(w.no);
   $('#type-in').focus();
 }
@@ -881,7 +876,7 @@ function typeCheck(){
   if(typeLock) return;
   const v=$('#type-in').value; if(!v.trim()) return;
   typeLock=true; $('#type-in').disabled=true;
-  const good = typeDir==='no' ? esMatch(v, typeW) : norm(v)===norm(typeW.no);
+  const good = norm(v)===norm(typeW.no);
   score(good);
   const fb=$('#type-fb'); fb.className='fb '+(good?'ok':'no');
   fb.innerHTML = (good?'Correcto. ':'No. ') +
