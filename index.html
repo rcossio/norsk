@@ -442,8 +442,10 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
     <div class="mic-state" id="mic-state">Tocá el micrófono y hablá en noruego</div>
     <div id="talk-out"></div>
   </div>
-  <div class="row" style="margin-top:18px"><span class="hint">Si no se te ocurre nada, escuchá una de estas y repetila:</span></div>
-  <div class="pool" id="talk-ideas"></div>
+  <div class="row" style="margin-top:20px">
+    <button class="btn ghost" id="talk-idea">Dame una palabra para improvisar</button>
+  </div>
+  <div id="talk-idea-out"></div>
 </section>
 
 <!-- 11 LISTA -->
@@ -632,12 +634,13 @@ function slug(t){
 }
 const audioCache = {};
 let autoSound = true, curAudio = null, lastSay = {k:'',t:0};
-function say(text, btn){
+function say(text, btn, slow){
   if(!text) return;
   // si la misma palabra se pide dos veces seguidas, ignorar la segunda
   const now = Date.now();
-  if(text===lastSay.k && now-lastSay.t < 600) return;
-  lastSay = {k:text, t:now};
+  const dk = text + (slow?'|lento':'');
+  if(dk===lastSay.k && now-lastSay.t < 600) return;
+  lastSay = {k:dk, t:now};
   if(curAudio){ curAudio.pause(); curAudio.currentTime=0; }
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
   const key = slug(text);
@@ -646,6 +649,7 @@ function say(text, btn){
   curAudio = a;
   if(btn){ btn.classList.add('playing'); a.onended = a.onpause = ()=>btn.classList.remove('playing'); }
   a.currentTime = 0;
+  a.playbackRate = slow ? 0.65 : 1;
   a.play().catch(err=>{
     if(btn) btn.classList.remove('playing');
     // AbortError = lo cortamos nosotros al pedir otra palabra, no es un fallo real
@@ -654,7 +658,7 @@ function say(text, btn){
     const u = new SpeechSynthesisUtterance(text);
     const v = speechSynthesis.getVoices().find(x=>/^(nb|no|nn)/i.test(x.lang));
     if(v) u.voice = v;
-    u.lang = 'nb-NO'; u.rate = .9;
+    u.lang = 'nb-NO'; u.rate = slow ? .55 : .9;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   });
 }
@@ -668,14 +672,16 @@ function audioKeys(){
 }
 // lee una frase cualquiera con la voz de Google Translate.
 // Un <audio> no necesita CORS, así que se puede apuntar directo al endpoint.
-function playPhrase(text, btn){
+function playPhrase(text, btn, slow){
   const t = text.trim();
   const caer = ()=>{ if(btn) btn.classList.remove('playing'); playSeq(t.split(/\s+/), btn); };
   if(!t || t.length > 190) return caer();
   if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
-  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(t));
+  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no'+
+                      (slow?'&ttsspeed=0.24':'')+'&q='+encodeURIComponent(t));
   curAudio = a;
+  a.playbackRate = slow ? 0.8 : 1;   // el ttsspeed de Google frena poco; esto termina el trabajo
   if(btn) btn.classList.add('playing');
   a.onended = ()=>{ if(btn) btn.classList.remove('playing'); };
   a.onerror = caer;                       // si Google no responde, cadena de grabaciones propias
@@ -695,13 +701,14 @@ function playSeq(tokens, btn){
     const k = keys[i++];
     let a = audioCache[k];
     if(!a){ a = new Audio('audio/'+k+'.mp3'); audioCache[k] = a; }
-    curAudio = a; a.currentTime = 0;
+    curAudio = a; a.currentTime = 0; a.playbackRate = 1;
     a.onended = ()=> setTimeout(next, 170);
     a.play().catch(()=>{ if(btn) btn.classList.remove('playing'); });
   };
   next();
 }
 const ICON = '<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M0 0l12 7-12 7z"/></svg>';
+const ICON_SLOW = '<span style="font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:-.02em">½×</span>';
 function playBtn(text, cls){
   return `<button class="say ${cls||''}" data-say="${esc(text)}" aria-label="Escuchar ${esc(text)}">${ICON}</button>`;
 }
@@ -1221,16 +1228,21 @@ async function translate(text){
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, recOn = false;
 
+// palabras con contenido: sin frases hechas ni piezas gramaticales
+const IDEAS = W.filter(w => !/\s/.test(w.no) && !['Gramática','Preguntas','Cortesía'].includes(w.cat));
+$('#talk-idea').onclick = ()=>{
+  const w = pick('idea', IDEAS);
+  $('#talk-idea-out').innerHTML =
+    `<div class="card" style="margin-top:12px;padding:22px 18px">`+
+      `<span class="tag">${esc(w.cat)}</span>`+
+      `<div class="no-word" style="font-size:clamp(26px,6.5vw,42px)">${esc(w.no)}</div>`+
+      `<div class="es-word" style="font-size:20px;margin-top:2px">${esc(w.es)}</div>`+
+      `<div class="say-row">${playBtn(w.no,'')}</div>`+
+      `<div class="mic-state">armá una frase que la use y decila al micrófono</div>`+
+    `</div>`;
+};
+
 function talkInit(){
-  const ideas = $('#talk-ideas');
-  if(ideas && !ideas.childElementCount){
-    shuffle(SENT).slice(0,4).forEach(s=>{
-      const d = document.createElement('div');
-      d.className = 'chip';
-      d.innerHTML = playBtn(s.no,'sm')+' '+esc(s.no);
-      ideas.appendChild(d);
-    });
-  }
   if(!SR){
     $('#mic-btn').disabled = true;
     $('#mic-state').innerHTML = 'Tu navegador no reconoce voz. Funciona en Chrome (Android y escritorio) y en Safari.';
@@ -1253,18 +1265,23 @@ function talkRender(text, interim){
   }).join('');
   // ¿existe grabación de la frase entera, o hay que encadenar palabra por palabra?
   const exact = SENT.find(s=>norm(s.no)===norm(text)) || W.find(w=>norm(w.no)===norm(text));
-  const modelo = exact
-    ? `<div class="say-row">${playBtn(exact.no,'big')}</div><div class="mic-state">así lo dice la grabación</div>`
-    : `<div class="say-row"><button class="say big" id="talk-model" aria-label="Escuchar la versión modelo">${ICON}</button></div>`+
-      `<div class="mic-state">así suena la frase entera, para comparar</div>`;
+  const modelo =
+    `<div class="say-row">`+
+      `<button class="say big" id="talk-model" aria-label="Escuchar la versión modelo">${ICON}</button>`+
+      `<button class="say big" id="talk-slow" aria-label="Escuchar despacio">${ICON_SLOW}</button>`+
+    `</div>`+
+    `<div class="mic-state">${exact?'así lo dice la grabación':'así suena la frase entera'}, normal y despacio</div>`;
   out.innerHTML =
     `<div class="heard" style="margin-top:18px">${esc(text)}</div>`+
     modelo+
     `<div class="gloss">${chips}</div>`+
     `<div class="hint" style="margin-top:8px">tocá cualquier palabra para escucharla sola</div>`+
     `<div class="trad"><span class="trad-lbl">traducción</span><span id="trad-txt">traduciendo…</span></div>`;
-  const mb = $('#talk-model');
-  if(mb) mb.onclick = e=>{ e.stopPropagation(); playPhrase(text, e.currentTarget); };
+  const suena = (slow, e)=>{ e.stopPropagation();
+    if(exact) say(exact.no, e.currentTarget, slow); else playPhrase(text, e.currentTarget, slow); };
+  const mb=$('#talk-model'), sb=$('#talk-slow');
+  if(mb) mb.onclick = e=>suena(false, e);
+  if(sb) sb.onclick = e=>suena(true, e);
   translate(text).then(tr=>{
     const el = $('#trad-txt'); if(!el) return;
     el.textContent = tr || 'No pude traducir la frase entera ahora, pero arriba tenés el desglose palabra por palabra.';
