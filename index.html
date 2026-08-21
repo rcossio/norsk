@@ -249,6 +249,8 @@ td .sil{margin-top:2px}
 .gw{border:1px solid var(--kant);border-radius:2px;padding:7px 11px;text-align:center;background:var(--kort)}
 .gw b{display:block;font-family:var(--display);font-size:16px;color:var(--sno);font-weight:600}
 .gw span{display:block;font-family:var(--serif);font-style:italic;font-size:13px;color:var(--gull);margin-top:1px}
+.gw[data-say]{cursor:pointer}
+.gw[data-say]:hover{border-color:var(--gull)}
 .gw.unk{border-style:dashed;opacity:.6}
 .gw.unk span{color:#6E8CA3;font-style:normal;font-family:var(--mono);font-size:11px}
 .trad{
@@ -654,6 +656,32 @@ function say(text, btn){
   });
 }
 function autoSay(text){ if(autoSound) say(text); }
+
+// qué grabaciones existen realmente
+let AUDIO_KEYS = null;
+function audioKeys(){
+  if(!AUDIO_KEYS) AUDIO_KEYS = new Set([...W.map(w=>w.no), ...SENT.map(s=>s.no)].map(slug));
+  return AUDIO_KEYS;
+}
+// encadena varias grabaciones sueltas para armar una frase
+function playSeq(tokens, btn){
+  const keys = tokens.map(slug).filter(k => audioKeys().has(k));
+  if(!keys.length){ say(tokens.join(' '), btn); return; }
+  if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
+  document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
+  let i = 0;
+  if(btn) btn.classList.add('playing');
+  const next = ()=>{
+    if(i >= keys.length){ if(btn) btn.classList.remove('playing'); return; }
+    const k = keys[i++];
+    let a = audioCache[k];
+    if(!a){ a = new Audio('audio/'+k+'.mp3'); audioCache[k] = a; }
+    curAudio = a; a.currentTime = 0;
+    a.onended = ()=> setTimeout(next, 170);
+    a.play().catch(()=>{ if(btn) btn.classList.remove('playing'); });
+  };
+  next();
+}
 const ICON = '<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M0 0l12 7-12 7z"/></svg>';
 function playBtn(text, cls){
   return `<button class="say ${cls||''}" data-say="${esc(text)}" aria-label="Escuchar ${esc(text)}">${ICON}</button>`;
@@ -1165,13 +1193,24 @@ function talkRender(text, interim){
   const toks = text.split(/\s+/).filter(Boolean);
   const chips = toks.map(t=>{
     const g = gloss(t);
-    return g ? `<div class="gw"><b>${esc(t)}</b><span>${esc(g.es)}</span></div>`
+    const snd = audioKeys().has(slug(t)) ? ` data-say="${esc(t)}"` : '';
+    return g ? `<div class="gw"${snd}><b>${esc(t)}</b><span>${esc(g.es)}</span></div>`
              : `<div class="gw unk"><b>${esc(t)}</b><span>no la tengo</span></div>`;
   }).join('');
+  // ¿existe grabación de la frase entera, o hay que encadenar palabra por palabra?
+  const exact = SENT.find(s=>norm(s.no)===norm(text)) || W.find(w=>norm(w.no)===norm(text));
+  const modelo = exact
+    ? `<div class="say-row">${playBtn(exact.no,'big')}</div><div class="mic-state">así lo dice la grabación</div>`
+    : `<div class="say-row"><button class="say big" id="talk-model" aria-label="Escuchar la versión modelo">${ICON}</button></div>`+
+      `<div class="mic-state">así suena palabra por palabra, para comparar</div>`;
   out.innerHTML =
     `<div class="heard" style="margin-top:18px">${esc(text)}</div>`+
+    modelo+
     `<div class="gloss">${chips}</div>`+
+    `<div class="hint" style="margin-top:8px">tocá cualquier palabra para escucharla sola</div>`+
     `<div class="trad"><span class="trad-lbl">traducción</span><span id="trad-txt">traduciendo…</span></div>`;
+  const mb = $('#talk-model');
+  if(mb) mb.onclick = e=>{ e.stopPropagation(); playSeq(toks, e.currentTarget); };
   translate(text).then(tr=>{
     const el = $('#trad-txt'); if(!el) return;
     el.textContent = tr || 'No pude traducir la frase entera ahora, pero arriba tenés el desglose palabra por palabra.';
