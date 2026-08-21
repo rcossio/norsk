@@ -725,10 +725,10 @@ if('speechSynthesis' in window) speechSynthesis.getVoices();
 
 /* ---------- muestreo con tope ----------
    Sigue siendo azar puro: se elige una palabra al azar y se acepta salvo que ya
-   haya salido más de tres veces por encima de la que menos salió, en cuyo caso se
+   haya salido TOPE veces por encima de la que menos salió, en cuyo caso se
    vuelve a tirar. No es un mazo (el orden no está fijado de antemano) pero corta
    las rachas de diez repeticiones. Cuesta un contador por palabra y nada más. */
-const TOPE = 3;
+const TOPE = 2;
 const counts = {}, lastPick = {};
 function pick(key, pool){
   pool = pool || W;
@@ -736,10 +736,17 @@ function pick(key, pool){
   if(!c || c.size !== pool.length){ c = counts[key] = new Map(); pool.forEach(x=>c.set(x,0)); }
   let min = Infinity;
   c.forEach(v=>{ if(v < min) min = v; });
-  const cap = min + TOPE;
-  let x, tries = 0;
-  do{ x = pool[Math.floor(Math.random()*pool.length)]; }
-  while((c.get(x) > cap || (x === lastPick[key] && pool.length > 1)) && ++tries < 40);
+  const cap = min + TOPE, prev = lastPick[key];
+  let x = null, best = null, bestN = Infinity;
+  for(let i = 0; i < 40; i++){
+    const y = pool[Math.floor(Math.random()*pool.length)];
+    if(y === prev && pool.length > 1) continue;
+    const n = c.get(y);
+    if(n < cap){ x = y; break; }          // dentro del tope: se acepta
+    if(n < bestN){ bestN = n; best = y; } // si no, guardo la menos vista por si acaso
+  }
+  // si en 40 tiros no salió ninguna admisible, va la menos vista de las que salieron
+  if(!x) x = best || pool[Math.floor(Math.random()*pool.length)];
   c.set(x, (c.get(x)||0) + 1);
   lastPick[key] = x;
   return x;
