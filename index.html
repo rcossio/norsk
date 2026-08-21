@@ -232,6 +232,41 @@ td .sil{margin-top:2px}
 .legend ul{margin:0;padding-left:18px;font-family:var(--serif);font-size:15px;color:#B9CEDB}
 .legend li{margin:3px 0}
 .legend b{font-family:var(--display);color:var(--sno)}
+.mic{
+  width:96px;height:96px;border-radius:50%;border:2px solid var(--flagg);
+  background:rgba(219,43,57,.12);color:var(--flagg);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;padding:0;
+}
+.mic svg{width:34px;height:34px;fill:currentColor}
+.mic:hover{background:rgba(219,43,57,.22)}
+.mic:focus-visible{outline:2px solid var(--gull);outline-offset:4px}
+.mic.rec{background:var(--flagg);color:var(--sno);box-shadow:0 0 0 0 rgba(219,43,57,.6)}
+.mic:disabled{opacity:.35;cursor:default}
+.mic-state{font-family:var(--mono);font-size:12px;color:#7E9CB2;margin-top:14px;letter-spacing:.04em}
+.heard{font-family:var(--display);font-weight:700;font-size:clamp(24px,5.5vw,38px);color:var(--sno);line-height:1.2;letter-spacing:-.01em}
+.heard.interim{color:#5E7E96;font-weight:400}
+.gloss{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;justify-content:center}
+.gw{border:1px solid var(--kant);border-radius:2px;padding:7px 11px;text-align:center;background:var(--kort)}
+.gw b{display:block;font-family:var(--display);font-size:16px;color:var(--sno);font-weight:600}
+.gw span{display:block;font-family:var(--serif);font-style:italic;font-size:13px;color:var(--gull);margin-top:1px}
+.gw.unk{border-style:dashed;opacity:.6}
+.gw.unk span{color:#6E8CA3;font-style:normal;font-family:var(--mono);font-size:11px}
+.trad{
+  margin-top:18px;padding-top:16px;position:relative;
+  font-family:var(--serif);font-style:italic;font-size:clamp(20px,4.6vw,28px);color:var(--gull);
+}
+.trad::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:repeating-linear-gradient(to right,var(--kant) 0 6px,transparent 6px 12px);
+}
+.trad-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6E8CA3;display:block;margin-bottom:6px;font-style:normal}
+@media (prefers-reduced-motion:no-preference){
+  .mic.rec{animation:pulse 1.4s ease-out infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(219,43,57,.55)}
+    100%{box-shadow:0 0 0 26px rgba(219,43,57,0)}
+  }
+}
 .snd-toggle{
   background:none;border:1px solid var(--kant);color:#88A7BC;border-radius:2px;
   font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
@@ -393,7 +428,20 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="row" style="margin-top:14px"><button class="btn primary" id="surv-start">Empezar de nuevo</button></div>
 </section>
 
-<!-- 10 LISTA -->
+<!-- 10 HABLÁ -->
+<section class="panel" id="p-talk" role="tabpanel">
+  <div class="panel-head"><h2>Hablá</h2><p>Decí lo que quieras en noruego. Escribo lo que entendí y lo traduzco al castellano, para que veas si te salió lo que querías decir. Acá no hay correcto ni incorrecto.</p></div>
+  <div class="card">
+    <span class="tag">micrófono</span>
+    <div class="say-row"><button class="mic" id="mic-btn" aria-label="Grabar"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg></button></div>
+    <div class="mic-state" id="mic-state">Tocá el micrófono y hablá en noruego</div>
+    <div id="talk-out"></div>
+  </div>
+  <div class="row" style="margin-top:18px"><span class="hint">Si no se te ocurre nada, escuchá una de estas y repetila:</span></div>
+  <div class="pool" id="talk-ideas"></div>
+</section>
+
+<!-- 11 LISTA -->
 <section class="panel" id="p-list" role="tabpanel">
   <div class="panel-head"><h2>Lista</h2><p>Las 107 con su ancla. Buscá por cualquier campo: noruego, castellano, o incluso por el idioma del ancla.</p></div>
   <div class="legend">
@@ -643,6 +691,7 @@ const TABS = [
  ["Frases","p-sent",()=>sentNew()],
  ["Contrarreloj","p-race",()=>raceReset()],
  ["Supervivencia","p-surv",()=>survStart()],
+ ["Hablá","p-talk",()=>talkInit()],
  ["Lista","p-list",()=>listRender('')]
 ];
 let active = 0;
@@ -657,7 +706,7 @@ function selectTab(i){
   active=i;
   [...tabsEl.children].forEach((b,j)=>b.setAttribute('aria-selected', j===i?'true':'false'));
   TABS.forEach(([,id],j)=>document.getElementById(id).classList.toggle('on', j===i));
-  raceStop();
+  raceStop(); if(typeof talkStop==='function') talkStop();
   TABS[i][2]();
   window.scrollTo({top:0,behavior:'instant'});
 }
@@ -1037,7 +1086,146 @@ function survAnswer(good){
 }
 $('#surv-start').onclick=survStart;
 
-/* =====================  10. LISTA  ===================== */
+
+/* =====================  10. HABLÁ  =====================
+   Reconocimiento de voz del navegador (nb-NO) + traducción online.
+   El desglose palabra por palabra sale del diccionario propio y funciona
+   siempre, aunque la traducción de internet falle. */
+
+// palabras que aparecen en las frases pero no son entrada de la lista
+const EXTRA = {
+  ikke:'no', meg:'a mí', deg:'a vos', seg:'se', i:'en', på:'en, sobre', til:'a, hacia',
+  med:'con', for:'para', som:'que', nå:'ahora', ikkje:'no', norsk:'noruego',
+  engelsk:'inglés', kaffe:'café', øl:'cerveza', mye:'mucho', litt:'un poco',
+  veldig:'muy', takk:'gracias', hvordan:'cómo', hvorfor:'por qué', hvem:'quién',
+  vær:'sé (imperativo)', så:'tan', snill:'amable', god:'bueno', jo:'sí (contradiciendo)'
+};
+const EXTRA_N = {}; for(const k in EXTRA) EXTRA_N[norm(k)] = EXTRA[k];
+function gloss(token){
+  const t = norm(token);
+  if(!t) return null;
+  let w = W.find(x => norm(x.no) === t);
+  if(w) return {es:w.es, w};
+  w = W.find(x => x.inf && norm(x.inf.replace(/^å\s*/,'')) === t);
+  if(w) return {es:w.es+' (infinitivo)', w};
+  if(EXTRA_N[t]) return {es:EXTRA_N[t]};
+  // forma definida: tingen, toalettet, boka…
+  for(const suf of ['ene','ene','en','et','a','er']){
+    if(t.length > suf.length+1 && t.endsWith(suf)){
+      const stem = t.slice(0, -suf.length);
+      const base = W.find(x => norm(x.no) === stem || norm(x.no) === stem+'k' || norm(x.no)+'k' === stem);
+      if(base && base.cat !== 'Verbos') return {es:base.es+' (definido)', w:base};
+      if(base) return {es:base.es, w:base};
+    }
+  }
+  return null;
+}
+
+async function translate(text){
+  try{
+    const r = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=no&tl=es&dt=t&q='+encodeURIComponent(text));
+    const d = await r.json();
+    const out = d[0].map(x=>x[0]).join('');
+    if(out && out.trim()) return out.trim();
+  }catch(e){}
+  try{
+    const r = await fetch('https://api.mymemory.translated.net/get?langpair=no|es&q='+encodeURIComponent(text));
+    const d = await r.json();
+    if(d.responseStatus === 200) return d.responseData.translatedText;
+  }catch(e){}
+  return null;
+}
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, recOn = false;
+
+function talkInit(){
+  const ideas = $('#talk-ideas');
+  if(ideas && !ideas.childElementCount){
+    shuffle(SENT).slice(0,4).forEach(s=>{
+      const d = document.createElement('div');
+      d.className = 'chip';
+      d.innerHTML = playBtn(s.no,'sm')+' '+esc(s.no);
+      ideas.appendChild(d);
+    });
+  }
+  if(!SR){
+    $('#mic-btn').disabled = true;
+    $('#mic-state').innerHTML = 'Tu navegador no reconoce voz. Funciona en Chrome (Android y escritorio) y en Safari.';
+  }
+}
+
+function talkRender(text, interim){
+  const out = $('#talk-out');
+  if(!text){ out.innerHTML=''; return; }
+  if(interim){
+    out.innerHTML = `<div class="heard interim" style="margin-top:18px">${esc(text)}</div>`;
+    return;
+  }
+  const toks = text.split(/\s+/).filter(Boolean);
+  const chips = toks.map(t=>{
+    const g = gloss(t);
+    return g ? `<div class="gw"><b>${esc(t)}</b><span>${esc(g.es)}</span></div>`
+             : `<div class="gw unk"><b>${esc(t)}</b><span>no la tengo</span></div>`;
+  }).join('');
+  out.innerHTML =
+    `<div class="heard" style="margin-top:18px">${esc(text)}</div>`+
+    `<div class="gloss">${chips}</div>`+
+    `<div class="trad"><span class="trad-lbl">traducción</span><span id="trad-txt">traduciendo…</span></div>`;
+  translate(text).then(tr=>{
+    const el = $('#trad-txt'); if(!el) return;
+    el.textContent = tr || 'No pude traducir la frase entera ahora, pero arriba tenés el desglose palabra por palabra.';
+  });
+}
+
+function talkStop(){
+  recOn = false;
+  $('#mic-btn').classList.remove('rec');
+  if(rec){ try{ rec.stop(); }catch(e){} }
+}
+
+$('#mic-btn').onclick = ()=>{
+  if(!SR) return;
+  if(recOn){ talkStop(); return; }
+  if(curAudio) curAudio.pause();
+  rec = new SR();
+  rec.lang = 'nb-NO';
+  rec.interimResults = true;
+  rec.maxAlternatives = 1;
+  rec.continuous = false;
+  rec.onstart = ()=>{ recOn = true; $('#mic-btn').classList.add('rec');
+    $('#mic-state').textContent = 'Escuchando… tocá de nuevo para cortar';
+    talkRender('', true); };
+  rec.onresult = e=>{
+    let fin='', tmp='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t = e.results[i][0].transcript;
+      if(e.results[i].isFinal) fin += t; else tmp += t;
+    }
+    if(fin) talkRender(fin.trim(), false);
+    else if(tmp) talkRender(tmp.trim(), true);
+  };
+  rec.onerror = ev=>{
+    talkStop();
+    const m = {
+      'no-speech':'No escuché nada. Probá de nuevo, más cerca del micrófono.',
+      'not-allowed':'El navegador bloqueó el micrófono. Habilitalo en los permisos del sitio.',
+      'service-not-allowed':'El navegador bloqueó el micrófono. Habilitalo en los permisos del sitio.',
+      'audio-capture':'No encuentro micrófono en este dispositivo.',
+      'network':'El reconocimiento de voz necesita internet.'
+    };
+    $('#mic-state').textContent = m[ev.error] || ('Falló el reconocimiento: '+ev.error);
+  };
+  rec.onend = ()=>{
+    recOn = false; $('#mic-btn').classList.remove('rec');
+    if(!/Escuchando/.test($('#mic-state').textContent)) return;
+    $('#mic-state').textContent = 'Tocá el micrófono y hablá en noruego';
+  };
+  try{ rec.start(); }
+  catch(e){ $('#mic-state').textContent = 'No pude abrir el micrófono.'; }
+};
+
+/* =====================  11. LISTA  ===================== */
 function listRender(q){
   const t=norm(q);
   const rows=W.filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')+' '+(w.sil||'')).includes(t));
