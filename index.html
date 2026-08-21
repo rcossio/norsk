@@ -260,7 +260,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="cross" aria-hidden="true"></div>
   <div class="hdr-inner">
     <h1>Ankeret<span>.</span></h1>
-    <p class="sub">101 palabras de noruego, cada una atada a algo que ya sabés en inglés, italiano, francés, portugués o castellano. El ancla es la parte que importa: si la recordás, la palabra viene sola.</p>
+    <p class="sub">107 palabras de noruego, cada una atada a algo que ya sabés en inglés, italiano, francés, portugués o castellano. El ancla es la parte que importa: si la recordás, la palabra viene sola.</p>
     <div class="meter">
       <span>Aciertos <b id="m-ok">0</b> / <b id="m-tot">0</b></span>
       <span>Racha <i id="m-streak">0</i></span>
@@ -399,7 +399,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
 
 <!-- 11 LISTA -->
 <section class="panel" id="p-list" role="tabpanel">
-  <div class="panel-head"><h2>Lista</h2><p>Las 101 con su ancla. Buscá por cualquier campo: noruego, castellano, o incluso por el idioma del ancla.</p></div>
+  <div class="panel-head"><h2>Lista</h2><p>Las 107 con su ancla. Buscá por cualquier campo: noruego, castellano, o incluso por el idioma del ancla.</p></div>
   <div class="legend">
     <h3>Cómo leer la columna "suena"</h3>
     <ul>
@@ -416,7 +416,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <table><thead><tr><th>Noruego</th><th>Suena</th><th>Castellano</th><th>Ancla</th></tr></thead><tbody id="list-body"></tbody></table>
 </section>
 
-<footer>Ankeret · 101 palabras · sin cuentas, sin servidor, sin guardar nada</footer>
+<footer>Ankeret · 107 palabras · sin cuentas, sin servidor, sin guardar nada</footer>
 </div>
 
 <script>
@@ -471,6 +471,12 @@ const W = [
 {no:"tog",pron:"tog",es:"tren",an:"inglés tow: la locomotora que remolca",cat:"Viaje"},
 {no:"fly",pron:"flü",es:"avión",an:"inglés fly",cat:"Viaje"},
 {no:"penger",pron:"pénguer",es:"dinero",an:"inglés penny, pence",cat:"Cosas y lugares"},
+{no:"ting",pron:"ting",es:"cosa",an:"inglés thing",cat:"Cosas y lugares"},
+{no:"en",pron:"en",es:"un, una",an:"inglés an y one: en ting, una cosa",cat:"Gramática"},
+{no:"et",pron:"et",es:"un, una (neutro)",an:"el mismo un, pero con t: et hus, et egg, et barn",cat:"Gramática"},
+{no:"denne",pron:"déne",es:"este, esta",an:"inglés den, la guarida: esta guarida, denne",cat:"Gramática"},
+{no:"dette",pron:"déte",es:"esto (neutro)",an:"denne en versión neutra: pensá d + este",cat:"Gramática"},
+{no:"det",pron:"de",es:"eso, lo",an:"inglés that sin la th",sil:"la t no se dice",cat:"Gramática"},
 {no:"bok",pron:"buk",es:"libro",an:"inglés book",cat:"Cosas y lugares"},
 
 {no:"er",pron:"ær",es:"ser, estar",an:"inglés are",inf:"å være",cat:"Verbos"},
@@ -528,6 +534,10 @@ const W = [
 ];
 
 const SENT = [
+ {no:"Jeg vil kjøpe en ting", es:"Quiero comprar una cosa", note:"en es un/una; con hus, egg o barn habría que decir et."},
+ {no:"Hva er dette?", es:"¿Qué es esto?", note:"dette es lo que usás al señalar algo sin saber qué es."},
+ {no:"Jeg vil ha denne", es:"Quiero esta", note:"denne solo, sin sustantivo detrás, ya significa esta."},
+ {no:"Denne tingen er ny", es:"Esta cosa es nueva", note:"detrás de denne el sustantivo va en forma definida: ting pasa a tingen."},
  {no:"Jeg heter Rodrigo", es:"Me llamo Rodrigo", note:"heter es llamarse: literalmente yo me llamo."},
  {no:"Jeg snakker ikke norsk", es:"No hablo noruego", note:"ikke es el no, y va después del verbo, nunca antes."},
  {no:"Hvor er toalettet?", es:"¿Dónde está el baño?", note:"toalettet: el artículo el se pega al final de la palabra."},
