@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google devuelve 404 en translate_tts si la petición llega con Referer de otra
+     página. Un <audio> no permite referrerpolicy propio, así que se corta acá. -->
+<meta name="referrer" content="no-referrer">
 <title>Ankeret — noruego por anclas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
