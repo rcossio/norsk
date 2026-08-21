@@ -675,7 +675,12 @@ function audioKeys(){
 // Un <audio> no necesita CORS, así que se puede apuntar directo al endpoint.
 function playPhrase(text, btn, slow){
   const t = text.trim();
-  const caer = ()=>{ if(btn) btn.classList.remove('playing'); playSeq(t.split(/\s+/), btn); };
+  const caer = ()=>{
+    if(btn) btn.classList.remove('playing');
+    const s = $('#talk-src');
+    if(s) s.textContent = 'Google no respondió: suenan mis grabaciones, palabra por palabra';
+    playSeq(t.split(/\s+/), btn);
+  };
   if(!t || t.length > 190) return caer();
   if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
@@ -1276,22 +1281,20 @@ function talkRender(text, interim){
     return g ? `<div class="gw"${snd}><b>${esc(t)}</b><span>${esc(g.es)}</span></div>`
              : `<div class="gw unk"><b>${esc(t)}</b><span>no la tengo</span></div>`;
   }).join('');
-  // ¿existe grabación de la frase entera, o hay que encadenar palabra por palabra?
-  const exact = SENT.find(s=>norm(s.no)===norm(text)) || W.find(w=>norm(w.no)===norm(text));
   const modelo =
     `<div class="say-row">`+
       `<button class="say big" id="talk-model" aria-label="Escuchar la versión modelo">${ICON}</button>`+
       `<button class="say big" id="talk-slow" aria-label="Escuchar despacio">${ICON_SLOW}</button>`+
     `</div>`+
-    `<div class="mic-state">${exact?'así lo dice la grabación':'así suena la frase entera'}, normal y despacio</div>`;
+    `<div class="mic-state" id="talk-src">así suena la frase entera, normal y despacio</div>`;
   out.innerHTML =
     `<div class="heard" style="margin-top:18px">${esc(text)}</div>`+
     modelo+
     `<div class="gloss">${chips}</div>`+
     `<div class="hint" style="margin-top:8px">tocá cualquier palabra para escucharla sola</div>`+
     `<div class="trad"><span class="trad-lbl">traducción</span><span id="trad-txt">traduciendo…</span></div>`;
-  const suena = (slow, e)=>{ e.stopPropagation();
-    if(exact) say(exact.no, e.currentTarget, slow); else playPhrase(text, e.currentTarget, slow); };
+  // acá siempre Google: es lo que dijiste vos, no una tarjeta del mazo
+  const suena = (slow, e)=>{ e.stopPropagation(); playPhrase(text, e.currentTarget, slow); };
   const mb=$('#talk-model'), sb=$('#talk-slow');
   if(mb) mb.onclick = e=>suena(false, e);
   if(sb) sb.onclick = e=>suena(true, e);
