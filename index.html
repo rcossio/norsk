@@ -586,9 +586,13 @@ function slug(t){
     .replace(/[^a-z0-9 ]/g,'').trim().replace(/\s+/g,'-');
 }
 const audioCache = {};
-let autoSound = true, curAudio = null;
+let autoSound = true, curAudio = null, lastSay = {k:'',t:0};
 function say(text, btn){
   if(!text) return;
+  // si la misma palabra se pide dos veces seguidas, ignorar la segunda
+  const now = Date.now();
+  if(text===lastSay.k && now-lastSay.t < 600) return;
+  lastSay = {k:text, t:now};
   if(curAudio){ curAudio.pause(); curAudio.currentTime=0; }
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
   const key = slug(text);
@@ -597,8 +601,10 @@ function say(text, btn){
   curAudio = a;
   if(btn){ btn.classList.add('playing'); a.onended = a.onpause = ()=>btn.classList.remove('playing'); }
   a.currentTime = 0;
-  a.play().catch(()=>{
+  a.play().catch(err=>{
     if(btn) btn.classList.remove('playing');
+    // AbortError = lo cortamos nosotros al pedir otra palabra, no es un fallo real
+    if(err && (err.name==='AbortError' || err.name==='NotAllowedError')) return;
     if(!('speechSynthesis' in window)) return;
     const u = new SpeechSynthesisUtterance(text);
     const v = speechSynthesis.getVoices().find(x=>/^(nb|no|nn)/i.test(x.lang));
@@ -813,8 +819,10 @@ function pairClick(t,b){
   const fb=$('#pairs-fb'); fb.className='fb '+(good?'ok':'no');
   if(good){
     pairSel.b.classList.remove('sel'); pairSel.b.classList.add('done'); b.classList.add('done');
-    pairSel.b.dataset.say = t.w.no; b.dataset.say = t.w.no;
-    pairSel.b.title = b.title = 'Tocá para escuchar '+t.w.no;
+    const a1=pairSel.b, a2=b;
+    a1.title = a2.title = 'Tocá para escuchar '+t.w.no;
+    // se asigna después del clic actual, si no este mismo clic lo reproduce otra vez
+    setTimeout(()=>{ a1.dataset.say = t.w.no; a2.dataset.say = t.w.no; }, 0);
     fb.innerHTML = esc(t.w.no)+' ('+esc(t.w.pron)+') = '+esc(t.w.es)+'. Ancla: '+esc(t.w.an)+'. '+playBtn(t.w.no,'sm');
     autoSay(t.w.no);
     pairLeft--;
@@ -834,7 +842,13 @@ function soundNew(){
   soundW=rnd(W); soundLock=false;
   $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
   $('#sound-q').innerHTML=`<span class="tag">escuchá</span><div class="say-row">${playBtn(soundW.no,'big')}</div>`+
-    `<div class="pron" style="margin-top:12px;font-size:clamp(20px,5vw,32px)">${esc(soundW.pron)}</div>`;
+    `<div id="sound-pron" class="pron" style="margin-top:14px;font-size:clamp(20px,5vw,32px);min-height:34px"></div>`+
+    `<button class="btn ghost" id="sound-peek" style="margin-top:6px;font-size:13px;padding:7px 14px">Ver cómo suena escrito</button>`;
+  $('#sound-peek').onclick=e=>{
+    $('#sound-pron').textContent = soundW.pron;
+    if(soundW.sil) $('#sound-pron').insertAdjacentHTML('afterend','<div class="sil">'+esc(soundW.sil)+'</div>');
+    e.currentTarget.remove();
+  };
   autoSay(soundW.no);
   const opts=shuffle([soundW,...distractors(soundW,'es',3)]);
   const box=$('#sound-opts'); box.innerHTML='';
