@@ -163,7 +163,8 @@ nav{position:sticky;top:0;z-index:20;background:rgba(6,20,32,.94);backdrop-filte
 }
 .tile.es{font-family:var(--serif);font-style:italic;color:var(--gull)}
 .tile.sel{border-color:var(--gull);background:#1B3C57}
-.tile.done{opacity:.22;cursor:default;border-style:dashed}
+.tile.done{opacity:.45;cursor:pointer;border-style:dashed}
+.tile.done:hover{opacity:.8;border-color:var(--gull)}
 .tile.miss{border-color:var(--flagg)}
 
 /* ---------- categories ---------- */
@@ -220,6 +221,17 @@ td.an{font-family:var(--serif);font-size:14px;color:#9DB8C9}
 .say.sm svg{width:10px;height:10px}
 .say.playing{background:var(--gull);color:var(--dyp);border-color:var(--gull)}
 .say-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:10px}
+.sil{font-family:var(--mono);font-size:11px;color:#7E9CB2;margin-top:6px;letter-spacing:.02em}
+.sil::before{content:"◦ "}
+td .sil{margin-top:2px}
+.legend{
+  border:1px solid var(--kant);border-left:3px solid var(--gull);border-radius:2px;
+  padding:14px 16px;margin-bottom:18px;background:rgba(18,48,73,.45);
+}
+.legend h3{margin:0 0 8px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gull);font-weight:400}
+.legend ul{margin:0;padding-left:18px;font-family:var(--serif);font-size:15px;color:#B9CEDB}
+.legend li{margin:3px 0}
+.legend b{font-family:var(--display);color:var(--sno)}
 .snd-toggle{
   background:none;border:1px solid var(--kant);color:#88A7BC;border-radius:2px;
   font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
@@ -304,7 +316,8 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div class="panel-head"><h2>Escribí</h2><p>Lo más duro y lo que más fija. Te acepto la palabra sin å, ø ni æ, pero después te muestro cómo se escribe de verdad.</p></div>
   <div class="row">
     <div class="seg" id="type-dir">
-      <button data-d="es" aria-pressed="true">es → no</button>
+      <button data-d="oir" aria-pressed="true">escuchá y escribí</button>
+      <button data-d="es" aria-pressed="false">es → no</button>
       <button data-d="no" aria-pressed="false">no → es</button>
     </div>
   </div>
@@ -387,6 +400,17 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
 <!-- 11 LISTA -->
 <section class="panel" id="p-list" role="tabpanel">
   <div class="panel-head"><h2>Lista</h2><p>Las 101 con su ancla. Buscá por cualquier campo: noruego, castellano, o incluso por el idioma del ancla.</p></div>
+  <div class="legend">
+    <h3>Cómo leer la columna "suena"</h3>
+    <ul>
+      <li><b>j</b> = la h noruega, soplada como en el <i>house</i> inglés. No es la jota de <i>jamón</i>.</li>
+      <li><b>ü</b> = la u francesa de <i>tu</i>. La <b>y</b> noruega siempre suena así.</li>
+      <li><b>ø</b> = el <i>eu</i> francés de <i>peu</i>: una e con los labios redondeados.</li>
+      <li><b>ch</b> en <i>kjøtt</i> y <i>kjøper</i> es más suave que la nuestra, como el <i>ich</i> alemán.</li>
+      <li>La <b>o</b> larga suena <b>u</b>: <i>bok</i> es buk, <i>stor</i> es stur, <i>god</i> es gu.</li>
+      <li>La línea gris ◦ marca las letras que se escriben pero no se dicen.</li>
+    </ul>
+  </div>
   <input class="search" id="list-search" placeholder="Buscar: fisk, pescado, inglés, verbo…" autocomplete="off">
   <table><thead><tr><th>Noruego</th><th>Suena</th><th>Castellano</th><th>Ancla</th></tr></thead><tbody id="list-body"></tbody></table>
 </section>
@@ -401,14 +425,14 @@ const W = [
 {no:"mann",pron:"man",es:"hombre",an:"inglés man",cat:"Personas y cuerpo"},
 {no:"kvinne",pron:"kvine",es:"mujer",an:"inglés queen: la reina es la mujer",cat:"Personas y cuerpo"},
 {no:"barn",pron:"barn",es:"niño",an:"inglés born: los recién nacidos",cat:"Personas y cuerpo"},
-{no:"hånd",pron:"jonn",es:"mano",an:"inglés hand",cat:"Personas y cuerpo"},
+{no:"hånd",pron:"jonn",es:"mano",an:"inglés hand",sil:"la d final no se dice",cat:"Personas y cuerpo"},
 {no:"fot",pron:"fut",es:"pie",an:"inglés foot",cat:"Personas y cuerpo"},
 {no:"øye",pron:"øie",es:"ojo",an:"inglés eye",cat:"Personas y cuerpo"},
 {no:"munn",pron:"mun",es:"boca",an:"inglés mumble: lo que sale de la boca",cat:"Personas y cuerpo"},
 {no:"hund",pron:"junn",es:"perro",an:"inglés hound",cat:"Animales y comida"},
 {no:"katt",pron:"kat",es:"gato",an:"italiano gatto",cat:"Animales y comida"},
 {no:"fisk",pron:"fisk",es:"pescado",an:"inglés fish",cat:"Animales y comida"},
-{no:"brød",pron:"brø",es:"pan",an:"inglés bread; y el brodo italiano, la sopa con pancito",cat:"Animales y comida"},
+{no:"brød",pron:"brø",es:"pan",an:"inglés bread; y el brodo italiano, la sopa con pancito",sil:"la d final no se dice",cat:"Animales y comida"},
 {no:"melk",pron:"melk",es:"leche",an:"inglés milk",cat:"Animales y comida"},
 {no:"ost",pron:"ust",es:"queso",an:"la hostia, ostia en italiano: la oblea blanca y redonda, como una feta",cat:"Animales y comida"},
 {no:"egg",pron:"eg",es:"huevo",an:"inglés egg",cat:"Animales y comida"},
@@ -420,37 +444,37 @@ const W = [
 {no:"takk",pron:"tak",es:"gracias",an:"inglés thanks",cat:"Cortesía"},
 {no:"ja",pron:"ia",es:"sí",an:"inglés yeah",cat:"Gramática"},
 {no:"nei",pron:"nai",es:"no",an:"inglés nay",cat:"Gramática"},
-{no:"og",pron:"o",es:"y",an:"falso amigo perfecto: suena como el o español y significa lo contrario",cat:"Gramática"},
+{no:"og",pron:"o",es:"y",an:"falso amigo perfecto: suena como el o español y significa lo contrario",sil:"la g no se dice",cat:"Gramática"},
 {no:"men",pron:"men",es:"pero",an:"todos los hombres, men… pero uno",cat:"Gramática"},
 {no:"eller",pron:"éler",es:"o",an:"él o ella: eller te da la elección",cat:"Gramática"},
-{no:"jeg",pron:"iai",es:"yo",an:"empieza con el mismo sonido y de yo",cat:"Gramática"},
+{no:"jeg",pron:"iai",es:"yo",an:"empieza con el mismo sonido y de yo",sil:"la g final no se dice",cat:"Gramática"},
 {no:"du",pron:"dü",es:"vos",an:"italiano y portugués tu",cat:"Gramática"},
 {no:"han",pron:"jan",es:"él",an:"inglés he más n",cat:"Gramática"},
 {no:"hun",pron:"jun",es:"ella",an:"inglés hen: la gallina es la femenina",cat:"Gramática"},
 {no:"vi",pron:"vi",es:"nosotros",an:"italiano vi vediamo",cat:"Gramática"},
 {no:"de",pron:"di",es:"ellos",an:"inglés they dicho dey",cat:"Gramática"},
-{no:"god",pron:"gu",es:"bueno",an:"inglés good",cat:"Descripciones"},
+{no:"god",pron:"gu",es:"bueno",an:"inglés good",sil:"la d final no se dice",cat:"Descripciones"},
 {no:"stor",pron:"stur",es:"grande",an:"inglés store, el gran almacén",cat:"Descripciones"},
 {no:"liten",pron:"líten",es:"pequeño",an:"inglés little",cat:"Descripciones"},
 {no:"ny",pron:"nü",es:"nuevo",an:"español nuevo, francés neuf",cat:"Descripciones"},
 {no:"gammel",pron:"gámel",es:"viejo",an:"camel: el camello arrugado y viejo",cat:"Descripciones"},
 {no:"varm",pron:"varm",es:"caliente",an:"inglés warm",cat:"Descripciones"},
-{no:"kald",pron:"kal",es:"frío",an:"inglés cold",cat:"Descripciones"},
+{no:"kald",pron:"kal",es:"frío",an:"inglés cold",sil:"la d final no se dice",cat:"Descripciones"},
 {no:"dag",pron:"dag",es:"día",an:"inglés day",cat:"Tiempo"},
 {no:"natt",pron:"nat",es:"noche",an:"italiano notte",cat:"Tiempo"},
 {no:"år",pron:"or",es:"año",an:"inglés year sin la y",cat:"Tiempo"},
-{no:"tid",pron:"ti",es:"tiempo",an:"inglés tide, time and tide",cat:"Tiempo"},
+{no:"tid",pron:"ti",es:"tiempo",an:"inglés tide, time and tide",sil:"la d final no se dice",cat:"Tiempo"},
 {no:"by",pron:"bü",es:"ciudad",an:"el -by de Rugby y Derby: pueblo en inglés",cat:"Cosas y lugares"},
 {no:"gate",pron:"gá-te",es:"calle",an:"inglés gate, el portón que da a la calle",cat:"Cosas y lugares"},
 {no:"bil",pron:"bil",es:"auto",an:"automóbil",cat:"Viaje"},
 {no:"tog",pron:"tog",es:"tren",an:"inglés tow: la locomotora que remolca",cat:"Viaje"},
 {no:"fly",pron:"flü",es:"avión",an:"inglés fly",cat:"Viaje"},
-{no:"penger",pron:"péng-er",es:"dinero",an:"inglés penny, pence",cat:"Cosas y lugares"},
+{no:"penger",pron:"pénguer",es:"dinero",an:"inglés penny, pence",cat:"Cosas y lugares"},
 {no:"bok",pron:"buk",es:"libro",an:"inglés book",cat:"Cosas y lugares"},
 
 {no:"er",pron:"ær",es:"ser, estar",an:"inglés are",inf:"å være",cat:"Verbos"},
 {no:"har",pron:"jar",es:"tener",an:"inglés have, español haber",inf:"å ha",cat:"Verbos"},
-{no:"gjør",pron:"iør",es:"hacer",an:"inglés do; se escribe casi como jour pero suena iør",inf:"å gjøre",cat:"Verbos"},
+{no:"gjør",pron:"iør",es:"hacer",an:"inglés do; se escribe casi como jour pero suena iør",inf:"å gjøre",sil:"gj- se vuelve una i; la g no se dice",cat:"Verbos"},
 {no:"sier",pron:"síer",es:"decir",an:"el sí español: lo que decís",inf:"å si",cat:"Verbos"},
 {no:"snakker",pron:"snáker",es:"hablar",an:"inglés snack: hablar es picotear palabras",inf:"å snakke",cat:"Verbos"},
 {no:"forstår",pron:"forstór",es:"entender",an:"inglés understand: la misma estructura de estar parado ante algo",inf:"å forstå",cat:"Verbos"},
@@ -464,7 +488,7 @@ const W = [
 {no:"reiser",pron:"ráiser",es:"viajar",an:"inglés rise: levantarse y salir",inf:"å reise",cat:"Verbos"},
 {no:"kjøper",pron:"chøper",es:"comprar",an:"inglés cheap: lo barato se compra",inf:"å kjøpe",cat:"Verbos"},
 {no:"betaler",pron:"betáler",es:"pagar",an:"italiano pagare, portugués pagar, con la raíz tal",inf:"å betale",cat:"Verbos"},
-{no:"hjelper",pron:"iélper",es:"ayudar",an:"inglés help",inf:"å hjelpe",cat:"Verbos"},
+{no:"hjelper",pron:"iélper",es:"ayudar",an:"inglés help",inf:"å hjelpe",sil:"la h de hj- no se dice",cat:"Verbos"},
 {no:"vil",pron:"vil",es:"querer",an:"inglés will",inf:"å ville",cat:"Verbos"},
 {no:"kan",pron:"kan",es:"poder",an:"inglés can",inf:"å kunne",cat:"Verbos"},
 {no:"må",pron:"mo",es:"deber, tener que",an:"inglés must",inf:"å måtte",cat:"Verbos"},
@@ -472,7 +496,7 @@ const W = [
 {no:"trenger",pron:"trénguer",es:"necesitar",an:"necesito una tregua",inf:"å trenge",cat:"Verbos"},
 {no:"finner",pron:"fíner",es:"encontrar",an:"inglés find",inf:"å finne",cat:"Verbos"},
 {no:"tar",pron:"tar",es:"tomar",an:"inglés take",inf:"å ta",cat:"Verbos"},
-{no:"gir",pron:"yir",es:"dar",an:"inglés give",inf:"å gi",cat:"Verbos"},
+{no:"gir",pron:"iir",es:"dar",an:"inglés give",inf:"å gi",sil:"la g ante i se vuelve una i",cat:"Verbos"},
 {no:"bor",pron:"bur",es:"vivir, residir",an:"español morar, inglés abode",inf:"å bo",cat:"Verbos"},
 {no:"heter",pron:"jéter",es:"llamarse",an:"inglés I hate: I hate cómo me llamo",inf:"å hete",cat:"Verbos"},
 {no:"koster",pron:"kóster",es:"costar",an:"español costar",inf:"å koste",cat:"Verbos"},
@@ -482,17 +506,17 @@ const W = [
 {no:"vær så snill",pron:"vær so snil",es:"por favor",an:"literal: sé tan amable",cat:"Cortesía"},
 {no:"tusen takk",pron:"túsen tak",es:"muchas gracias",an:"literal: mil gracias",cat:"Cortesía"},
 {no:"vær så god",pron:"vær so gu",es:"de nada, aquí tiene",an:"literal: sé tan bueno",cat:"Cortesía"},
-{no:"unnskyld",pron:"únshül",es:"perdón, disculpe",an:"inglés excuse con skyld, la culpa que se debe",cat:"Cortesía"},
+{no:"unnskyld",pron:"únshül",es:"perdón, disculpe",an:"inglés excuse con skyld, la culpa que se debe",sil:"la d final no se dice",cat:"Cortesía"},
 {no:"beklager",pron:"beklágüer",es:"lo siento",an:"klag es quejarse, como el klagen alemán",cat:"Cortesía"},
-{no:"ha det",pron:"ha de",es:"chau",an:"literal: tenelo bien",cat:"Cortesía"},
-{no:"god morgen",pron:"gu mórn",es:"buen día",an:"inglés good morning",cat:"Cortesía"},
+{no:"ha det",pron:"ha de",es:"chau",an:"literal: tenelo bien",sil:"la t de det no se dice",cat:"Cortesía"},
+{no:"god morgen",pron:"gu mórn",es:"buen día",an:"inglés good morning",sil:"morgen se contrae: se pierden la g y la e, por eso morn existe solo como saludo",cat:"Cortesía"},
 {no:"snakker du engelsk?",pron:"snáker du énguelsk",es:"¿hablás inglés?",an:"snakke de snack más english",cat:"Cortesía"},
 {no:"toalett",pron:"toalét",es:"baño",an:"francés toilette",cat:"Viaje"},
 {no:"do",pron:"du",es:"baño (coloquial)",an:"cortito, el de los bares",cat:"Viaje"},
-{no:"hvor",pron:"vur",es:"dónde",an:"inglés where",cat:"Preguntas"},
+{no:"hvor",pron:"vur",es:"dónde",an:"inglés where",sil:"la h de hv- no se dice",cat:"Preguntas"},
 {no:"når",pron:"nor",es:"cuándo",an:"inglés when",cat:"Preguntas"},
-{no:"hva",pron:"va",es:"qué",an:"inglés what",cat:"Preguntas"},
-{no:"hvor mye",pron:"vur mü-e",es:"cuánto",an:"where much",cat:"Preguntas"},
+{no:"hva",pron:"va",es:"qué",an:"inglés what",sil:"la h de hv- no se dice",cat:"Preguntas"},
+{no:"hvor mye",pron:"vur mü-e",es:"cuánto",an:"where much",sil:"la h de hv- no se dice",cat:"Preguntas"},
 {no:"billett",pron:"bilét",es:"boleto",an:"francés billet, italiano biglietto",cat:"Viaje"},
 {no:"flyplass",pron:"flüplas",es:"aeropuerto",an:"fly, avión, más plass, plaza",cat:"Viaje"},
 {no:"hotell",pron:"jotél",es:"hotel",an:"hotel",cat:"Viaje"},
@@ -642,10 +666,12 @@ function flashRender(){
     `<span class="tag">${esc(w.cat)}</span>`+
     (front
       ? `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>`+
+        (w.sil?`<div class="sil">${esc(w.sil)}</div>`:'')+
         `<div class="say-row">${playBtn(w.no,'big')}</div>`+
         (flashShown?`<div class="es-word" style="margin-top:14px">${esc(w.es)}</div>`+(w.inf?`<div class="inf">${esc(w.inf)}</div>`:''):'')
       : `<div class="es-word">${esc(w.es)}</div>`+
         (flashShown?`<div class="no-word" style="margin-top:14px">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>`+
+          (w.sil?`<div class="sil">${esc(w.sil)}</div>`:'')+
           `<div class="say-row">${playBtn(w.no,'big')}</div>`+(w.inf?`<div class="inf">${esc(w.inf)}</div>`:''):''))
     + anchorHTML(w, flashShown);
   if(front !== flashShown) autoSay(w.no);
@@ -697,7 +723,7 @@ function choiceAnswer(o,btn){
 }
 
 /* =====================  3. ESCRIBÍ  ===================== */
-let typeDir='es', typeW=null, typeLock=false;
+let typeDir='oir', typeW=null, typeLock=false;
 $('#type-dir').onclick = e=>{const b=e.target.closest('button'); if(!b)return;
   typeDir=b.dataset.d; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));
   typeNew();};
@@ -706,20 +732,23 @@ function typeNew(){
   const w=typeW;
   $('#type-fb').textContent=''; $('#type-fb').className='fb';
   $('#type-in').value=''; $('#type-in').disabled=false;
-  $('#type-keys').style.display = typeDir==='es'?'flex':'none';
+  $('#type-keys').style.display = typeDir==='no'?'none':'flex';
   $('#type-q').innerHTML = `<span class="tag">${esc(w.cat)}</span>`+
-    (typeDir==='es' ? `<div class="es-word">${esc(w.es)}</div><div class="inf">escribilo en noruego</div>`
-                    : `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div><div class="inf">escribilo en castellano</div>`);
+    (typeDir==='oir' ? `<div class="say-row">${playBtn(w.no,'big')}</div><div class="inf" style="margin-top:12px">escuchá y escribilo en noruego</div>`
+     : typeDir==='es' ? `<div class="es-word">${esc(w.es)}</div><div class="inf">escribilo en noruego</div>`
+     : `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>${w.sil?'<div class="sil">'+esc(w.sil)+'</div>':''}<div class="inf">escribilo en castellano</div>`);
+  if(typeDir==='oir') say(w.no);
+  $('#type-in').focus();
 }
 function typeCheck(){
   if(typeLock) return;
   const v=$('#type-in').value; if(!v.trim()) return;
   typeLock=true; $('#type-in').disabled=true;
-  const good = typeDir==='es' ? norm(v)===norm(typeW.no) : esMatch(v, typeW);
+  const good = typeDir==='no' ? esMatch(v, typeW) : norm(v)===norm(typeW.no);
   score(good);
   const fb=$('#type-fb'); fb.className='fb '+(good?'ok':'no');
   fb.innerHTML = (good?'Correcto. ':'No. ') +
-    'Se escribe <b>'+esc(typeW.no)+'</b> ('+esc(typeW.pron)+') = '+esc(typeW.es)+'. Ancla: '+esc(typeW.an)+'. '+playBtn(typeW.no,'sm');
+    'Se escribe <b>'+esc(typeW.no)+'</b> ('+esc(typeW.pron)+') = '+esc(typeW.es)+'. '+(typeW.sil?typeW.sil+'. ':'')+'Ancla: '+esc(typeW.an)+'. '+playBtn(typeW.no,'sm');
   autoSay(typeW.no);
   setTimeout(typeNew, good?1300:3200);
 }
@@ -759,6 +788,8 @@ function pairClick(t,b){
   const fb=$('#pairs-fb'); fb.className='fb '+(good?'ok':'no');
   if(good){
     pairSel.b.classList.remove('sel'); pairSel.b.classList.add('done'); b.classList.add('done');
+    pairSel.b.dataset.say = t.w.no; b.dataset.say = t.w.no;
+    pairSel.b.title = b.title = 'Tocá para escuchar '+t.w.no;
     fb.innerHTML = esc(t.w.no)+' ('+esc(t.w.pron)+') = '+esc(t.w.es)+'. Ancla: '+esc(t.w.an)+'. '+playBtn(t.w.no,'sm');
     autoSay(t.w.no);
     pairLeft--;
@@ -1007,10 +1038,10 @@ $('#surv-start').onclick=survStart;
 /* =====================  11. LISTA  ===================== */
 function listRender(q){
   const t=norm(q);
-  const rows=W.filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')).includes(t));
+  const rows=W.filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')+' '+(w.sil||'')).includes(t));
   $('#list-body').innerHTML = rows.map(w=>
     `<tr><td class="no">${playBtn(w.no,'sm')} ${esc(w.no)}${w.inf?'<div class="inf">'+esc(w.inf)+'</div>':''}</td>
-      <td class="pr">${esc(w.pron)}</td><td class="es">${esc(w.es)}</td><td class="an">${esc(w.an)}</td></tr>`).join('');
+      <td class="pr">${esc(w.pron)}${w.sil?'<div class="sil">'+esc(w.sil)+'</div>':''}</td><td class="es">${esc(w.es)}</td><td class="an">${esc(w.an)}</td></tr>`).join('');
 }
 $('#list-search').addEventListener('input',e=>listRender(e.target.value));
 
