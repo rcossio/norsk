@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ankeret — noruego por anclas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --dyp:#0B2233;
+  --dypere:#061420;
+  --kort:#123049;
+  --kant:#1E4767;
+  --is:#C7D9E4;
+  --sno:#F2F7FA;
+  --flagg:#DB2B39;
+  --gull:#E9B44C;
+  --sjo:#4FB3A5;
+  --display:"Familjen Grotesk",system-ui,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --mono:"Space Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--dyp);
+  color:var(--is);
+  font-family:var(--display);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px 80px}
+
+/* ---------- capçalera amb la creu nòrdica ---------- */
+header{position:relative;overflow:hidden;border-bottom:1px solid var(--kant)}
+.cross{
+  position:absolute;inset:0;pointer-events:none;opacity:.3;
+  background:
+    linear-gradient(to right,transparent 100px,var(--flagg) 100px,var(--flagg) 116px,transparent 116px),
+    linear-gradient(to bottom,transparent calc(50% - 8px),var(--flagg) calc(50% - 8px),var(--flagg) calc(50% + 8px),transparent calc(50% + 8px)),
+    linear-gradient(to right,transparent 88px,var(--sno) 88px,var(--sno) 128px,transparent 128px),
+    linear-gradient(to bottom,transparent calc(50% - 20px),var(--sno) calc(50% - 20px),var(--sno) calc(50% + 20px),transparent calc(50% + 20px));
+}
+.hdr-inner{position:relative;max-width:980px;margin:0 auto;padding:34px 20px 26px}
+h1{
+  font-family:var(--display);
+  font-weight:700;font-size:clamp(30px,6vw,46px);
+  letter-spacing:-.02em;margin:0;color:var(--sno);
+}
+h1 span{color:var(--gull)}
+.sub{font-family:var(--serif);font-style:italic;font-size:clamp(15px,2.4vw,19px);color:var(--is);margin:6px 0 0;max-width:52ch}
+.meter{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:#88A7BC}
+.meter b{color:var(--sno);font-weight:700}
+.meter i{color:var(--gull);font-style:normal}
+
+/* ---------- pestanyes ---------- */
+nav{position:sticky;top:0;z-index:20;background:rgba(6,20,32,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--kant)}
+.tabs{display:flex;gap:2px;overflow-x:auto;max-width:980px;margin:0 auto;padding:0 12px;scrollbar-width:thin}
+.tabs button{
+  flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;
+  color:#89A6BA;font-family:var(--display);font-size:14px;font-weight:600;
+  padding:14px 12px;cursor:pointer;white-space:nowrap;letter-spacing:.01em;
+}
+.tabs button:hover{color:var(--sno)}
+.tabs button[aria-selected="true"]{color:var(--sno);border-bottom-color:var(--flagg)}
+.tabs button:focus-visible{outline:2px solid var(--gull);outline-offset:-4px}
+
+/* ---------- estructura de panell ---------- */
+.panel{display:none;padding-top:30px}
+.panel.on{display:block}
+.panel-head{margin-bottom:20px}
+.panel-head h2{font-size:24px;margin:0 0 4px;color:var(--sno);letter-spacing:-.01em}
+.panel-head p{margin:0;font-family:var(--serif);font-size:16px;color:#9DB8C9;max-width:60ch}
+
+/* ---------- controls ---------- */
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.seg{display:inline-flex;border:1px solid var(--kant);border-radius:2px;overflow:hidden}
+.seg button{
+  background:none;border:0;color:#89A6BA;font-family:var(--mono);font-size:11px;
+  letter-spacing:.06em;padding:8px 12px;cursor:pointer;text-transform:uppercase;
+}
+.seg button[aria-pressed="true"]{background:var(--kant);color:var(--sno)}
+.seg button:focus-visible{outline:2px solid var(--gull);outline-offset:-2px}
+.btn{
+  font-family:var(--display);font-weight:600;font-size:15px;
+  background:var(--kant);color:var(--sno);border:0;border-radius:2px;
+  padding:11px 20px;cursor:pointer;
+}
+.btn:hover{background:#27587D}
+.btn.primary{background:var(--flagg)}
+.btn.primary:hover{background:#EF3D4B}
+.btn.ghost{background:none;border:1px solid var(--kant);color:var(--is)}
+.btn.ghost:hover{background:var(--kort)}
+.btn:focus-visible{outline:2px solid var(--gull);outline-offset:2px}
+.hint{font-family:var(--mono);font-size:11px;color:#6E8CA3;letter-spacing:.04em}
+
+/* ---------- targeta ---------- */
+.card{
+  background:var(--kort);border:1px solid var(--kant);border-radius:3px;
+  padding:34px 28px;text-align:center;position:relative;
+}
+.card .tag{
+  position:absolute;top:12px;left:14px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;color:#6E8CA3;
+}
+.no-word{font-family:var(--display);font-weight:700;font-size:clamp(34px,8vw,58px);color:var(--sno);letter-spacing:-.02em;line-height:1.1}
+.es-word{font-family:var(--serif);font-style:italic;font-size:clamp(26px,6vw,42px);color:var(--gull);line-height:1.15}
+.pron{font-family:var(--mono);font-size:15px;color:#8FB0C4;margin-top:8px}
+.inf{font-family:var(--mono);font-size:13px;color:#6E8CA3;margin-top:4px}
+
+/* ---------- l'ancla: element signatura ---------- */
+.anchor{margin:22px auto 0;max-width:46ch;position:relative;padding-top:20px}
+.anchor::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:repeating-linear-gradient(to right,var(--kant) 0 6px,transparent 6px 12px);
+}
+.anchor-lbl{
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gull);display:block;margin-bottom:6px;
+}
+.anchor-txt{font-family:var(--serif);font-size:17px;color:var(--is)}
+.hidden{visibility:hidden}
+
+/* ---------- graella d'opcions ---------- */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.opt{
+  background:var(--kort);border:1px solid var(--kant);border-radius:2px;color:var(--sno);
+  font-family:var(--display);font-size:17px;padding:16px 14px;cursor:pointer;text-align:left;
+  display:flex;gap:10px;align-items:baseline;
+}
+.opt:hover:not(:disabled){border-color:#3A7BA8}
+.opt:disabled{cursor:default}
+.opt .k{font-family:var(--mono);font-size:11px;color:#6E8CA3}
+.opt.right{background:#12463F;border-color:var(--sjo);color:#BFF0E7}
+.opt.wrong{background:#4A1720;border-color:var(--flagg);color:#F3C3C8}
+.opt.es{font-family:var(--serif);font-style:italic}
+
+/* ---------- feedback ---------- */
+.fb{margin-top:16px;min-height:26px;font-family:var(--serif);font-size:17px}
+.fb.ok{color:var(--sjo)}
+.fb.no{color:#F09AA3}
+
+/* ---------- escriure ---------- */
+.type-in{
+  width:100%;background:var(--dypere);border:1px solid var(--kant);border-radius:2px;
+  color:var(--sno);font-family:var(--display);font-size:22px;padding:14px 16px;
+}
+.type-in:focus{outline:none;border-color:var(--gull)}
+.keys{display:flex;gap:6px;margin-top:8px}
+.keys button{
+  background:var(--kort);border:1px solid var(--kant);color:var(--sno);
+  font-family:var(--display);font-size:16px;width:40px;height:36px;cursor:pointer;border-radius:2px;
+}
+
+/* ---------- parells ---------- */
+.pairs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{
+  background:var(--kort);border:1px solid var(--kant);border-radius:2px;color:var(--sno);
+  padding:16px 12px;font-family:var(--display);font-size:17px;cursor:pointer;min-height:56px;
+}
+.tile.es{font-family:var(--serif);font-style:italic;color:var(--gull)}
+.tile.sel{border-color:var(--gull);background:#1B3C57}
+.tile.done{opacity:.22;cursor:default;border-style:dashed}
+.tile.miss{border-color:var(--flagg)}
+
+/* ---------- categories ---------- */
+.buckets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.bucket{
+  border:1px dashed var(--kant);border-radius:2px;padding:12px;min-height:120px;
+  background:rgba(18,48,73,.4);
+}
+.bucket h4{margin:0 0 8px;font-size:13px;font-family:var(--mono);letter-spacing:.05em;color:#8FB0C4;text-transform:uppercase}
+.bucket.hit{border-color:var(--sjo)}
+.bucket ul{list-style:none;margin:0;padding:0;font-family:var(--display);font-size:15px}
+.bucket li{padding:2px 0;color:var(--sno)}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  background:var(--kort);border:1px solid var(--kant);color:var(--sno);border-radius:2px;
+  padding:9px 13px;font-family:var(--display);font-size:16px;cursor:pointer;
+}
+.chip.sel{border-color:var(--gull);background:#1B3C57}
+
+/* ---------- frases ---------- */
+.slot{
+  min-height:60px;border:1px dashed var(--kant);border-radius:2px;padding:12px;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:rgba(6,20,32,.5);
+}
+.slot .chip{background:var(--kant)}
+.sent-es{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--gull);margin-bottom:12px}
+
+/* ---------- llista ---------- */
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid #16374F;vertical-align:top}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6E8CA3}
+td.no{font-weight:600;color:var(--sno);white-space:nowrap}
+td.pr{font-family:var(--mono);font-size:13px;color:#8FB0C4;white-space:nowrap}
+td.es{font-family:var(--serif);font-style:italic;color:var(--gull)}
+td.an{font-family:var(--serif);font-size:14px;color:#9DB8C9}
+.search{
+  width:100%;background:var(--dypere);border:1px solid var(--kant);color:var(--sno);
+  font-family:var(--display);font-size:16px;padding:11px 14px;border-radius:2px;margin-bottom:14px;
+}
+.search:focus{outline:none;border-color:var(--gull)}
+
+.big-num{font-family:var(--display);font-weight:700;font-size:52px;color:var(--sno);line-height:1}
+.lives{font-size:22px;letter-spacing:4px;color:var(--flagg)}
+footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-family:var(--mono);font-size:11px;color:#5F7D95;text-align:center}
+
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr}
+  .buckets{grid-template-columns:1fr}
+  .cross{opacity:.16}
+  .hdr-inner{padding-left:20px}
+  .card{padding:26px 18px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .card,.opt,.tile{transition:background .15s ease,border-color .15s ease,opacity .2s ease}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="cross" aria-hidden="true"></div>
+  <div class="hdr-inner">
+    <h1>Ankeret<span>.</span></h1>
+    <p class="sub">101 palabras de noruego, cada una atada a algo que ya sabés en inglés, italiano, francés, portugués o castellano. El ancla es la parte que importa: si la recordás, la palabra viene sola.</p>
+    <div class="meter">
+      <span>Aciertos <b id="m-ok">0</b> / <b id="m-tot">0</b></span>
+      <span>Racha <i id="m-streak">0</i></span>
+      <span>Mejor racha <i id="m-best">0</i></span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="tabs" role="tablist" id="tabs"></div>
+</nav>
+
+<div class="wrap">
+
+<!-- 1 TARJETAS -->
+<section class="panel" id="p-flash" role="tabpanel">
+  <div class="panel-head"><h2>Tarjetas</h2><p>Mirás una cara, la pensás, revelás. Si te trabaste, el ancla aparece siempre abajo.</p></div>
+  <div class="row">
+    <div class="seg" id="flash-dir">
+      <button data-d="no" aria-pressed="true">no → es</button>
+      <button data-d="es" aria-pressed="false">es → no</button>
+      <button data-d="mix" aria-pressed="false">mezclado</button>
+    </div>
+    <span class="hint">espacio = revelar · flecha derecha = siguiente</span>
+  </div>
+  <div class="card" id="flash-card"></div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn primary" id="flash-reveal">Revelar</button>
+    <button class="btn ghost" id="flash-knew">La sabía</button>
+    <button class="btn ghost" id="flash-next">Siguiente</button>
+  </div>
+</section>
+
+<!-- 2 ELEGÍ -->
+<section class="panel" id="p-choice" role="tabpanel">
+  <div class="panel-head"><h2>Elegí</h2><p>Cuatro opciones, una sola sirve. Cuando errás te muestro el ancla de la palabra correcta.</p></div>
+  <div class="row">
+    <div class="seg" id="choice-dir">
+      <button data-d="no" aria-pressed="true">no → es</button>
+      <button data-d="es" aria-pressed="false">es → no</button>
+      <button data-d="mix" aria-pressed="false">mezclado</button>
+    </div>
+    <span class="hint">teclas 1 · 2 · 3 · 4</span>
+  </div>
+  <div class="card" id="choice-q"></div>
+  <div class="opts" id="choice-opts"></div>
+  <div class="fb" id="choice-fb"></div>
+</section>
+
+<!-- 3 ESCRIBÍ -->
+<section class="panel" id="p-type" role="tabpanel">
+  <div class="panel-head"><h2>Escribí</h2><p>Lo más duro y lo que más fija. Te acepto la palabra sin å, ø ni æ, pero después te muestro cómo se escribe de verdad.</p></div>
+  <div class="row">
+    <div class="seg" id="type-dir">
+      <button data-d="es" aria-pressed="true">es → no</button>
+      <button data-d="no" aria-pressed="false">no → es</button>
+    </div>
+  </div>
+  <div class="card" id="type-q"></div>
+  <div style="margin-top:16px">
+    <input class="type-in" id="type-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Escribí acá y dale Enter">
+    <div class="keys" id="type-keys"><button data-c="å">å</button><button data-c="ø">ø</button><button data-c="æ">æ</button></div>
+  </div>
+  <div class="fb" id="type-fb"></div>
+  <div class="row" style="margin-top:12px"><button class="btn primary" id="type-go">Corregir</button><button class="btn ghost" id="type-skip">No sé, mostrame</button></div>
+</section>
+
+<!-- 4 PARES -->
+<section class="panel" id="p-pairs" role="tabpanel">
+  <div class="panel-head"><h2>Pares</h2><p>Seis palabras noruegas y sus seis traducciones, desordenadas. Tocá una de cada color para aparearlas.</p></div>
+  <div class="pairs" id="pairs-grid"></div>
+  <div class="fb" id="pairs-fb"></div>
+  <div class="row" style="margin-top:14px"><button class="btn ghost" id="pairs-new">Ronda nueva</button></div>
+</section>
+
+<!-- 5 SONIDO -->
+<section class="panel" id="p-sound" role="tabpanel">
+  <div class="panel-head"><h2>Sonido</h2><p>Te doy solo cómo suena, sin la ortografía. Es lo que vas a escuchar en la calle: adiviná qué significa.</p></div>
+  <div class="card" id="sound-q"></div>
+  <div class="opts" id="sound-opts"></div>
+  <div class="fb" id="sound-fb"></div>
+</section>
+
+<!-- 6 ANCLA -->
+<section class="panel" id="p-anchor" role="tabpanel">
+  <div class="panel-head"><h2>Ancla</h2><p>Al revés que siempre: te doy la muleta y tenés que sacar la palabra noruega. Este es el modo que te enseña a usar el método, no solo la lista.</p></div>
+  <div class="card" id="anchor-q"></div>
+  <div class="opts" id="anchor-opts"></div>
+  <div class="fb" id="anchor-fb"></div>
+</section>
+
+<!-- 7 CATEGORÍAS -->
+<section class="panel" id="p-cat" role="tabpanel">
+  <div class="panel-head"><h2>Categorías</h2><p>Doce palabras, tres cajones. Tocá una palabra y después el cajón donde va. Sirve para agrupar por campo semántico, que es como se acuerdan mejor.</p></div>
+  <div class="pool" id="cat-pool"></div>
+  <div class="buckets" id="cat-buckets"></div>
+  <div class="fb" id="cat-fb"></div>
+  <div class="row" style="margin-top:14px"><button class="btn ghost" id="cat-new">Ronda nueva</button></div>
+</section>
+
+<!-- 8 FRASES -->
+<section class="panel" id="p-sent" role="tabpanel">
+  <div class="panel-head"><h2>Frases</h2><p>Armá la oración noruega tocando las palabras en orden. El orden del noruego no es el del castellano y acá se ve.</p></div>
+  <div class="sent-es" id="sent-es"></div>
+  <div class="slot" id="sent-slot"></div>
+  <div class="pool" id="sent-pool" style="margin-top:14px"></div>
+  <div class="fb" id="sent-fb"></div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn primary" id="sent-check">Verificar</button>
+    <button class="btn ghost" id="sent-clear">Vaciar</button>
+    <button class="btn ghost" id="sent-next">Otra frase</button>
+  </div>
+</section>
+
+<!-- 9 CONTRARRELOJ -->
+<section class="panel" id="p-race" role="tabpanel">
+  <div class="panel-head"><h2>Contrarreloj</h2><p>Sesenta segundos. No pienses el ancla, respondé de reflejo: acá se mide lo que ya tenés automatizado.</p></div>
+  <div class="row"><div class="big-num" id="race-clock">60</div><div style="margin-left:20px"><div class="hint">Puntos</div><div class="big-num" id="race-score">0</div></div></div>
+  <div class="card" id="race-q"></div>
+  <div class="opts" id="race-opts"></div>
+  <div class="fb" id="race-fb"></div>
+  <div class="row" style="margin-top:14px"><button class="btn primary" id="race-start">Arrancar</button></div>
+</section>
+
+<!-- 10 SUPERVIVENCIA -->
+<section class="panel" id="p-surv" role="tabpanel">
+  <div class="panel-head"><h2>Supervivencia</h2><p>Tres vidas, modos mezclados sin aviso: a veces elegís, a veces escribís, a veces te doy solo el ancla. Perdés una vida por error.</p></div>
+  <div class="row"><div class="lives" id="surv-lives">●●●</div><span class="hint" id="surv-count">racha 0</span></div>
+  <div class="card" id="surv-q"></div>
+  <div id="surv-body"></div>
+  <div class="fb" id="surv-fb"></div>
+  <div class="row" style="margin-top:14px"><button class="btn primary" id="surv-start">Empezar de nuevo</button></div>
+</section>
+
+<!-- 11 LISTA -->
+<section class="panel" id="p-list" role="tabpanel">
+  <div class="panel-head"><h2>Lista</h2><p>Las 101 con su ancla. Buscá por cualquier campo: noruego, castellano, o incluso por el idioma del ancla.</p></div>
+  <input class="search" id="list-search" placeholder="Buscar: fisk, pescado, inglés, verbo…" autocomplete="off">
+  <table><thead><tr><th>Noruego</th><th>Suena</th><th>Castellano</th><th>Ancla</th></tr></thead><tbody id="list-body"></tbody></table>
+</section>
+
+<footer>Ankeret · 101 palabras · sin cuentas, sin servidor, sin guardar nada</footer>
+</div>
+
+<script>
+/* =====================  DATOS  ===================== */
+const W = [
+{no:"hus",pron:"jus",es:"casa",an:"inglés house",cat:"Cosas y lugares"},
+{no:"mann",pron:"man",es:"hombre",an:"inglés man",cat:"Personas y cuerpo"},
+{no:"kvinne",pron:"kvine",es:"mujer",an:"inglés queen: la reina es la mujer",cat:"Personas y cuerpo"},
+{no:"barn",pron:"barn",es:"niño",an:"inglés born: los recién nacidos",cat:"Personas y cuerpo"},
+{no:"hånd",pron:"jonn",es:"mano",an:"inglés hand",cat:"Personas y cuerpo"},
+{no:"fot",pron:"fut",es:"pie",an:"inglés foot",cat:"Personas y cuerpo"},
+{no:"øye",pron:"øie",es:"ojo",an:"inglés eye",cat:"Personas y cuerpo"},
+{no:"munn",pron:"mun",es:"boca",an:"inglés mumble: lo que sale de la boca",cat:"Personas y cuerpo"},
+{no:"hund",pron:"junn",es:"perro",an:"inglés hound",cat:"Animales y comida"},
+{no:"katt",pron:"kat",es:"gato",an:"italiano gatto",cat:"Animales y comida"},
+{no:"fisk",pron:"fisk",es:"pescado",an:"inglés fish",cat:"Animales y comida"},
+{no:"brød",pron:"brø",es:"pan",an:"inglés bread; y el brodo italiano, la sopa con pancito",cat:"Animales y comida"},
+{no:"melk",pron:"melk",es:"leche",an:"inglés milk",cat:"Animales y comida"},
+{no:"ost",pron:"ust",es:"queso",an:"la hostia, ostia en italiano: la oblea blanca y redonda, como una feta",cat:"Animales y comida"},
+{no:"egg",pron:"eg",es:"huevo",an:"inglés egg",cat:"Animales y comida"},
+{no:"kjøtt",pron:"chøt",es:"carne",an:"chuleta",cat:"Animales y comida"},
+{no:"eple",pron:"ep-le",es:"manzana",an:"inglés apple",cat:"Animales y comida"},
+{no:"mat",pron:"mat",es:"comida",an:"matar lo que vas a comer",cat:"Animales y comida"},
+{no:"vann",pron:"van",es:"agua",an:"el baño, donde corre el agua",cat:"Animales y comida"},
+{no:"hei",pron:"jai",es:"hola",an:"inglés hey",cat:"Cortesía"},
+{no:"takk",pron:"tak",es:"gracias",an:"inglés thanks",cat:"Cortesía"},
+{no:"ja",pron:"ia",es:"sí",an:"inglés yeah",cat:"Gramática"},
+{no:"nei",pron:"nai",es:"no",an:"inglés nay",cat:"Gramática"},
+{no:"og",pron:"o",es:"y",an:"falso amigo perfecto: suena como el o español y significa lo contrario",cat:"Gramática"},
+{no:"men",pron:"men",es:"pero",an:"todos los hombres, men… pero uno",cat:"Gramática"},
+{no:"eller",pron:"éler",es:"o",an:"él o ella: eller te da la elección",cat:"Gramática"},
+{no:"jeg",pron:"iai",es:"yo",an:"empieza con el mismo sonido y de yo",cat:"Gramática"},
+{no:"du",pron:"dü",es:"vos",an:"italiano y portugués tu",cat:"Gramática"},
+{no:"han",pron:"jan",es:"él",an:"inglés he más n",cat:"Gramática"},
+{no:"hun",pron:"jun",es:"ella",an:"inglés hen: la gallina es la femenina",cat:"Gramática"},
+{no:"vi",pron:"vi",es:"nosotros",an:"italiano vi vediamo",cat:"Gramática"},
+{no:"de",pron:"di",es:"ellos",an:"inglés they dicho dey",cat:"Gramática"},
+{no:"god",pron:"gu",es:"bueno",an:"inglés good",cat:"Descripciones"},
+{no:"stor",pron:"stur",es:"grande",an:"inglés store, el gran almacén",cat:"Descripciones"},
+{no:"liten",pron:"líten",es:"pequeño",an:"inglés little",cat:"Descripciones"},
+{no:"ny",pron:"nü",es:"nuevo",an:"español nuevo, francés neuf",cat:"Descripciones"},
+{no:"gammel",pron:"gámel",es:"viejo",an:"camel: el camello arrugado y viejo",cat:"Descripciones"},
+{no:"varm",pron:"varm",es:"caliente",an:"inglés warm",cat:"Descripciones"},
+{no:"kald",pron:"kal",es:"frío",an:"inglés cold",cat:"Descripciones"},
+{no:"dag",pron:"dag",es:"día",an:"inglés day",cat:"Tiempo"},
+{no:"natt",pron:"nat",es:"noche",an:"italiano notte",cat:"Tiempo"},
+{no:"år",pron:"or",es:"año",an:"inglés year sin la y",cat:"Tiempo"},
+{no:"tid",pron:"ti",es:"tiempo",an:"inglés tide, time and tide",cat:"Tiempo"},
+{no:"by",pron:"bü",es:"ciudad",an:"el -by de Rugby y Derby: pueblo en inglés",cat:"Cosas y lugares"},
+{no:"gate",pron:"gá-te",es:"calle",an:"inglés gate, el portón que da a la calle",cat:"Cosas y lugares"},
+{no:"bil",pron:"bil",es:"auto",an:"automóbil",cat:"Viaje"},
+{no:"tog",pron:"tog",es:"tren",an:"inglés tow: la locomotora que remolca",cat:"Viaje"},
+{no:"fly",pron:"flü",es:"avión",an:"inglés fly",cat:"Viaje"},
+{no:"penger",pron:"péng-er",es:"dinero",an:"inglés penny, pence",cat:"Cosas y lugares"},
+{no:"bok",pron:"buk",es:"libro",an:"inglés book",cat:"Cosas y lugares"},
+
+{no:"er",pron:"ær",es:"ser, estar",an:"inglés are",inf:"å være",cat:"Verbos"},
+{no:"har",pron:"jar",es:"tener",an:"inglés have, español haber",inf:"å ha",cat:"Verbos"},
+{no:"gjør",pron:"iør",es:"hacer",an:"inglés do; se escribe casi como jour pero suena iør",inf:"å gjøre",cat:"Verbos"},
+{no:"sier",pron:"síer",es:"decir",an:"el sí español: lo que decís",inf:"å si",cat:"Verbos"},
+{no:"snakker",pron:"snáker",es:"hablar",an:"inglés snack: hablar es picotear palabras",inf:"å snakke",cat:"Verbos"},
+{no:"forstår",pron:"forstór",es:"entender",an:"inglés understand: la misma estructura de estar parado ante algo",inf:"å forstå",cat:"Verbos"},
+{no:"vet",pron:"vet",es:"saber",an:"inglés wit, el ingenio",inf:"å vite",cat:"Verbos"},
+{no:"ser",pron:"ser",es:"ver",an:"falso amigo con ser: en noruego es ver",inf:"å se",cat:"Verbos"},
+{no:"hører",pron:"jører",es:"oír",an:"inglés hear",inf:"å høre",cat:"Verbos"},
+{no:"spiser",pron:"spíser",es:"comer",an:"italiano spesa: hacer las compras para comer",inf:"å spise",cat:"Verbos"},
+{no:"drikker",pron:"dríker",es:"beber",an:"inglés drink",inf:"å drikke",cat:"Verbos"},
+{no:"går",pron:"gor",es:"ir, caminar",an:"inglés go",inf:"å gå",cat:"Verbos"},
+{no:"kommer",pron:"kómer",es:"venir",an:"italiano come, inglés come",inf:"å komme",cat:"Verbos"},
+{no:"reiser",pron:"ráiser",es:"viajar",an:"inglés rise: levantarse y salir",inf:"å reise",cat:"Verbos"},
+{no:"kjøper",pron:"chøper",es:"comprar",an:"inglés cheap: lo barato se compra",inf:"å kjøpe",cat:"Verbos"},
+{no:"betaler",pron:"betáler",es:"pagar",an:"italiano pagare, portugués pagar, con la raíz tal",inf:"å betale",cat:"Verbos"},
+{no:"hjelper",pron:"iélper",es:"ayudar",an:"inglés help",inf:"å hjelpe",cat:"Verbos"},
+{no:"vil",pron:"vil",es:"querer",an:"inglés will",inf:"å ville",cat:"Verbos"},
+{no:"kan",pron:"kan",es:"poder",an:"inglés can",inf:"å kunne",cat:"Verbos"},
+{no:"må",pron:"mo",es:"deber, tener que",an:"inglés must",inf:"å måtte",cat:"Verbos"},
+{no:"liker",pron:"líker",es:"gustar",an:"inglés like",inf:"å like",cat:"Verbos"},
+{no:"trenger",pron:"trénguer",es:"necesitar",an:"italiano stringere: la necesidad te aprieta",inf:"å trenge",cat:"Verbos"},
+{no:"finner",pron:"fíner",es:"encontrar",an:"inglés find",inf:"å finne",cat:"Verbos"},
+{no:"tar",pron:"tar",es:"tomar",an:"inglés take",inf:"å ta",cat:"Verbos"},
+{no:"gir",pron:"yir",es:"dar",an:"inglés give",inf:"å gi",cat:"Verbos"},
+{no:"bor",pron:"bur",es:"vivir, residir",an:"español morar, inglés abode",inf:"å bo",cat:"Verbos"},
+{no:"heter",pron:"jéter",es:"llamarse",an:"el nombre por el que te llaman, inglés antiguo hight",inf:"å hete",cat:"Verbos"},
+{no:"koster",pron:"kóster",es:"costar",an:"español costar",inf:"å koste",cat:"Verbos"},
+{no:"åpner",pron:"ópner",es:"abrir",an:"inglés open",inf:"å åpne",cat:"Verbos"},
+{no:"lukker",pron:"lúker",es:"cerrar",an:"inglés lock",inf:"å lukke",cat:"Verbos"},
+
+{no:"vær så snill",pron:"vær so snil",es:"por favor",an:"literal: sé tan amable",cat:"Cortesía"},
+{no:"tusen takk",pron:"túsen tak",es:"muchas gracias",an:"literal: mil gracias",cat:"Cortesía"},
+{no:"vær så god",pron:"vær so gu",es:"de nada, aquí tiene",an:"literal: sé tan bueno",cat:"Cortesía"},
+{no:"unnskyld",pron:"únshül",es:"perdón, disculpe",an:"inglés excuse con skyld, la culpa que se debe",cat:"Cortesía"},
+{no:"beklager",pron:"beklágüer",es:"lo siento",an:"klag es quejarse, como el klagen alemán",cat:"Cortesía"},
+{no:"ha det",pron:"ha de",es:"chau",an:"literal: tenelo bien",cat:"Cortesía"},
+{no:"god morgen",pron:"gu mórn",es:"buen día",an:"inglés good morning",cat:"Cortesía"},
+{no:"snakker du engelsk?",pron:"snáker du énguelsk",es:"¿hablás inglés?",an:"snakke de snack más english",cat:"Cortesía"},
+{no:"toalett",pron:"toalét",es:"baño",an:"francés toilette",cat:"Viaje"},
+{no:"do",pron:"du",es:"baño (coloquial)",an:"cortito, el de los bares",cat:"Viaje"},
+{no:"hvor",pron:"vur",es:"dónde",an:"inglés where",cat:"Preguntas"},
+{no:"når",pron:"nor",es:"cuándo",an:"inglés when",cat:"Preguntas"},
+{no:"hva",pron:"va",es:"qué",an:"inglés what",cat:"Preguntas"},
+{no:"hvor mye",pron:"vur mü-e",es:"cuánto",an:"where much",cat:"Preguntas"},
+{no:"billett",pron:"bilét",es:"boleto",an:"francés billet, italiano biglietto",cat:"Viaje"},
+{no:"flyplass",pron:"flüplas",es:"aeropuerto",an:"fly, avión, más plass, plaza",cat:"Viaje"},
+{no:"hotell",pron:"jotél",es:"hotel",an:"hotel",cat:"Viaje"},
+{no:"venstre",pron:"vénstre",es:"izquierda",an:"la mano que no es la fuerte",cat:"Viaje"},
+{no:"høyre",pron:"jóire",es:"derecha",an:"inglés high: la mano alta, la fuerte",cat:"Viaje"},
+{no:"her",pron:"jær",es:"aquí",an:"inglés here",cat:"Viaje"},
+{no:"der",pron:"dær",es:"allí",an:"inglés there",cat:"Viaje"}
+];
+
+const SENT = [
+ {no:"Jeg heter Rodrigo", es:"Me llamo Rodrigo", note:"heter es llamarse: literalmente yo me llamo."},
+ {no:"Jeg snakker ikke norsk", es:"No hablo noruego", note:"ikke es el no, y va después del verbo, nunca antes."},
+ {no:"Hvor er toalettet?", es:"¿Dónde está el baño?", note:"toalettet: el artículo el se pega al final de la palabra."},
+ {no:"Jeg vil ha kaffe", es:"Quiero un café", note:"vil ha es querer tener. Así se pide todo."},
+ {no:"Hvor mye koster det?", es:"¿Cuánto cuesta esto?", note:"det es eso; el orden es cuánto cuesta eso."},
+ {no:"Kan du hjelpe meg?", es:"¿Me podés ayudar?", note:"meg es a mí. Con kan el verbo va sin conjugar."},
+ {no:"Jeg forstår ikke", es:"No entiendo", note:"otra vez ikke detrás del verbo."},
+ {no:"Jeg liker fisk", es:"Me gusta el pescado", note:"acá el que gusta sos vos: yo gusto pescado."},
+ {no:"Vi reiser i dag", es:"Viajamos hoy", note:"i dag, en día, es hoy."},
+ {no:"Hun bor her", es:"Ella vive acá", note:"bor de morar."},
+ {no:"Toget kommer", es:"El tren viene", note:"toget: tog más el artículo pegado."},
+ {no:"Jeg vil betale, takk", es:"Quiero pagar, gracias", note:"con vil el segundo verbo queda en infinitivo."},
+ {no:"Han snakker ikke engelsk", es:"Él no habla inglés", note:"mismo molde que con norsk."},
+ {no:"Kan jeg kjøpe en billett?", es:"¿Puedo comprar un boleto?", note:"en es un, una."}
+];
+
+/* =====================  UTILIDADES  ===================== */
+const $ = s => document.querySelector(s);
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => {const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+const esc = s => s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function norm(s){
+  return s.toLowerCase().trim()
+   .replace(/[¿?¡!.,;:]/g,'')
+   .replace(/å/g,'a').replace(/ø/g,'o').replace(/æ/g,'ae')
+   .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+   .replace(/\s+/g,' ');
+}
+function esMatch(input, word){
+  return word.es.split(',').some(p => norm(p)===norm(input)) || norm(input)===norm(word.es);
+}
+function distractors(w, key, n){
+  const pool = shuffle(W.filter(x => x!==w && x[key]!==w[key]));
+  return pool.slice(0,n);
+}
+
+/* marcador global */
+const S = {ok:0,tot:0,streak:0,best:0};
+function score(good){
+  S.tot++; if(good){S.ok++; S.streak++; if(S.streak>S.best) S.best=S.streak;} else S.streak=0;
+  $('#m-ok').textContent=S.ok; $('#m-tot').textContent=S.tot;
+  $('#m-streak').textContent=S.streak; $('#m-best').textContent=S.best;
+}
+function anchorHTML(w, show){
+  return `<div class="anchor${show?'':' hidden'}"><span class="anchor-lbl">ancla</span><span class="anchor-txt">${esc(w.an)}</span></div>`;
+}
+
+/* =====================  PESTAÑAS  ===================== */
+const TABS = [
+ ["Tarjetas","p-flash",()=>flashNew()],
+ ["Elegí","p-choice",()=>choiceNew()],
+ ["Escribí","p-type",()=>typeNew()],
+ ["Pares","p-pairs",()=>pairsNew()],
+ ["Sonido","p-sound",()=>soundNew()],
+ ["Ancla","p-anchor",()=>anchorNew()],
+ ["Categorías","p-cat",()=>catNew()],
+ ["Frases","p-sent",()=>sentNew()],
+ ["Contrarreloj","p-race",()=>raceReset()],
+ ["Supervivencia","p-surv",()=>survStart()],
+ ["Lista","p-list",()=>listRender('')]
+];
+let active = 0;
+const tabsEl = $('#tabs');
+TABS.forEach(([label,id],i)=>{
+  const b=document.createElement('button');
+  b.textContent=label; b.setAttribute('role','tab'); b.setAttribute('aria-selected', i===0?'true':'false');
+  b.onclick=()=>selectTab(i);
+  tabsEl.appendChild(b);
+});
+function selectTab(i){
+  active=i;
+  [...tabsEl.children].forEach((b,j)=>b.setAttribute('aria-selected', j===i?'true':'false'));
+  TABS.forEach(([,id],j)=>document.getElementById(id).classList.toggle('on', j===i));
+  raceStop();
+  TABS[i][2]();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+/* =====================  1. TARJETAS  ===================== */
+let flashDir='no', flashW=null, flashShown=false, flashSide='no';
+$('#flash-dir').onclick = e=>{const b=e.target.closest('button'); if(!b)return;
+  flashDir=b.dataset.d; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));
+  flashNew();};
+function flashNew(){
+  flashW=rnd(W); flashShown=false;
+  flashSide = flashDir==='mix' ? (Math.random()<.5?'no':'es') : flashDir;
+  flashRender();
+}
+function flashRender(){
+  const w=flashW, front = flashSide==='no';
+  $('#flash-card').innerHTML =
+    `<span class="tag">${esc(w.cat)}</span>`+
+    (front
+      ? `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>`+
+        (flashShown?`<div class="es-word" style="margin-top:14px">${esc(w.es)}</div>`+(w.inf?`<div class="inf">${esc(w.inf)}</div>`:''):'')
+      : `<div class="es-word">${esc(w.es)}</div>`+
+        (flashShown?`<div class="no-word" style="margin-top:14px">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>`+(w.inf?`<div class="inf">${esc(w.inf)}</div>`:''):''))
+    + anchorHTML(w, flashShown);
+}
+$('#flash-reveal').onclick=()=>{if(!flashShown){flashShown=true;flashRender();}};
+$('#flash-next').onclick=()=>flashNew();
+$('#flash-knew').onclick=()=>{score(true);flashNew();};
+
+/* =====================  2. ELEGÍ  ===================== */
+let choiceDir='no', choiceW=null, choiceSide='no', choiceLock=false;
+$('#choice-dir').onclick = e=>{const b=e.target.closest('button'); if(!b)return;
+  choiceDir=b.dataset.d; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));
+  choiceNew();};
+function choiceNew(){
+  choiceW=rnd(W); choiceLock=false;
+  choiceSide = choiceDir==='mix' ? (Math.random()<.5?'no':'es') : choiceDir;
+  const w=choiceW, ask = choiceSide==='no';
+  $('#choice-fb').textContent=''; $('#choice-fb').className='fb';
+  $('#choice-q').innerHTML = `<span class="tag">${esc(w.cat)}</span>`+
+    (ask ? `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div>`
+         : `<div class="es-word">${esc(w.es)}</div>`);
+  const key = ask?'es':'no';
+  const opts = shuffle([w, ...distractors(w,key,3)]);
+  const box=$('#choice-opts'); box.innerHTML='';
+  opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt'+(ask?' es':'');
+    b.innerHTML=`<span class="k">${i+1}</span><span>${esc(o[key])}</span>`;
+    b.onclick=()=>choiceAnswer(o,b);
+    box.appendChild(b);
+  });
+}
+function choiceAnswer(o,btn){
+  if(choiceLock) return; choiceLock=true;
+  const good = o===choiceW;
+  score(good);
+  const key = choiceSide==='no'?'es':'no';
+  [...$('#choice-opts').children].forEach(b=>{
+    b.disabled=true;
+    const t=b.lastElementChild.textContent;
+    if(t===choiceW[key]) b.classList.add('right');
+    else if(b===btn) b.classList.add('wrong');
+  });
+  const fb=$('#choice-fb');
+  fb.className='fb '+(good?'ok':'no');
+  fb.innerHTML = (good?'Bien. ':'Era <b>'+esc(choiceW.no)+'</b> ('+esc(choiceW.pron)+'). ') + 'Ancla: '+esc(choiceW.an)+'.';
+  setTimeout(choiceNew, good?750:2400);
+}
+
+/* =====================  3. ESCRIBÍ  ===================== */
+let typeDir='es', typeW=null, typeLock=false;
+$('#type-dir').onclick = e=>{const b=e.target.closest('button'); if(!b)return;
+  typeDir=b.dataset.d; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));
+  typeNew();};
+function typeNew(){
+  typeW=rnd(W); typeLock=false;
+  const w=typeW;
+  $('#type-fb').textContent=''; $('#type-fb').className='fb';
+  $('#type-in').value=''; $('#type-in').disabled=false;
+  $('#type-keys').style.display = typeDir==='es'?'flex':'none';
+  $('#type-q').innerHTML = `<span class="tag">${esc(w.cat)}</span>`+
+    (typeDir==='es' ? `<div class="es-word">${esc(w.es)}</div><div class="inf">escribilo en noruego</div>`
+                    : `<div class="no-word">${esc(w.no)}</div><div class="pron">${esc(w.pron)}</div><div class="inf">escribilo en castellano</div>`);
+}
+function typeCheck(){
+  if(typeLock) return;
+  const v=$('#type-in').value; if(!v.trim()) return;
+  typeLock=true; $('#type-in').disabled=true;
+  const good = typeDir==='es' ? norm(v)===norm(typeW.no) : esMatch(v, typeW);
+  score(good);
+  const fb=$('#type-fb'); fb.className='fb '+(good?'ok':'no');
+  fb.innerHTML = (good?'Correcto. ':'No. ') +
+    'Se escribe <b>'+esc(typeW.no)+'</b> ('+esc(typeW.pron)+') = '+esc(typeW.es)+'. Ancla: '+esc(typeW.an)+'.';
+  setTimeout(typeNew, good?1300:3200);
+}
+$('#type-go').onclick=typeCheck;
+$('#type-skip').onclick=()=>{if(typeLock)return;typeLock=true;score(false);
+  const fb=$('#type-fb');fb.className='fb no';
+  fb.innerHTML='<b>'+esc(typeW.no)+'</b> ('+esc(typeW.pron)+') = '+esc(typeW.es)+'. Ancla: '+esc(typeW.an)+'.';
+  setTimeout(typeNew,2800);};
+$('#type-in').addEventListener('keydown',e=>{if(e.key==='Enter')typeCheck();});
+$('#type-keys').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  const inp=$('#type-in');inp.value+=b.dataset.c;inp.focus();};
+
+/* =====================  4. PARES  ===================== */
+let pairSel=null, pairLeft=0;
+function pairsNew(){
+  const set = shuffle(W).slice(0,6);
+  pairLeft = 6; pairSel=null;
+  $('#pairs-fb').textContent=''; $('#pairs-fb').className='fb';
+  const tiles = shuffle(set.map(w=>({w,side:'no'})).concat(set.map(w=>({w,side:'es'}))));
+  const g=$('#pairs-grid'); g.innerHTML='';
+  tiles.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='tile'+(t.side==='es'?' es':'');
+    b.textContent = t.side==='no'? t.w.no : t.w.es;
+    b.onclick=()=>pairClick(t,b);
+    g.appendChild(b);
+  });
+}
+function pairClick(t,b){
+  if(b.classList.contains('done')) return;
+  if(!pairSel){ pairSel={t,b}; b.classList.add('sel'); return; }
+  if(pairSel.b===b){ b.classList.remove('sel'); pairSel=null; return; }
+  if(pairSel.t.side===t.side){ pairSel.b.classList.remove('sel'); pairSel={t,b}; b.classList.add('sel'); return; }
+  const good = pairSel.t.w===t.w;
+  score(good);
+  const fb=$('#pairs-fb'); fb.className='fb '+(good?'ok':'no');
+  if(good){
+    pairSel.b.classList.remove('sel'); pairSel.b.classList.add('done'); b.classList.add('done');
+    fb.innerHTML = esc(t.w.no)+' ('+esc(t.w.pron)+') = '+esc(t.w.es)+'. Ancla: '+esc(t.w.an)+'.';
+    pairLeft--;
+    if(pairLeft===0){ fb.className='fb ok'; fb.textContent='Ronda completa. Tocá ronda nueva.'; }
+  }else{
+    const a=pairSel.b; a.classList.remove('sel'); a.classList.add('miss'); b.classList.add('miss');
+    fb.innerHTML = esc(pairSel.t.w.no)+' es '+esc(pairSel.t.w.es)+', no '+esc(t.w.es)+'.';
+    setTimeout(()=>{a.classList.remove('miss');b.classList.remove('miss');},700);
+  }
+  pairSel=null;
+}
+$('#pairs-new').onclick=pairsNew;
+
+/* =====================  5. SONIDO  ===================== */
+let soundW=null, soundLock=false;
+function soundNew(){
+  soundW=rnd(W); soundLock=false;
+  $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
+  $('#sound-q').innerHTML=`<span class="tag">suena así</span><div class="no-word" style="font-family:var(--mono);font-size:clamp(26px,6vw,42px)">${esc(soundW.pron)}</div>`;
+  const opts=shuffle([soundW,...distractors(soundW,'es',3)]);
+  const box=$('#sound-opts'); box.innerHTML='';
+  opts.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='opt es';
+    b.innerHTML=`<span class="k">${i+1}</span><span>${esc(o.es)}</span>`;
+    b.onclick=()=>{
+      if(soundLock)return; soundLock=true;
+      const good=o===soundW; score(good);
+      [...box.children].forEach(x=>{x.disabled=true;
+        if(x.lastElementChild.textContent===soundW.es)x.classList.add('right');
+        else if(x===b)x.classList.add('wrong');});
+      const fb=$('#sound-fb'); fb.className='fb '+(good?'ok':'no');
+      fb.innerHTML='Se escribe <b>'+esc(soundW.no)+'</b>. Ancla: '+esc(soundW.an)+'.';
+      setTimeout(soundNew, good?900:2400);
+    };
+    box.appendChild(b);
+  });
+}
+
+/* =====================  6. ANCLA  ===================== */
+let anchW=null, anchLock=false;
+function anchorNew(){
+  anchW=rnd(W); anchLock=false;
+  $('#anchor-fb').textContent=''; $('#anchor-fb').className='fb';
+  $('#anchor-q').innerHTML=`<span class="tag">${esc(anchW.cat)}</span>`+
+    `<div class="anchor" style="padding-top:0;margin-top:6px"><span class="anchor-lbl">el ancla dice</span><span class="anchor-txt" style="font-size:21px">${esc(anchW.an)}</span></div>`+
+    `<div class="es-word" style="font-size:22px;margin-top:16px">${esc(anchW.es)}</div>`;
+  const opts=shuffle([anchW,...distractors(anchW,'no',3)]);
+  const box=$('#anchor-opts'); box.innerHTML='';
+  opts.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='opt';
+    b.innerHTML=`<span class="k">${i+1}</span><span>${esc(o.no)}</span>`;
+    b.onclick=()=>{
+      if(anchLock)return; anchLock=true;
+      const good=o===anchW; score(good);
+      [...box.children].forEach(x=>{x.disabled=true;
+        if(x.lastElementChild.textContent===anchW.no)x.classList.add('right');
+        else if(x===b)x.classList.add('wrong');});
+      const fb=$('#anchor-fb'); fb.className='fb '+(good?'ok':'no');
+      fb.innerHTML='<b>'+esc(anchW.no)+'</b> se dice '+esc(anchW.pron)+'.';
+      setTimeout(anchorNew, good?900:2200);
+    };
+    box.appendChild(b);
+  });
+}
+
+/* =====================  7. CATEGORÍAS  ===================== */
+let catSel=null, catLeft=0, catMap={};
+function catNew(){
+  const cats = shuffle([...new Set(W.map(w=>w.cat))].filter(c=>W.filter(w=>w.cat===c).length>=4)).slice(0,3);
+  const words=[]; catMap={};
+  cats.forEach(c=>{ shuffle(W.filter(w=>w.cat===c)).slice(0,4).forEach(w=>words.push(w)); });
+  catLeft=words.length; catSel=null;
+  $('#cat-fb').textContent=''; $('#cat-fb').className='fb';
+  const pool=$('#cat-pool'); pool.innerHTML='';
+  shuffle(words).forEach(w=>{
+    const b=document.createElement('button'); b.className='chip'; b.textContent=w.no;
+    b.onclick=()=>{ [...pool.children].forEach(x=>x.classList.remove('sel'));
+      if(catSel&&catSel.w===w){catSel=null;return;} catSel={w,b}; b.classList.add('sel'); };
+    pool.appendChild(b);
+  });
+  const bk=$('#cat-buckets'); bk.innerHTML='';
+  cats.forEach(c=>{
+    const d=document.createElement('div'); d.className='bucket';
+    d.innerHTML=`<h4>${esc(c)}</h4><ul></ul>`;
+    d.onclick=()=>catDrop(c,d);
+    bk.appendChild(d);
+  });
+}
+function catDrop(c,d){
+  if(!catSel) return;
+  const good = catSel.w.cat===c;
+  score(good);
+  const fb=$('#cat-fb'); fb.className='fb '+(good?'ok':'no');
+  if(good){
+    d.querySelector('ul').insertAdjacentHTML('beforeend','<li>'+esc(catSel.w.no)+' — '+esc(catSel.w.es)+'</li>');
+    catSel.b.remove(); catSel=null; catLeft--;
+    fb.textContent = catLeft? 'Va. Quedan '+catLeft+'.' : 'Ronda limpia.';
+  }else{
+    fb.innerHTML = esc(catSel.w.no)+' es '+esc(catSel.w.es)+', va en '+esc(catSel.w.cat)+'.';
+    catSel.b.classList.remove('sel'); catSel=null;
+  }
+}
+$('#cat-new').onclick=catNew;
+
+/* =====================  8. FRASES  ===================== */
+let sentCur=null, sentBuilt=[];
+function sentNew(){
+  sentCur=rnd(SENT); sentBuilt=[];
+  $('#sent-es').textContent=sentCur.es;
+  $('#sent-fb').textContent=''; $('#sent-fb').className='fb';
+  $('#sent-slot').innerHTML='';
+  const pool=$('#sent-pool'); pool.innerHTML='';
+  shuffle(sentCur.no.split(' ')).forEach(tok=>{
+    const b=document.createElement('button'); b.className='chip'; b.textContent=tok;
+    b.onclick=()=>{ sentBuilt.push(tok); b.remove(); renderSlot(); };
+    pool.appendChild(b);
+  });
+}
+function renderSlot(){
+  const s=$('#sent-slot'); s.innerHTML='';
+  sentBuilt.forEach((tok,i)=>{
+    const b=document.createElement('button'); b.className='chip'; b.textContent=tok;
+    b.onclick=()=>{ sentBuilt.splice(i,1); const p=document.createElement('button');
+      p.className='chip'; p.textContent=tok;
+      p.onclick=()=>{ sentBuilt.push(tok); p.remove(); renderSlot(); };
+      $('#sent-pool').appendChild(p); renderSlot(); };
+    s.appendChild(b);
+  });
+}
+$('#sent-check').onclick=()=>{
+  if(!sentBuilt.length) return;
+  const good = sentBuilt.join(' ')===sentCur.no;
+  score(good);
+  const fb=$('#sent-fb'); fb.className='fb '+(good?'ok':'no');
+  fb.innerHTML = (good?'Exacto. ':'El orden correcto es <b>'+esc(sentCur.no)+'</b>. ')+sentCur.note;
+  if(good) setTimeout(sentNew,2600);
+};
+$('#sent-clear').onclick=()=>{ const keep=sentCur; sentCur=keep; sentBuilt=[];
+  $('#sent-slot').innerHTML=''; const pool=$('#sent-pool'); pool.innerHTML='';
+  shuffle(keep.no.split(' ')).forEach(tok=>{const b=document.createElement('button');b.className='chip';b.textContent=tok;
+    b.onclick=()=>{sentBuilt.push(tok);b.remove();renderSlot();};pool.appendChild(b);}); };
+$('#sent-next').onclick=sentNew;
+
+/* =====================  9. CONTRARRELOJ  ===================== */
+let raceT=null, raceLeft=60, raceScore=0, raceW=null, raceOn=false;
+function raceReset(){
+  raceStop(); raceLeft=60; raceScore=0; raceOn=false;
+  $('#race-clock').textContent='60'; $('#race-score').textContent='0';
+  $('#race-q').innerHTML='<div class="pron">Sesenta segundos, elección múltiple en las dos direcciones.</div>';
+  $('#race-opts').innerHTML=''; $('#race-fb').textContent='';
+  $('#race-start').textContent='Arrancar';
+}
+function raceStop(){ if(raceT){clearInterval(raceT);raceT=null;} }
+$('#race-start').onclick=()=>{
+  raceReset(); raceOn=true; $('#race-start').textContent='Reiniciar';
+  raceT=setInterval(()=>{ raceLeft--; $('#race-clock').textContent=raceLeft;
+    if(raceLeft<=0){ raceStop(); raceOn=false;
+      $('#race-q').innerHTML='<div class="big-num">'+raceScore+'</div><div class="pron">puntos en 60 segundos</div>';
+      $('#race-opts').innerHTML=''; $('#race-fb').className='fb ok';
+      $('#race-fb').textContent = raceScore>=20?'Muy rápido.':raceScore>=12?'Buen ritmo.':'Volvé a Tarjetas un rato y probá de nuevo.'; }
+  },1000);
+  raceQ();
+};
+function raceQ(){
+  if(!raceOn) return;
+  raceW=rnd(W);
+  const ask = Math.random()<.5;
+  $('#race-q').innerHTML = ask? `<div class="no-word">${esc(raceW.no)}</div>` : `<div class="es-word">${esc(raceW.es)}</div>`;
+  const key=ask?'es':'no';
+  const opts=shuffle([raceW,...distractors(raceW,key,3)]);
+  const box=$('#race-opts'); box.innerHTML='';
+  opts.forEach(o=>{
+    const b=document.createElement('button'); b.className='opt'+(ask?' es':'');
+    b.innerHTML=`<span>${esc(o[key])}</span>`;
+    b.onclick=()=>{ const good=o===raceW; score(good);
+      if(good){ raceScore++; $('#race-score').textContent=raceScore; $('#race-fb').className='fb ok'; $('#race-fb').textContent=''; }
+      else { raceLeft=Math.max(1,raceLeft-3); $('#race-fb').className='fb no';
+             $('#race-fb').innerHTML='Era '+esc(raceW[key])+'. Menos tres segundos.'; }
+      raceQ(); };
+    box.appendChild(b);
+  });
+}
+
+/* =====================  10. SUPERVIVENCIA  ===================== */
+let survLives=3, survStreak=0, survW=null, survMode='choice', survLock=false;
+function survStart(){
+  survLives=3; survStreak=0;
+  $('#surv-lives').textContent='●●●'; $('#surv-count').textContent='racha 0';
+  survQ();
+}
+function survQ(){
+  if(survLives<=0){
+    $('#surv-q').innerHTML='<div class="big-num">'+survStreak+'</div><div class="pron">respuestas seguidas antes de caer</div>';
+    $('#surv-body').innerHTML=''; $('#surv-fb').className='fb'; $('#surv-fb').textContent='Dale a empezar de nuevo.';
+    return;
+  }
+  survLock=false; survW=rnd(W);
+  survMode = rnd(['choice','choice','type','anchor']);
+  $('#surv-fb').textContent=''; $('#surv-fb').className='fb';
+  const body=$('#surv-body'); body.innerHTML='';
+  if(survMode==='choice'){
+    const ask=Math.random()<.5, key=ask?'es':'no';
+    $('#surv-q').innerHTML=`<span class="tag">elegí</span>`+(ask?`<div class="no-word">${esc(survW.no)}</div><div class="pron">${esc(survW.pron)}</div>`:`<div class="es-word">${esc(survW.es)}</div>`);
+    const box=document.createElement('div'); box.className='opts';
+    shuffle([survW,...distractors(survW,key,3)]).forEach(o=>{
+      const b=document.createElement('button'); b.className='opt'+(ask?' es':'');
+      b.innerHTML=`<span>${esc(o[key])}</span>`;
+      b.onclick=()=>survAnswer(o===survW); box.appendChild(b);
+    });
+    body.appendChild(box);
+  } else if(survMode==='type'){
+    $('#surv-q').innerHTML=`<span class="tag">escribí en noruego</span><div class="es-word">${esc(survW.es)}</div>`;
+    const inp=document.createElement('input'); inp.className='type-in'; inp.autocomplete='off'; inp.spellcheck=false;
+    inp.placeholder='Enter para corregir';
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&inp.value.trim()) survAnswer(norm(inp.value)===norm(survW.no)); });
+    body.appendChild(inp); inp.focus();
+  } else {
+    $('#surv-q').innerHTML=`<span class="tag">solo el ancla</span><div class="anchor" style="padding-top:0"><span class="anchor-lbl">pista</span><span class="anchor-txt" style="font-size:20px">${esc(survW.an)}</span></div>`;
+    const box=document.createElement('div'); box.className='opts';
+    shuffle([survW,...distractors(survW,'no',3)]).forEach(o=>{
+      const b=document.createElement('button'); b.className='opt';
+      b.innerHTML=`<span>${esc(o.no)}</span>`;
+      b.onclick=()=>survAnswer(o===survW); box.appendChild(b);
+    });
+    body.appendChild(box);
+  }
+}
+function survAnswer(good){
+  if(survLock) return; survLock=true;
+  score(good);
+  const fb=$('#surv-fb'); fb.className='fb '+(good?'ok':'no');
+  if(good){ survStreak++; $('#surv-count').textContent='racha '+survStreak;
+    fb.innerHTML=esc(survW.no)+' = '+esc(survW.es)+'.'; setTimeout(survQ,850); }
+  else { survLives--; $('#surv-lives').textContent='●●●'.slice(0,survLives)+'○○○'.slice(0,3-survLives);
+    fb.innerHTML='Era <b>'+esc(survW.no)+'</b> ('+esc(survW.pron)+') = '+esc(survW.es)+'. Ancla: '+esc(survW.an)+'.';
+    setTimeout(survQ,2600); }
+}
+$('#surv-start').onclick=survStart;
+
+/* =====================  11. LISTA  ===================== */
+function listRender(q){
+  const t=norm(q);
+  const rows=W.filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')).includes(t));
+  $('#list-body').innerHTML = rows.map(w=>
+    `<tr><td class="no">${esc(w.no)}${w.inf?'<div class="inf">'+esc(w.inf)+'</div>':''}</td>
+      <td class="pr">${esc(w.pron)}</td><td class="es">${esc(w.es)}</td><td class="an">${esc(w.an)}</td></tr>`).join('');
+}
+$('#list-search').addEventListener('input',e=>listRender(e.target.value));
+
+/* =====================  TECLADO GLOBAL  ===================== */
+document.addEventListener('keydown',e=>{
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='textarea') return;
+  const id=TABS[active][1];
+  if(id==='p-flash'){
+    if(e.code==='Space'){e.preventDefault();$('#flash-reveal').click();}
+    if(e.key==='ArrowRight'){e.preventDefault();flashNew();}
+  }
+  if(['1','2','3','4'].includes(e.key)){
+    const box = id==='p-choice'?$('#choice-opts'): id==='p-sound'?$('#sound-opts'): id==='p-anchor'?$('#anchor-opts'): id==='p-race'?$('#race-opts'):null;
+    if(box&&box.children[+e.key-1]) box.children[+e.key-1].click();
+  }
+});
+
+/* arranque */
+selectTab(0);
+</script>
+</body>
+</html>
