@@ -1237,12 +1237,13 @@ function playSeq(tokens, btn){
 }
 const ICON = '<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M0 0l12 7-12 7z"/></svg>';
 const ICON_SLOW = '<span style="font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:-.02em">½×</span>';
-function playBtn(text, cls){
-  return `<button class="say ${cls||''}" data-say="${esc(text)}" aria-label="Escuchar ${esc(text)}">${ICON}</button>`;
+function playBtn(text, cls, slow){
+  return `<button class="say ${cls||''}" data-say="${esc(text)}"${slow?' data-slow="1"':''} `+
+         `aria-label="Escuchar ${esc(text)}${slow?' despacio':''}">${slow?ICON_SLOW:ICON}</button>`;
 }
 document.addEventListener('click', e=>{
   const b = e.target.closest('[data-say]');
-  if(b){ e.stopPropagation(); say(b.dataset.say, b); }
+  if(b){ e.stopPropagation(); say(b.dataset.say, b, b.hasAttribute('data-slow')); }
 });
 $('#snd-toggle').onclick = e=>{
   autoSound = !autoSound;
@@ -1512,7 +1513,7 @@ function soundSentence(){
   soundLock = false;
   $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
   $('#sound-q').innerHTML = `<span class="tag">escuchá la frase</span>`+
-    `<div class="say-row">${playBtn(s[0],'big')}</div>`+
+    `<div class="say-row">${playBtn(s[0],'big')}${playBtn(s[0],'big',true)}</div>`+
     `<div id="sound-pron" class="heard" style="margin-top:14px;font-size:clamp(19px,4.4vw,26px);min-height:30px"></div>`+
     `<button class="btn ghost" id="sound-peek" style="margin-top:6px;font-size:13px;padding:7px 14px">Ver cómo se escribe</button>`;
   $('#sound-peek').onclick = e=>{ $('#sound-pron').textContent = s[0]; e.currentTarget.remove(); };
@@ -1544,7 +1545,8 @@ function soundNew(){
   if(soundMode==='setn') return soundSentence();
   soundW=pick('sound'); soundLock=false;
   $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
-  $('#sound-q').innerHTML=`<span class="tag">escuchá</span><div class="say-row">${playBtn(soundW.no,'big')}</div>`+
+  $('#sound-q').innerHTML=`<span class="tag">escuchá</span>`+
+    `<div class="say-row">${playBtn(soundW.no,'big')}${playBtn(soundW.no,'big',true)}</div>`+
     `<div id="sound-pron" class="pron" style="margin-top:14px;font-size:clamp(20px,5vw,32px);min-height:34px"></div>`+
     `<button class="btn ghost" id="sound-peek" style="margin-top:6px;font-size:13px;padding:7px 14px">Ver cómo suena escrito</button>`;
   $('#sound-peek').onclick=e=>{
