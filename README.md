@@ -9,6 +9,9 @@ castellano.
 120 palabras en tres niveles · 1050 frases generadas · 1086 grabaciones · 10 juegos.
 Un solo archivo HTML, sin dependencias, sin build, sin servidor.
 
+El detalle de **por qué la app es como es**, con el listado de decisiones y de las
+correcciones que las originaron, está en [DECISIONES.md](DECISIONES.md).
+
 ---
 
 ## El método: anclas
@@ -157,6 +160,7 @@ agregar una palabra ahí ya la hace elegible para las plantillas.
 
 ```
 index.html                  toda la app: datos, lógica y estilos
+DECISIONES.md               estado, y por qué la app es como es
 audio/*.mp3                 una grabación por palabra y por frase
 scripts/generar_frases.py   plantillas gramaticales y selección del corpus
 scripts/generar_audio.py    síntesis con Piper y control de calidad
