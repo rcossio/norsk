@@ -239,6 +239,12 @@ td .sil{margin-top:2px}
 .legend ul{margin:0;padding-left:18px;font-family:var(--serif);font-size:15px;color:#B9CEDB}
 .legend li{margin:3px 0}
 .legend b{font-family:var(--display);color:var(--sno)}
+.veces{
+  display:inline-block;font-family:var(--mono);font-size:11px;
+  color:var(--dyp);background:var(--gull);border-radius:2px;padding:1px 5px;margin-left:6px;
+}
+.veces.cero{background:none;color:#4E6D85;border:1px solid #1D4363}
+tr.virgen td.no{opacity:.72}
 .mic{
   width:96px;height:96px;border-radius:50%;border:2px solid var(--flagg);
   background:rgba(219,43,57,.12);color:var(--flagg);cursor:pointer;
@@ -309,6 +315,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
       <span>Aciertos <b id="m-ok">0</b> / <b id="m-tot">0</b></span>
       <span>Racha <i id="m-streak">0</i></span>
       <span>Mejor racha <i id="m-best">0</i></span>
+      <span>Practicadas <i id="m-prac">0</i></span>
       <button class="snd-toggle" id="snd-toggle" aria-pressed="true">audio automático: sí</button>
     </div>
   </div>
@@ -460,7 +467,7 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
 
 <!-- 11 LISTA -->
 <section class="panel" id="p-list" role="tabpanel">
-  <div class="panel-head"><h2>Lista</h2><p>Solo palabras sueltas, con su ancla. Las frases hechas como <i>vær så snill</i> o <i>god morgen</i> no aparecen acá: viven en los juegos. Buscá por cualquier campo, incluso por el idioma del ancla.</p></div>
+  <div class="panel-head"><h2>Lista</h2><p>Solo palabras sueltas, con su ancla y cuántas veces la practicaste en esta sesión. Las frases hechas como <i>vær så snill</i> o <i>god morgen</i> no aparecen acá: viven en los juegos. Buscá por cualquier campo, incluso por el idioma del ancla.</p></div>
   <div class="legend">
     <h3>Cómo leer la columna "suena"</h3>
     <ul>
@@ -472,6 +479,13 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
       <li>La <b>o</b> larga suena <b>u</b>: <i>bok</i> es buk, <i>stor</i> es stur, <i>god</i> es gu.</li>
       <li>La línea gris ◦ marca las letras que se escriben pero no se dicen.</li>
     </ul>
+  </div>
+  <div class="row">
+    <div class="seg" id="list-sort">
+      <button data-s="lista" aria-pressed="true">orden de la lista</button>
+      <button data-s="menos" aria-pressed="false">menos practicadas</button>
+      <button data-s="mas" aria-pressed="false">más practicadas</button>
+    </div>
   </div>
   <input class="search" id="list-search" placeholder="Buscar: fisk, pescado, inglés, verbo…" autocomplete="off">
   <table><thead><tr><th>Noruego</th><th>Suena</th><th>Castellano</th><th>Ancla</th></tr></thead><tbody id="list-body"></tbody></table>
@@ -1286,6 +1300,48 @@ function pickMany(key, n){
   return out;
 }
 
+/* ---------- contador de práctica ----------
+   Cada ejercicio suma uno a las palabras involucradas. Las frases se resuelven al
+   vuelo: se buscan las entradas de varias palabras dentro del texto y después se
+   intenta reducir cada token a su entrada de la lista (infinitivo, forma definida,
+   neutro del adjetivo). Sin tabla escrita: todo sale de W. */
+const practiced = new Map();
+const BY_NO  = new Map(W.map(w => [norm(w.no), w]));
+const BY_INF = new Map(W.filter(w => w.inf).map(w => [norm(w.inf.replace(/^å\s*/,'')), w]));
+const NEUTRO = {nytt:'ny', godt:'god', stort:'stor', lite:'liten', gammelt:'gammel', varmt:'varm', kaldt:'kald'};
+const SUFIJOS = ['ene','en','et','er','a','n','t','e'];
+
+function resolve(tok){
+  const t = norm(tok);
+  if(!t) return null;
+  if(BY_NO.has(t))  return BY_NO.get(t);
+  if(BY_INF.has(t)) return BY_INF.get(t);
+  if(NEUTRO[t])     return BY_NO.get(NEUTRO[t]);
+  for(const suf of SUFIJOS){
+    if(t.length > suf.length + 1 && t.endsWith(suf)){
+      const raiz = t.slice(0, -suf.length);
+      if(BY_NO.has(raiz)) return BY_NO.get(raiz);
+    }
+  }
+  return null;
+}
+function bump(w){
+  if(!w) return;
+  practiced.set(w, (practiced.get(w)||0) + 1);
+  const el = $('#m-prac'); if(el) el.textContent = practiced.size;
+}
+function practice(w){ bump(w); }
+function practiceText(text){
+  if(!text) return;
+  const plano = ' ' + norm(text) + ' ';
+  const tocadas = new Set();
+  // entradas de varias palabras: i dag, hvor mye, vær så snill…
+  W.forEach(w => { if(/\s/.test(w.no) && plano.includes(' ' + norm(w.no) + ' ')) tocadas.add(w); });
+  // y cada token por separado, reducido a su entrada
+  norm(text).split(/\s+/).forEach(tok => { const w = resolve(tok); if(w) tocadas.add(w); });
+  tocadas.forEach(bump);
+}
+
 /* marcador global */
 const S = {ok:0,tot:0,streak:0,best:0};
 function score(good){
@@ -1359,7 +1415,7 @@ function flashRender(){
 // los dos botones revelan igual; lo único que cambia es qué pasa con la racha
 function flashReveal(good){
   if(flashShown) return;
-  score(good); flashShown=true; flashRender();
+  score(good); practice(flashW); flashShown=true; flashRender();
   $('#flash-knew').style.display='none'; $('#flash-miss').style.display='none';
   const n=$('#flash-next'); n.style.display=''; n.focus();
 }
@@ -1397,7 +1453,7 @@ function choiceNew(){
 function choiceAnswer(o,btn){
   if(choiceLock) return; choiceLock=true;
   const good = o===choiceW;
-  score(good);
+  score(good); practice(choiceW);
   const key = choiceSide==='no'?'es':'no';
   [...$('#choice-opts').children].forEach(b=>{
     b.disabled=true;
@@ -1436,7 +1492,7 @@ function typeCheck(){
   const v=$('#type-in').value; if(!v.trim()) return;
   typeLock=true; $('#type-in').disabled=true;
   const good = norm(v)===norm(typeW.no);
-  score(good);
+  score(good); practice(typeW);
   const fb=$('#type-fb'); fb.className='fb '+(good?'ok':'no');
   fb.innerHTML = (good?'Correcto. ':'No. ') +
     'Se escribe <b>'+esc(typeW.no)+'</b> ('+esc(typeW.pron)+') = '+esc(typeW.es)+'. '+(typeW.sil?typeW.sil+'. ':'')+'Ancla: '+esc(typeW.an)+'. '+playBtn(typeW.no,'sm');
@@ -1448,7 +1504,7 @@ function typeDone(){
   const n=$('#type-next'); n.style.display=''; n.focus();
 }
 $('#type-go').onclick=typeCheck;
-$('#type-skip').onclick=()=>{if(typeLock)return;typeLock=true;score(false);
+$('#type-skip').onclick=()=>{if(typeLock)return;typeLock=true;score(false);practice(typeW);
   const fb=$('#type-fb');fb.className='fb no';
   fb.innerHTML='<b>'+esc(typeW.no)+'</b> ('+esc(typeW.pron)+') = '+esc(typeW.es)+'. Ancla: '+esc(typeW.an)+'. '+playBtn(typeW.no,'sm');
   autoSay(typeW.no);
@@ -1480,7 +1536,7 @@ function pairClick(t,b){
   if(pairSel.b===b){ b.classList.remove('sel'); pairSel=null; return; }
   if(pairSel.t.side===t.side){ pairSel.b.classList.remove('sel'); pairSel={t,b}; b.classList.add('sel'); return; }
   const good = pairSel.t.w===t.w;
-  score(good);
+  score(good); practice(t.w); if(!good) practice(pairSel.t.w);
   const fb=$('#pairs-fb'); fb.className='fb '+(good?'ok':'no');
   if(good){
     pairSel.b.classList.remove('sel'); pairSel.b.classList.add('done'); b.classList.add('done');
@@ -1528,7 +1584,7 @@ function soundSentence(){
     b.innerHTML=`<span class="k">${i+1}</span><span>${esc(o[1])}</span>`;
     b.onclick=()=>{
       if(soundLock) return; soundLock=true;
-      const good = o===s; score(good);
+      const good = o===s; score(good); practiceText(s[0]);
       [...box.children].forEach(x=>{ x.disabled=true;
         if(x.lastElementChild.textContent===s[1]) x.classList.add('right');
         else if(x===b) x.classList.add('wrong'); });
@@ -1562,7 +1618,7 @@ function soundNew(){
     b.innerHTML=`<span class="k">${i+1}</span><span>${esc(o.es)}</span>`;
     b.onclick=()=>{
       if(soundLock)return; soundLock=true;
-      const good=o===soundW; score(good);
+      const good=o===soundW; score(good); practice(soundW);
       [...box.children].forEach(x=>{x.disabled=true;
         if(x.lastElementChild.textContent===soundW.es)x.classList.add('right');
         else if(x===b)x.classList.add('wrong');});
@@ -1600,7 +1656,7 @@ function catNew(){
 function catDrop(c,d){
   if(!catSel) return;
   const good = catSel.w.cat===c;
-  score(good);
+  score(good); practice(catSel.w);
   const fb=$('#cat-fb'); fb.className='fb '+(good?'ok':'no');
   if(good){
     d.querySelector('ul').insertAdjacentHTML('beforeend','<li>'+playBtn(catSel.w.no,'sm')+' '+esc(catSel.w.no)+' — '+esc(catSel.w.es)+'</li>');
@@ -1642,7 +1698,7 @@ function renderSlot(){
 $('#sent-check').onclick=()=>{
   if(!sentBuilt.length) return;
   const good = sentBuilt.join(' ')===sentCur.no;
-  score(good);
+  score(good); practiceText(sentCur.no);
   const fb=$('#sent-fb'); fb.className='fb '+(good?'ok':'no');
   fb.innerHTML = (good?'Exacto. ':'El orden correcto es <b>'+esc(sentCur.no)+'</b>. ')+sentCur.note+' '+playBtn(sentCur.no,'sm');
   autoSay(sentCur.no);
@@ -1685,7 +1741,7 @@ function raceQ(){
   opts.forEach(o=>{
     const b=document.createElement('button'); b.className='opt'+(ask?' es':'');
     b.innerHTML=`<span>${esc(o[key])}</span>`;
-    b.onclick=()=>{ const good=o===raceW; score(good);
+    b.onclick=()=>{ const good=o===raceW; score(good); practice(raceW);
       if(good){ raceScore++; $('#race-score').textContent=raceScore; $('#race-fb').className='fb ok'; $('#race-fb').textContent=''; }
       else { raceLeft=Math.max(1,raceLeft-3); $('#race-fb').className='fb no';
              $('#race-fb').innerHTML='Era '+esc(raceW[key])+'. Menos tres segundos.'; }
@@ -1740,7 +1796,7 @@ function survQ(){
 }
 function survAnswer(good){
   if(survLock) return; survLock=true;
-  score(good);
+  score(good); practice(survW);
   const fb=$('#surv-fb'); fb.className='fb '+(good?'ok':'no');
   autoSay(survW.no);
   if(good){ survStreak++; $('#surv-count').textContent='racha '+survStreak;
@@ -1832,6 +1888,7 @@ function talkRender(text, interim){
     out.innerHTML = `<div class="heard interim" style="margin-top:18px">${esc(text)}</div>`;
     return;
   }
+  practiceText(text);
   const toks = text.split(/\s+/).filter(Boolean);
   const chips = toks.map(t=>{
     const g = gloss(t);
@@ -1910,11 +1967,20 @@ $('#mic-btn').onclick = ()=>{
 };
 
 /* =====================  11. LISTA  ===================== */
+let listSort='lista';
+$('#list-sort').onclick = e=>{const b=e.target.closest('button'); if(!b)return;
+  listSort=b.dataset.s; [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));
+  listRender($('#list-search').value);};
 function listRender(q){
   const t=norm(q);
-  const rows=W.filter(w=>!/\s/.test(w.no)).filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')+' '+(w.sil||'')).includes(t));
+  let rows=W.filter(w=>!/\s/.test(w.no)).filter(w=>!t||norm(w.no+' '+w.es+' '+w.an+' '+w.cat+' '+(w.inf||'')+' '+(w.sil||'')).includes(t));
+  const n = w => practiced.get(w)||0;
+  if(listSort==='mas')   rows=rows.slice().sort((a,b)=>n(b)-n(a));
+  if(listSort==='menos') rows=rows.slice().sort((a,b)=>n(a)-n(b));
   $('#list-body').innerHTML = rows.map(w=>
-    `<tr><td class="no">${playBtn(w.no,'sm')} ${esc(w.no)}${w.inf?'<div class="inf">'+esc(w.inf)+'</div>':''}</td>
+    `<tr class="${n(w)?'':'virgen'}"><td class="no">${playBtn(w.no,'sm')} ${esc(w.no)}`+
+      `<span class="veces${n(w)?'':' cero'}">${n(w)?'×'+n(w):'—'}</span>`+
+      `${w.inf?'<div class="inf">'+esc(w.inf)+'</div>':''}</td>
       <td class="pr">${esc(w.pron)}${w.sil?'<div class="sil">'+esc(w.sil)+'</div>':''}</td><td class="es">${esc(w.es)}</td><td class="an">${esc(w.an)}</td></tr>`).join('');
 }
 $('#list-search').addEventListener('input',e=>listRender(e.target.value));
