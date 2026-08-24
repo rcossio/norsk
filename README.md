@@ -131,6 +131,17 @@ que sortea preguntas de todas las reglas del nivel.
 Las reglas de pronunciación que antes vivían como leyenda al pie de la Lista se
 mudaron acá.
 
+## Dos voces
+
+Cada texto tiene grabación de **Piper** (local, generada) y de **Google Translate**
+(bajada una vez y guardada, no pedida en vivo). En Sonido hay tres botones:
+**▶₁** voz principal (Google), **▶₂** segunda voz (Piper) y **½×** la lenta con
+pausas, que solo existe en Piper. El resto de los juegos usa la voz principal.
+
+La descarga de la voz de Google se hizo en cinco etapas con `scripts/voz_google.py`,
+espaciando los pedidos medio segundo: el endpoint es interno y el uso intenso puede
+devolver 429 o bloquear la IP. Guardarla evita depender de la red en cada carta.
+
 ## Audio
 
 Generado con [Piper](https://github.com/rhasspy/piper), voz

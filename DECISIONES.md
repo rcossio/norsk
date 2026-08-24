@@ -9,7 +9,7 @@ este explica el origen de cada uno.
 |---|---|
 | Vocabulario | 120 palabras, tres niveles anidados (25 / 61 / 120) |
 | Frases | 1050 generadas, 50 plantillas, tope de 10% por plantilla |
-| Audio | 2173 mp3 (normal + lento por texto), Piper `no_NO-talesyntese-medium`, 28 MB |
+| Audio | 3301 mp3: Piper normal y lento, más la voz de Google, 41 MB |
 | Juegos | 10, más Reglas y la Lista |
 | Dependencias | ninguna; un archivo HTML |
 | Persistencia | ninguna; el nivel viaja en el hash de la URL |
@@ -116,6 +116,10 @@ las documenta como trabajo manual y no automatizable.
 ### Reglas
 
 55. Sección de reglas gramaticales y de pronunciación, con las de pronunciación mudadas desde la Lista, repartidas en tres niveles y **practicables, no solo enunciadas** → 22 reglas con 48 preguntas de opción múltiple; cada respuesta explica el porqué y suma al marcador general.
+
+56. Segunda voz de Google, bajada en cinco etapas para verificar que no bloquee → 1128 archivos, 0 fallos. Después, a pedido, Google pasa a voz principal (▶₁) y Piper a segunda (▶₂).
+57. ⚑ "El orden de la Lista desapareció y yo no lo pedí" → cierto: un borrado por rango se llevó el selector, y el JS huérfano cortaba la ejecución del script entero. El mismo error había borrado antes `playBtn`. Se restauran, `$()` se blinda y se agrega un simulador de DOM que corre el script completo, porque `node --check` solo valida sintaxis.
+58. Poder escuchar la propia grabación en Hablá, sin que quede guardada → MediaRecorder en paralelo al reconocimiento; el audio vive como blob en memoria y se revoca al grabar de nuevo.
 
 ### Documentación
 
