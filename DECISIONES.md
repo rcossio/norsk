@@ -108,7 +108,8 @@ las documenta como trabajo manual y no automatizable.
 
 ### Audio, segunda vuelta
 
-52. ⚑ "Reproducir más lento no sirve; el problema son las pausas entre palabras. ¿Estás usando Google de verdad?" → **no**: en Sonido sonaban los mp3 de Piper; Google solo se usaba en Hablá. Y el diagnóstico era correcto: lo que cuesta al escuchar es segmentar, no la velocidad. Se genera una segunda grabación `-lento` por cada texto, con comas entre palabras para forzar pausas reales, y en Hablá se restituye el modo lento de Google, que también las inserta.
+52. ⚑ "Reproducir más lento no sirve; el problema son las pausas entre palabras. ¿Estás usando Google de verdad?" → **no**: en Sonido sonaban los mp3 de Piper; Google solo se usaba en Hablá. Y el diagnóstico era correcto: lo que cuesta al escuchar es segmentar, no la velocidad. Se genera una segunda grabación `-lento` por cada texto, con comas entre palabras para forzar pausas reales.
+53. ⚑ "No te pedí que tocaras Hablá" → cierto, fue un cambio no pedido. Hablá se revierte: sigue yendo siempre a Google, porque ahí el texto lo inventa el usuario y no hay grabación propia; encadenar palabras sueltas no funciona.
 
 ### Documentación
 

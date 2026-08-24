@@ -1795,12 +1795,11 @@ function playPhrase(text, btn, slow){
   if(!t || t.length > 190) return caer();
   if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
-  // mismo audio en los dos casos: el ttsspeed de Google frena apenas un 18% y además
-  // mete pausas entre palabras. La velocidad la maneja el reproductor.
-  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no'+
-                      (slow?'&ttsspeed=0.24':'')+'&q='+encodeURIComponent(t));
+  // Hablá siempre va a Google: acá el texto es inventado por el usuario y no hay
+  // grabación propia. La velocidad la maneja el reproductor, sin tocar la URL.
+  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(t));
   curAudio = a;
-  const rate = slow ? 0.85 : 1;
+  const rate = slow ? 0.62 : 1;
   // al cargar el recurso el navegador vuelve playbackRate a defaultPlaybackRate,
   // así que hay que fijar los dos y reafirmarlo cuando ya hay metadatos
   a.defaultPlaybackRate = rate; a.playbackRate = rate;
