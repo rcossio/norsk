@@ -10,7 +10,7 @@ este explica el origen de cada uno.
 | Vocabulario | 120 palabras, tres niveles anidados (25 / 61 / 120) |
 | Frases | 1050 generadas, 50 plantillas, tope de 10% por plantilla |
 | Audio | 2173 mp3 (normal + lento por texto), Piper `no_NO-talesyntese-medium`, 28 MB |
-| Juegos | 10 más la Lista |
+| Juegos | 10, más Reglas y la Lista |
 | Dependencias | ninguna; un archivo HTML |
 | Persistencia | ninguna; el nivel viaja en el hash de la URL |
 | Externo | solo la pestaña Hablá (voz del navegador + Google) |
@@ -112,6 +112,10 @@ las documenta como trabajo manual y no automatizable.
 53. ⚑ "No te pedí que tocaras Hablá" → cierto, fue un cambio no pedido. Hablá se revierte: sigue yendo siempre a Google, porque ahí el texto lo inventa el usuario y no hay grabación propia; encadenar palabras sueltas no funciona.
 
 54. Botón **G** en Sonido, a la izquierda del play y simétrico con el ½×, para pedir una segunda voz a Google bajo demanda → se mantiene el audio local por defecto y se evita depender de una API no oficial, pero queda la ayuda cuando hace falta contrastar.
+
+### Reglas
+
+55. Sección de reglas gramaticales y de pronunciación, con las de pronunciación mudadas desde la Lista, repartidas en tres niveles y **practicables, no solo enunciadas** → 22 reglas con 48 preguntas de opción múltiple; cada respuesta explica el porqué y suma al marcador general.
 
 ### Documentación
 

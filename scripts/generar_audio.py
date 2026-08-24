@@ -35,7 +35,10 @@ def textos():
     html = open(os.path.join(RAIZ,"index.html"), encoding="utf-8").read()
     palabras = re.findall(r'no:"([^"]+)"', html)
     frases   = re.findall(r'\["([^"]+)","[^"]*",\d+,\d+\]', html)
-    return palabras + frases
+    ejemplos = []
+    for m in re.finditer(r'ej:\[([^\]]*)\]', html):
+        ejemplos += re.findall(r'"([^"]+)"', m.group(1))
+    return palabras + frases + ejemplos
 
 def main():
     voz = PiperVoice.load(VOZ, config_path=VOZ + ".json")

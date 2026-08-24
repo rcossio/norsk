@@ -237,6 +237,24 @@ td.an{font-family:var(--serif);font-size:14px;color:#9DB8C9}
 .sil{font-family:var(--mono);font-size:11px;color:#7E9CB2;margin-top:6px;letter-spacing:.02em}
 .sil::before{content:"◦ "}
 td .sil{margin-top:2px}
+.regla{border:1px solid var(--kant);border-left:3px solid var(--gull);border-radius:2px;
+  padding:16px 18px;margin-bottom:14px;background:rgba(18,48,73,.4)}
+.regla h3{margin:0 0 6px;font-size:17px;color:var(--sno);letter-spacing:-.01em}
+.regla .num{font-family:var(--mono);font-size:10px;color:var(--gull);letter-spacing:.14em;display:block;margin-bottom:4px}
+.regla p{margin:0 0 10px;font-family:var(--serif);font-size:16px;color:#C3D6E2;line-height:1.5}
+.regla p b{font-family:var(--display);color:var(--sno);font-weight:600}
+.regla .ejs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.ejs .ej{display:inline-flex;align-items:center;gap:6px;background:var(--kort);border:1px solid var(--kant);
+  border-radius:2px;padding:5px 9px;font-family:var(--display);font-size:15px;color:var(--sno)}
+.regla .pre{font-family:var(--display);font-size:16px;color:var(--sno);margin:10px 0 8px}
+.opciones{display:flex;flex-wrap:wrap;gap:8px}
+.opciones button{background:var(--kort);border:1px solid var(--kant);color:var(--sno);border-radius:2px;
+  padding:9px 13px;font-family:var(--display);font-size:15px;cursor:pointer}
+.opciones button:hover:not(:disabled){border-color:#3A7BA8}
+.opciones button.right{background:#12463F;border-color:var(--sjo);color:#BFF0E7}
+.opciones button.wrong{background:#4A1720;border-color:var(--flagg);color:#F3C3C8}
+.porque{font-family:var(--serif);font-size:15px;margin-top:9px;min-height:22px}
+.porque.ok{color:var(--sjo)} .porque.no{color:#F09AA3}
 .legend{
   border:1px solid var(--kant);border-left:3px solid var(--gull);border-radius:2px;
   padding:14px 16px;margin-bottom:18px;background:rgba(18,48,73,.45);
@@ -480,28 +498,20 @@ footer{border-top:1px solid var(--kant);margin-top:60px;padding:22px 0;font-fami
   <div id="talk-idea-out"></div>
 </section>
 
-<!-- 11 LISTA -->
+<!-- 11 REGLAS -->
+<section class="panel" id="p-rules" role="tabpanel">
+  <div class="panel-head"><h2>Reglas</h2><p>Lo que hay detrás de las palabras: cómo se ordena la frase, cómo cambia el sustantivo, qué letras no suenan. Cada regla trae ejemplos con audio y preguntas para probarla.</p></div>
+  <div class="row">
+    <button class="btn primary" id="rules-quiz">Practicar las reglas de este nivel</button>
+    <span class="hint" id="rules-count"></span>
+  </div>
+  <div id="rules-quiz-box"></div>
+  <div id="rules-list"></div>
+</section>
+
+<!-- 12 LISTA -->
 <section class="panel" id="p-list" role="tabpanel">
   <div class="panel-head"><h2>Lista</h2><p>Solo palabras sueltas, con su ancla y cuántas veces la practicaste en esta sesión. Las frases hechas como <i>vær så snill</i> o <i>god morgen</i> no aparecen acá: viven en los juegos. Buscá por cualquier campo, incluso por el idioma del ancla.</p></div>
-  <div class="legend">
-    <h3>Cómo leer la columna "suena"</h3>
-    <ul>
-      <li><b>j</b> = la h noruega, soplada como en el <i>house</i> inglés. No es la jota de <i>jamón</i>.</li>
-      <li><b>ü</b> = la u francesa de <i>tu</i>. La <b>y</b> noruega siempre suena así.</li>
-      <li><b>ø</b> = el <i>eu</i> francés de <i>peu</i>: una e con los labios redondeados.</li>
-      <li><b>ch</b> en <i>kjøtt</i> y <i>kjøper</i> es más suave que la nuestra, como el <i>ich</i> alemán.</li>
-      <li>El diptongo <b>ei</b> (jeg, hei, nei) no es nuestro <i>ai</i>: arranca en un sonido entre la a y la e, más cerca de la e. Decir "jai" es la marca del extranjero.</li>
-      <li>La <b>o</b> larga suena <b>u</b>: <i>bok</i> es buk, <i>stor</i> es stur, <i>god</i> es gu.</li>
-      <li>La línea gris ◦ marca las letras que se escriben pero no se dicen.</li>
-    </ul>
-  </div>
-  <div class="row">
-    <div class="seg" id="list-sort">
-      <button data-s="lista" aria-pressed="true">orden de la lista</button>
-      <button data-s="menos" aria-pressed="false">menos practicadas</button>
-      <button data-s="mas" aria-pressed="false">más practicadas</button>
-    </div>
-  </div>
   <input class="search" id="list-search" placeholder="Buscar: fisk, pescado, inglés, verbo…" autocomplete="off">
   <table><thead><tr><th>Noruego</th><th>Suena</th><th>Castellano</th><th>Ancla</th></tr></thead><tbody id="list-body"></tbody></table>
 </section>
@@ -1710,6 +1720,148 @@ const SND = [
 ["Betaler vi billetten?","¿Nosotros pagamos el boleto?",20,3]
 ];
 
+
+/* =====================  REGLAS  =====================
+   Cada regla tiene enunciado, ejemplos y preguntas de práctica.
+   `lvl` decide en qué nivel aparece. */
+const REGLAS = [
+{n:1,lvl:1,t:"Cada sustantivo tiene género fijo: en o et",
+ r:"Un sustantivo es palabra <b>en</b> o palabra <b>et</b> para siempre. No se deduce del significado: hay que aprenderlo pegado a la palabra. Alrededor de tres de cada cuatro son <b>en</b>.",
+ ej:["en mann","et hus","en bil","et brød"],
+ q:[{p:"¿Cómo se dice «una casa»?",o:["en hus","et hus","hus en"],c:1,w:"hus es palabra et."},
+    {p:"El artículo et corresponde al género…",o:["masculino","femenino","neutro"],c:2,w:"et tiene una t, como neuTro."}]},
+
+{n:2,lvl:1,t:"«El» y «la» se pegan al final",
+ r:"En noruego el artículo definido no va adelante: es un sufijo. Y repite la palabra del indefinido: <b>en → -en</b>, <b>et → -et</b>.",
+ ej:["bilen","huset","mannen","toget"],
+ q:[{p:"et tog significa «un tren». ¿Y «el tren»?",o:["togen","toget","det tog"],c:1,w:"Palabra et, sufijo -et."},
+    {p:"en bok significa «un libro». ¿Y «el libro»?",o:["boka","boket","bokat"],c:0,w:"bok admite boka o boken; la app usa boka."},
+    {p:"«en bil» y «bilen» se diferencian en…",o:["el género","un artículo suelto contra un sufijo","el número"],c:1,w:"Mismo género; cambia dónde va el artículo."}]},
+
+{n:3,lvl:1,t:"El verbo no se conjuga",
+ r:"Una sola forma de presente para todas las personas. Aprender el verbo es aprender toda la conjugación.",
+ ej:["jeg er","du er","han er","vi er"],
+ q:[{p:"«Nosotros comemos» es…",o:["vi spisem","vi spiser","vi spisen"],c:1,w:"spiser vale para las seis personas."},
+    {p:"¿Cuántas formas de presente tiene un verbo noruego?",o:["una","tres","seis"],c:0,w:"Una sola."}]},
+
+{n:4,lvl:1,t:"ikke va detrás del verbo",
+ r:"La negación nunca se antepone al verbo, como sí hacemos en castellano.",
+ ej:["Jeg snakker ikke norsk","Han spiser ikke brødet"],
+ q:[{p:"«Yo no hablo noruego» es…",o:["Jeg ikke snakker norsk","Jeg snakker ikke norsk","Ikke jeg snakker norsk"],c:1,w:"ikke después del verbo conjugado."},
+    {p:"Con un modal, ikke va…",o:["antes del modal","entre el modal y el infinitivo","al final"],c:1,w:"Jeg vil ikke kjøpe boka."}]},
+
+{n:5,lvl:1,t:"Pronunciación: la d final no se dice",
+ r:"Se escribe pero no suena, en muchísimas palabras frecuentes.",
+ ej:["god","brød","tid","kald"],
+ q:[{p:"god se pronuncia…",o:["god","gud","gu"],c:2,w:"La d muere y la o larga suena u."},
+    {p:"tid se pronuncia…",o:["tid","ti","tai"],c:1,w:"Igual que en inglés tide, sin la d."}]},
+
+{n:6,lvl:1,t:"Pronunciación: la o larga suena u",
+ r:"Cuando la <b>o</b> es larga, la boca dice <b>u</b>. Es la trampa que más delata al hispanohablante.",
+ ej:["bok","stor","fot","ost"],
+ q:[{p:"bok se pronuncia…",o:["bok","buk","bak"],c:1,w:"Como el book inglés."},
+    {p:"stor se pronuncia…",o:["stor","stur","star"],c:1,w:"Como el store inglés."}]},
+
+{n:7,lvl:2,t:"Después de denne y dette el sustantivo va definido",
+ r:"El noruego marca «este» <b>dos veces</b>: en el demostrativo y en el sufijo del sustantivo. <b>denne</b> para palabras en, <b>dette</b> para palabras et.",
+ ej:["denne dagen","dette huset","denne bilen"],
+ q:[{p:"«Este día» es…",o:["denne dag","denne dagen","dette dagen"],c:1,w:"dag es en, y el sustantivo va definido."},
+    {p:"«Esta casa» es…",o:["denne huset","dette hus","dette huset"],c:2,w:"hus es et, así que dette + huset."}]},
+
+{n:8,lvl:2,t:"Con palabras et el adjetivo suma -t",
+ r:"El adjetivo concuerda con el género, también cuando va después del verbo. <b>liten</b> es irregular: hace <b>lite</b>.",
+ ej:["Bilen er ny","Brødet er nytt","Huset er lite"],
+ q:[{p:"«El pan es nuevo» es…",o:["Brødet er ny","Brødet er nytt","Brødet er nye"],c:1,w:"brød es et, entonces nytt."},
+    {p:"El neutro de god es…",o:["gode","godt","gott"],c:1,w:"god + t, se pronuncia got."},
+    {p:"El neutro de liten es…",o:["litent","litet","lite"],c:2,w:"Irregular: hay que aprenderlo suelto."}]},
+
+{n:9,lvl:2,t:"V2: el verbo va siempre segundo",
+ r:"En una frase declarativa el verbo conjugado ocupa el <b>segundo lugar</b>. Si adelantás el tiempo o el lugar, el sujeto se corre detrás del verbo. Segundo lugar es segundo <b>bloque</b>, no segunda palabra.",
+ ej:["De tar toget i natt","I natt tar de toget","I dag reiser vi"],
+ q:[{p:"En una frase declarativa, el verbo va en el lugar…",o:["primero","segundo","último"],c:1,w:"Es la regla V2, sin excepciones."},
+    {p:"¿Cuál es correcta?",o:["I natt de tar toget","I natt tar de toget","Tar i natt de toget"],c:1,w:"I natt ocupa el puesto uno, el verbo el dos, el sujeto se corre."},
+    {p:"«I dag» ocupa…",o:["dos lugares","un solo lugar","ninguno"],c:1,w:"Es un bloque de sentido: cuenta como uno."}]},
+
+{n:10,lvl:2,t:"En preguntas sí/no el verbo va primero",
+ r:"Se invierte verbo y sujeto. Con palabra interrogativa vuelve a ser segundo, porque la pregunta ocupa el primer lugar.",
+ ej:["Tar de toget?","Når tar de toget?","Spiser du brødet?"],
+ q:[{p:"«¿Venís?» es…",o:["Du kommer?","Kommer du?","Er du kommer?"],c:1,w:"Verbo primero, sujeto después."},
+    {p:"En «Når kommer toget?» el verbo está en el lugar…",o:["primero","segundo","tercero"],c:1,w:"når ocupa el uno, así que se cumple V2."}]},
+
+{n:11,lvl:2,t:"Pronunciación: hv- suena v",
+ r:"La h de <b>hv-</b> y de <b>hj-</b> no se pronuncia.",
+ ej:["hvor","hva","hjelper"],
+ q:[{p:"hvor se pronuncia…",o:["jvor","vur","juor"],c:1,w:"La h calla y la o larga suena u."},
+    {p:"hva se pronuncia…",o:["va","jva","ja"],c:0,w:"Como el what inglés sin la w."}]},
+
+{n:12,lvl:2,t:"Pronunciación: la y es una u francesa",
+ r:"La <b>y</b> noruega no es nuestra i ni nuestra y: es la <b>ü</b> de <i>tu</i> en francés, con los labios redondeados.",
+ ej:["by","ny","fly","mye"],
+ q:[{p:"by se pronuncia…",o:["bai","bi","bü"],c:2,w:"Labios de u, lengua de i."},
+    {p:"ny se pronuncia…",o:["nü","nai","ni"],c:0,w:"Misma vocal que by y fly."}]},
+
+{n:13,lvl:2,t:"Pronunciación: ei no es nuestro «ai»",
+ r:"El diptongo <b>ei</b> arranca en un sonido entre la a y la e, más cerca de la e. Decir «jai» es la marca más reconocible del extranjero.",
+ ej:["jeg","hei","nei"],
+ q:[{p:"jeg se pronuncia más cerca de…",o:["iai","iei","ieg"],c:1,w:"Y en Oslo muchos dicen directamente iæ."},
+    {p:"La g final de jeg…",o:["suena como g","suena como k","no suena"],c:2,w:"Muda."}]},
+
+{n:14,lvl:3,t:"Adjetivo pegado al sustantivo",
+ r:"Delante del sustantivo el adjetivo sigue concordando: <b>en stor bil</b>, <b>et stort hus</b>. Pero con demostrativo o artículo definido pasa a la forma en <b>-e</b>, igual para los dos géneros.",
+ ej:["en stor bil","et stort hus","denne store bilen","dette lille huset"],
+ q:[{p:"«Una casa grande» es…",o:["en stor hus","et stor hus","et stort hus"],c:2,w:"hus es et: artículo et y adjetivo con -t."},
+    {p:"«Este auto grande» es…",o:["denne stor bilen","denne store bilen","denne stort bilen"],c:1,w:"Con demostrativo, el adjetivo va en -e."},
+    {p:"La forma en -e de liten es…",o:["litene","lille","litene"],c:1,w:"Irregular, como casi todo lo de liten."}]},
+
+{n:15,lvl:3,t:"En subordinada el verbo no va segundo",
+ r:"La regla V2 solo rige en la oración principal. En una subordinada el verbo se queda <b>detrás del sujeto</b>, y suele quedar al final.",
+ ej:["Hvor er toalettet?","Jeg vet ikke hvor toalettet er"],
+ q:[{p:"«No sé dónde está el baño» es…",o:["Jeg vet ikke hvor er toalettet","Jeg vet ikke hvor toalettet er","Jeg vet ikke er toalettet hvor"],c:1,w:"En subordinada el verbo va después del sujeto."},
+    {p:"La regla V2 se aplica…",o:["siempre","solo en la principal","solo en preguntas"],c:1,w:"La subordinada tiene su propio orden."}]},
+
+{n:16,lvl:3,t:"Plurales, con sus irregulares",
+ r:"El plural indefinido suele ser <b>-er</b>. Varios sustantivos neutros de una sílaba no cambian, y hay un grupo que altera la vocal.",
+ ej:["biler","katter","hus","bøker","menn","føtter"],
+ q:[{p:"El plural de bok es…",o:["boker","bøker","bokene"],c:1,w:"Cambia la vocal: o pasa a ø."},
+    {p:"El plural de hus es…",o:["huser","husene","hus"],c:2,w:"Neutro de una sílaba: no cambia."},
+    {p:"El plural de mann es…",o:["manner","menn","männer"],c:1,w:"Igual que man/men en inglés."}]},
+
+{n:17,lvl:3,t:"El imperativo es la raíz del infinitivo",
+ r:"Se le saca la <b>-e</b> final al infinitivo y ya está. Si el infinitivo no termina en -e, queda igual.",
+ ej:["Spis brødet","Kom nå","Kjøp en billett","Se her"],
+ q:[{p:"El imperativo de å spise es…",o:["spiser","spis","spise"],c:1,w:"Infinitivo menos la -e."},
+    {p:"El imperativo de å gå es…",o:["gå","går","gås"],c:0,w:"No termina en -e: no cambia."}]},
+
+{n:18,lvl:3,t:"må ikke es prohibición",
+ r:"No significa «no hace falta» sino <b>«no debés»</b>. Para decir que algo no es necesario se usa otra construcción.",
+ ej:["Du må ikke ta bilen"],
+ q:[{p:"«Du må ikke ta bilen» significa…",o:["no hace falta que tomes el auto","no debés tomar el auto","no podés tomar el auto"],c:1,w:"Es una prohibición, igual que must not en inglés."}]},
+
+{n:19,lvl:3,t:"Movimiento pide hit y dit, no her y der",
+ r:"<b>her</b> y <b>der</b> son estáticos: dónde estás. Para dirección se usan <b>hit</b> y <b>dit</b>.",
+ ej:["Jeg er her","Jeg bor der"],
+ q:[{p:"«Vengo acá» es…",o:["Jeg kommer her","Jeg kommer hit","Jeg kommer i her"],c:1,w:"Con verbo de movimiento, hit."},
+    {p:"«Vivo acá» es…",o:["Jeg bor her","Jeg bor hit","Jeg bor til her"],c:0,w:"bor no es movimiento: her."}]},
+
+{n:20,lvl:3,t:"Pronunciación: kj y gj",
+ r:"<b>kj</b> es una ch más suave que la nuestra, como el <i>ich</i> alemán. <b>gj</b> pierde la g y suena como una i.",
+ ej:["kjøtt","kjøper","gjør"],
+ q:[{p:"kjøtt se pronuncia…",o:["kiøt","chøt","køt"],c:1,w:"Con una ch suave, no la ch de coche."},
+    {p:"gjør se pronuncia…",o:["guiør","gør","iør"],c:2,w:"La g de gj- no suena."}]},
+
+{n:21,lvl:3,t:"liker no funciona como «gustar»",
+ r:"En noruego el que gusta es el <b>sujeto</b>, como en el <i>like</i> inglés. Se invierte respecto del castellano.",
+ ej:["Jeg liker fisken","Hun liker boka"],
+ q:[{p:"«Jeg liker fisken» significa…",o:["yo le gusto al pescado","a mí me gusta el pescado","el pescado me gusta a mí"],c:1,w:"jeg es el sujeto, fisken el objeto."},
+    {p:"«A ella le gusta el libro» es…",o:["Boka liker hun","Hun liker boka","Hun liker bok"],c:1,w:"Sujeto hun, objeto en forma definida."}]},
+
+{n:22,lvl:3,t:"Dos falsos amigos que invierten el sentido",
+ r:"<b>og</b> se pronuncia «o» y significa <b>y</b>. <b>nå</b> se pronuncia «no» y significa <b>ahora</b>. Los dos van a engañar al oído antes que a la cabeza.",
+ ej:["og","nå"],
+ q:[{p:"og significa…",o:["o","y","no"],c:1,w:"Suena como nuestro o, pero une."},
+    {p:"«Vi reiser nå» significa…",o:["no viajamos","viajamos ahora","viajamos no"],c:1,w:"nå es ahora, aunque suene a no."}]}
+];
+
 /* =====================  UTILIDADES  ===================== */
 const $ = s => document.querySelector(s);
 const rnd = a => a[Math.floor(Math.random()*a.length)];
@@ -2011,6 +2163,7 @@ const TABS = [
  ["Contrarreloj","p-race",()=>raceReset()],
  ["Supervivencia","p-surv",()=>survStart()],
  ["Hablá","p-talk",()=>talkInit()],
+ ["Reglas","p-rules",()=>rulesRender()],
  ["Lista","p-list",()=>listRender('')]
 ];
 let active = 0;
@@ -2617,6 +2770,83 @@ $('#mic-btn').onclick = ()=>{
   try{ rec.start(); }
   catch(e){ $('#mic-state').textContent = 'No pude abrir el micrófono.'; }
 };
+
+
+/* =====================  REGLAS: interfaz  ===================== */
+function reglasActivas(){ return REGLAS.filter(r => r.lvl <= NIVEL); }
+
+function ejemploHTML(t){
+  const suena = audioKeys().has(slug(t));
+  return `<span class="ej">${esc(t)}${suena?playBtn(t,'sm'):''}</span>`;
+}
+
+// una pregunta con sus opciones; onDone se llama al responder
+function preguntaHTML(id){
+  return `<div class="pre" id="${id}-p"></div><div class="opciones" id="${id}-o"></div><div class="porque" id="${id}-w"></div>`;
+}
+function montarPregunta(id, item, alTerminar){
+  $(`#${id}-p`).textContent = item.p;
+  const box = $(`#${id}-o`); box.innerHTML = '';
+  const w = $(`#${id}-w`); w.textContent = ''; w.className = 'porque';
+  let hecho = false;
+  shuffle(item.o.map((txt,i)=>({txt,i}))).forEach(op=>{
+    const b = document.createElement('button');
+    b.textContent = op.txt;
+    b.onclick = ()=>{
+      if(hecho) return; hecho = true;
+      const bien = op.i === item.c;
+      score(bien);
+      [...box.children].forEach(x=>{
+        x.disabled = true;
+        if(x.textContent === item.o[item.c]) x.classList.add('right');
+        else if(x === b) x.classList.add('wrong');
+      });
+      w.className = 'porque ' + (bien?'ok':'no');
+      w.textContent = item.w;
+      if(alTerminar) setTimeout(alTerminar, bien ? 1200 : 2600);
+    };
+    box.appendChild(b);
+  });
+}
+
+function rulesRender(){
+  const rs = reglasActivas();
+  $('#rules-count').textContent = rs.length + ' reglas en este nivel';
+  $('#rules-list').innerHTML = rs.map(r =>
+    `<div class="regla">`+
+      `<span class="num">regla ${r.n}</span>`+
+      `<h3>${r.t}</h3>`+
+      `<p>${r.r}</p>`+
+      `<div class="ejs">${r.ej.map(ejemploHTML).join('')}</div>`+
+      preguntaHTML('r'+r.n)+
+    `</div>`).join('');
+  rs.forEach(r => montarPregunta('r'+r.n, rnd(r.q), null));
+  $('#rules-quiz-box').innerHTML = '';
+}
+
+// modo práctica: preguntas al azar de todas las reglas del nivel
+let reglaActual = null;
+function rulesQuiz(){
+  const rs = reglasActivas();
+  if(!rs.length) return;
+  reglaActual = pick('regla', rs);
+  const item = rnd(reglaActual.q);
+  $('#rules-quiz-box').innerHTML =
+    `<div class="regla" style="border-left-color:var(--flagg)">`+
+      `<span class="num">regla ${reglaActual.n} · ${esc(reglaActual.t)}</span>`+
+      preguntaHTML('rq')+
+      `<div class="row" style="margin-top:12px">`+
+        `<button class="btn ghost" id="rq-ver">Ver la regla</button>`+
+        `<button class="btn" id="rq-next">Otra pregunta</button>`+
+      `</div>`+
+    `</div>`;
+  montarPregunta('rq', item, null);
+  $('#rq-next').onclick = rulesQuiz;
+  $('#rq-ver').onclick = ()=>{
+    $('#rq-ver').outerHTML = `<span class="hint" style="max-width:46ch">${reglaActual.r.replace(/<[^>]+>/g,'')}</span>`;
+  };
+}
+$('#rules-quiz').onclick = rulesQuiz;
 
 /* =====================  11. LISTA  ===================== */
 let listSort='lista';

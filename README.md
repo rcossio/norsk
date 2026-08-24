@@ -67,6 +67,8 @@ palabras, frases, señuelos de opción múltiple, categorías y la lista.
 | 2 | 61 | 450 | 36 |
 | 3 | 120 | 1050 | 50 |
 
+Reglas por nivel: 6, 13 y 22 acumuladas.
+
 Criterios de corte:
 
 - **La frecuencia manda, la cobertura verifica.** El orden sale de listas de
@@ -118,6 +120,16 @@ lugar y movimiento con *i / på / til / fra / med*, presentativo con *det er*, y
 - ***gustar* invierte el sujeto**: *Jeg liker fisken* → "a mí me gusta el pescado",
   y hay que decir "a él" / "a ella" o *han* y *hun* darían traducciones idénticas.
 - **Movimiento pide *hit/dit*, no *her/der***: *kommer her* no existe.
+
+## Reglas
+
+Pestaña aparte con 22 reglas de gramática y pronunciación, repartidas por nivel
+(6 / 13 / 22 acumuladas). Cada una trae enunciado, ejemplos con audio y preguntas
+de opción múltiple con la explicación del porqué. Hay además un modo de práctica
+que sortea preguntas de todas las reglas del nivel.
+
+Las reglas de pronunciación que antes vivían como leyenda al pie de la Lista se
+mudaron acá.
 
 ## Audio
 
