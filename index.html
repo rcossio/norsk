@@ -1743,14 +1743,25 @@ function say(text, btn, slow){
   lastSay = {k:dk, t:now};
   if(curAudio){ curAudio.pause(); curAudio.currentTime=0; }
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
-  const key = slug(text);
+  // la versión lenta es una grabación aparte, con pausa entre palabras:
+  // estirar la normal no ayuda a segmentar, y eso es lo que cuesta entender
+  const key = slug(text) + (slow ? '-lento' : '');
   let a = audioCache[key];
   if(!a){ a = new Audio('audio/'+key+'.mp3'); a.preload='auto'; audioCache[key]=a; }
   curAudio = a;
   if(btn){ btn.classList.add('playing'); a.onended = a.onpause = ()=>btn.classList.remove('playing'); }
   a.currentTime = 0;
-  const rate = slow ? 0.62 : 1;
-  a.defaultPlaybackRate = rate; a.playbackRate = rate;
+  a.defaultPlaybackRate = 1; a.playbackRate = 1;
+  if(slow){
+    // si faltara la grabación lenta, se estira la normal como respaldo
+    a.onerror = ()=>{
+      delete audioCache[key];
+      const b = new Audio('audio/'+slug(text)+'.mp3');
+      b.defaultPlaybackRate = 0.62; b.playbackRate = 0.62;
+      curAudio = b; b.onended = ()=>{ if(btn) btn.classList.remove('playing'); };
+      b.play().catch(()=>{ if(btn) btn.classList.remove('playing'); });
+    };
+  }
   a.play().catch(err=>{
     if(btn) btn.classList.remove('playing');
     // AbortError = lo cortamos nosotros al pedir otra palabra, no es un fallo real
@@ -1786,9 +1797,10 @@ function playPhrase(text, btn, slow){
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
   // mismo audio en los dos casos: el ttsspeed de Google frena apenas un 18% y además
   // mete pausas entre palabras. La velocidad la maneja el reproductor.
-  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(t));
+  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no'+
+                      (slow?'&ttsspeed=0.24':'')+'&q='+encodeURIComponent(t));
   curAudio = a;
-  const rate = slow ? 0.62 : 1;
+  const rate = slow ? 0.85 : 1;
   // al cargar el recurso el navegador vuelve playbackRate a defaultPlaybackRate,
   // así que hay que fijar los dos y reafirmarlo cuando ya hay metadatos
   a.defaultPlaybackRate = rate; a.playbackRate = rate;

@@ -129,9 +129,14 @@ interno mayor a 0.30 s se descarta y se vuelve a sintetizar, porque ese es el
 artefacto típico del modelo (un chasquido, una pausa, y recién la palabra). Después
 se recorta el silencio inicial y se deja 0.25 s de cola.
 
-El botón de velocidad lenta usa `playbackRate` del navegador, no el modo lento de
-ningún servicio: los modos lentos suelen insertar pausas entre palabras en vez de
-alargar los sonidos, que es lo contrario de lo que sirve para entrenar el oído.
+**Cada texto tiene dos grabaciones**: la normal y una `-lento`. La lenta no es la
+normal estirada: se sintetiza aparte, con comas entre palabras (Piper las convierte
+en pausas reales) y `length_scale` 1.35 en frases, 1.6 en palabras sueltas.
+
+La razón: al escuchar, lo que cuesta no es la velocidad de los sonidos sino
+**segmentar dónde termina una palabra y empieza la otra**. Bajar el `playbackRate`
+estira todo por igual y no ayuda; las pausas sí. Si faltara un archivo lento, se
+cae a estirar el normal a 0.62×.
 
 ## Servicios externos
 

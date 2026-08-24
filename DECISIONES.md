@@ -9,7 +9,7 @@ este explica el origen de cada uno.
 |---|---|
 | Vocabulario | 120 palabras, tres niveles anidados (25 / 61 / 120) |
 | Frases | 1050 generadas, 50 plantillas, tope de 10% por plantilla |
-| Audio | 1086 mp3, Piper `no_NO-talesyntese-medium`, 9 MB |
+| Audio | 2173 mp3 (normal + lento por texto), Piper `no_NO-talesyntese-medium`, 28 MB |
 | Juegos | 10 más la Lista |
 | Dependencias | ninguna; un archivo HTML |
 | Persistencia | ninguna; el nivel viaja en el hash de la URL |
@@ -105,6 +105,10 @@ las documenta como trabajo manual y no automatizable.
 47. Diagnóstico previo, sin tocar código, sobre cómo hacer niveles de vocabulario.
 48. ⚑ "Elegir por cobertura es intratable" → parcialmente: el greedy es barato, pero **sería circular**. Se adopta la propuesta del usuario: la frecuencia manda, la cobertura verifica.
 49. Implementar 25 / 60 / 120 conservando las palabras ya construidas → el nivel 3 son las 114 existentes más 6, así que hubo que escribir 6 anclas nuevas y no 120.
+
+### Audio, segunda vuelta
+
+52. ⚑ "Reproducir más lento no sirve; el problema son las pausas entre palabras. ¿Estás usando Google de verdad?" → **no**: en Sonido sonaban los mp3 de Piper; Google solo se usaba en Hablá. Y el diagnóstico era correcto: lo que cuesta al escuchar es segmentar, no la velocidad. Se genera una segunda grabación `-lento` por cada texto, con comas entre palabras para forzar pausas reales, y en Hablá se restituye el modo lento de Google, que también las inserta.
 
 ### Documentación
 
