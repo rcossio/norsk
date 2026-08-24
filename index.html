@@ -1995,13 +1995,20 @@ function sayGoogle(text, btn){
   if(!text) return;
   if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
-  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(text));
-  curAudio = a;
   if(btn) btn.classList.add('playing');
-  const fin = ()=>{ if(btn) btn.classList.remove('playing'); };
-  const caer = ()=>{ fin(); say(text, btn); };   // si Google no responde, suena la grabación propia
-  a.onended = fin; a.onerror = caer;
-  a.play().catch(caer);
+  const fin  = ()=>{ if(btn) btn.classList.remove('playing'); };
+  const caer = ()=>{ fin(); say(text, btn); };   // último recurso: la voz propia
+  // 1) copia local de la voz de Google, si ya está bajada
+  const local = new Audio('audio/'+slug(text)+'-g.mp3');
+  local.onended = fin;
+  local.onerror = ()=>{
+    // 2) si no está, se le pide a Google en vivo
+    const remoto = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(text));
+    curAudio = remoto; remoto.onended = fin; remoto.onerror = caer;
+    remoto.play().catch(caer);
+  };
+  curAudio = local;
+  local.play().catch(()=>{});
 }
 function playBtn(text, cls, slow){
   return `<button class="say ${cls||''}" data-say="${esc(text)}"${slow?' data-slow="1"':''} `+
