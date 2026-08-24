@@ -2680,8 +2680,9 @@ let rec = null, recOn = false;
 /* Grabación de la propia voz. Vive solo en memoria: un blob y su URL temporal,
    que se revocan al grabar de nuevo y desaparecen al recargar la página. */
 let micStream = null, micRec = null, micTrozos = [], miVozURL = null;
+let grabarVoz = true;   // se apaga sola si le estorba al reconocimiento
 async function empezarGrabacion(){
-  if(!navigator.mediaDevices || !window.MediaRecorder) return;
+  if(!grabarVoz || !navigator.mediaDevices || !window.MediaRecorder) return;
   try{
     micStream = await navigator.mediaDevices.getUserMedia({audio:true});
     micTrozos = [];
@@ -2694,7 +2695,7 @@ async function empezarGrabacion(){
       pintarMiVoz();
     };
     micRec.start();
-  }catch(e){ micRec = null; }   // sin permiso de micrófono para grabar: se sigue igual
+  }catch(e){ micRec = null; grabarVoz = false; }   // sin permiso: se sigue sin grabar
 }
 function pararGrabacion(){
   if(micRec && micRec.state !== 'inactive'){ try{ micRec.stop(); }catch(e){} }
@@ -2796,8 +2797,9 @@ $('#mic-btn').onclick = ()=>{
   rec.interimResults = true;
   rec.maxAlternatives = 1;
   rec.continuous = false;
-  empezarGrabacion();
   rec.onstart = ()=>{ recOn = true; $('#mic-btn').classList.add('rec');
+    // la grabación se engancha recién cuando el reconocedor ya tomó el micrófono
+    if(grabarVoz) empezarGrabacion();
     $('#mic-state').textContent = 'Escuchando… tocá de nuevo para cortar';
     talkRender('', true); };
   rec.onresult = e=>{
@@ -2811,6 +2813,13 @@ $('#mic-btn').onclick = ()=>{
   };
   rec.onerror = ev=>{
     talkStop();
+    if(grabarVoz && (ev.error==='aborted' || ev.error==='audio-capture')){
+      // el grabador le estaba peleando el micrófono: se apaga y se reintenta una vez
+      grabarVoz = false;
+      $('#mic-state').textContent = 'Reintentando sin grabar tu voz…';
+      setTimeout(()=>$('#mic-btn').click(), 400);
+      return;
+    }
     const m = {
       'no-speech':'No escuché nada. Probá de nuevo, más cerca del micrófono.',
       'not-allowed':'El navegador bloqueó el micrófono. Habilitalo en los permisos del sitio.',
