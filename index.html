@@ -226,6 +226,9 @@ td.an{font-family:var(--serif);font-size:14px;color:#9DB8C9}
 .say:focus-visible{outline:2px solid var(--gull);outline-offset:2px}
 .say svg{width:13px;height:13px;fill:currentColor}
 .say.big{width:68px;height:68px}
+.say.mid{width:48px;height:48px}
+.say.mid svg{width:17px;height:17px}
+.say.g{font-family:var(--display);font-weight:700;font-size:20px;line-height:1}
 .say.big svg{width:24px;height:24px}
 .say.sm{width:26px;height:26px;border-color:#1D4363}
 .say.sm svg{width:10px;height:10px}
@@ -1831,11 +1834,30 @@ function playSeq(tokens, btn){
 }
 const ICON = '<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M0 0l12 7-12 7z"/></svg>';
 const ICON_SLOW = '<span style="font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:-.02em">½×</span>';
+// segunda voz, a pedido: se llama a Google solo cuando el usuario toca la G
+function googleBtn(text){
+  return `<button class="say mid g" data-google="${esc(text)}" title="Escuchar con la voz de Google" `+
+         `aria-label="Escuchar ${esc(text)} con la voz de Google">G</button>`;
+}
+function sayGoogle(text, btn){
+  if(!text) return;
+  if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
+  document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
+  const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(text));
+  curAudio = a;
+  if(btn) btn.classList.add('playing');
+  const fin = ()=>{ if(btn) btn.classList.remove('playing'); };
+  const caer = ()=>{ fin(); say(text, btn); };   // si Google no responde, suena la grabación propia
+  a.onended = fin; a.onerror = caer;
+  a.play().catch(caer);
+}
 function playBtn(text, cls, slow){
   return `<button class="say ${cls||''}" data-say="${esc(text)}"${slow?' data-slow="1"':''} `+
          `aria-label="Escuchar ${esc(text)}${slow?' despacio':''}">${slow?ICON_SLOW:ICON}</button>`;
 }
 document.addEventListener('click', e=>{
+  const g = e.target.closest('[data-google]');
+  if(g){ e.stopPropagation(); sayGoogle(g.dataset.google, g); return; }
   const b = e.target.closest('[data-say]');
   if(b){ e.stopPropagation(); say(b.dataset.say, b, b.hasAttribute('data-slow')); }
 });
@@ -2193,7 +2215,7 @@ function soundSentence(){
   soundLock = false;
   $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
   $('#sound-q').innerHTML = `<span class="tag">escuchá la frase</span>`+
-    `<div class="say-row">${playBtn(s[0],'big')}${playBtn(s[0],'big',true)}</div>`+
+    `<div class="say-row">${googleBtn(s[0])}${playBtn(s[0],'big')}${playBtn(s[0],'mid',true)}</div>`+
     `<div id="sound-pron" class="heard" style="margin-top:14px;font-size:clamp(19px,4.4vw,26px);min-height:30px"></div>`+
     `<button class="btn ghost" id="sound-peek" style="margin-top:6px;font-size:13px;padding:7px 14px">Ver cómo se escribe</button>`;
   $('#sound-peek').onclick = e=>{ $('#sound-pron').textContent = s[0]; e.currentTarget.remove(); };
@@ -2227,7 +2249,7 @@ function soundNew(){
   soundW=pick('sound'); soundLock=false;
   $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
   $('#sound-q').innerHTML=`<span class="tag">escuchá</span>`+
-    `<div class="say-row">${playBtn(soundW.no,'big')}${playBtn(soundW.no,'big',true)}</div>`+
+    `<div class="say-row">${googleBtn(soundW.no)}${playBtn(soundW.no,'big')}${playBtn(soundW.no,'mid',true)}</div>`+
     `<div id="sound-pron" class="pron" style="margin-top:14px;font-size:clamp(20px,5vw,32px);min-height:34px"></div>`+
     `<button class="btn ghost" id="sound-peek" style="margin-top:6px;font-size:13px;padding:7px 14px">Ver cómo suena escrito</button>`;
   $('#sound-peek').onclick=e=>{

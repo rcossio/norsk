@@ -140,7 +140,17 @@ cae a estirar el normal a 0.62×.
 
 ## Servicios externos
 
-La pestaña **Hablá** es la única que necesita internet:
+Se usan lo mínimo posible y **nunca de forma automática**: el audio por defecto es
+siempre local. En Sonido hay un botón **G** que pide esa palabra o frase a Google
+como segunda voz, solo cuando el usuario lo toca. Si no responde, suena la
+grabación propia.
+
+Se evita depender de Google para el audio de los juegos porque `translate_tts` es
+un endpoint interno, no documentado, que ante uso intenso devuelve 429 o directamente
+bloquea la IP; además obligaría a un viaje de red por cada carta y rompería el modo
+offline.
+
+La pestaña **Hablá** es la única que necesita internet siempre:
 
 - Reconocimiento de voz: Web Speech API del navegador (`nb-NO`). Chrome y Safari.
 - Traducción y lectura de lo que dijiste: endpoints públicos de Google Translate.
