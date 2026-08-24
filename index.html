@@ -228,7 +228,9 @@ td.an{font-family:var(--serif);font-size:14px;color:#9DB8C9}
 .say.big{width:68px;height:68px}
 .say.mid{width:48px;height:48px}
 .say.mid svg{width:17px;height:17px}
-.say.g{font-family:var(--display);font-weight:700;font-size:20px;line-height:1}
+.say .vz{font-family:var(--mono);font-size:9px;font-style:normal;margin-left:2px;
+  align-self:flex-start;margin-top:-2px;opacity:.75}
+.say.big .vz{font-size:11px}
 .say.big svg{width:24px;height:24px}
 .say.sm{width:26px;height:26px;border-color:#1D4363}
 .say.sm svg{width:10px;height:10px}
@@ -1862,6 +1864,8 @@ const REGLAS = [
     {p:"«Vi reiser nå» significa…",o:["no viajamos","viajamos ahora","viajamos no"],c:1,w:"nå es ahora, aunque suene a no."}]}
 ];
 
+const GOOGLE_LISTO = ["apne-munnen","apne-oyet","apne-toalettet","barn","barnet-bor-her","barnet-er-lite","barnet-gar-i-natt","barnet-gar-na","barnet-har-et-hus","barnet-kommer-na","barnet-ser-en-hund","barnet-ser-en-ting","barnet-trenger-tiden","beklager","betaler","bilen","bilen-er-god","bilen-er-liten","bilen-er-til-hoyre","bilen-er-til-venstre","biler","bok","boker","bor","bor-jeg","brod","brodet-er-godt","by","dag","de","de-er-i-flyet","de-er-pa-toalettet","de-finner-en-ny-gate","de-gir-meg-melken","de-har-bilen","de-har-en-ting","de-kan-ikke-se-bilen","de-kan-lukke-bilen","de-kjoper-en-bil","de-kommer-i-natt","de-kommer-ikke-i-dag-beklager","de-kommer-na","de-liker-byen","de-liker-eplet","de-liker-fisken","de-reiser-fra-gaten","de-reiser-i-natt","de-reiser-med-flyet","de-ser-en-liten-hund","de-ser-ikke-katten","de-snakker-engelsk","de-spiser-en-kald-fisk","de-spiser-et-eple","de-spiser-ikke-fisken","de-vet-ikke-hvor-bilen-er","de-vil-drikke-vannet-men-de-kan-ikke","de-vil-hore-toget-men-de-kan-ikke","de-vil-ikke-ha-mannen","de-vil-ikke-kjope-huset","de-vil-lukke-bilen-men-de-kan-ikke","denne","denne-bilen","denne-boka-er-god","denne-foten-er-gammel","denne-foten-er-god","denne-gode-mannen-er-stor","denne-kalde-dagen-er-god","denne-kalde-maten-er-god","denne-kalde-munnen-er-god","denne-lille-katten-er-god","denne-mannen-er-liten","denne-melken-er-gammel","denne-pengene-er-kald","denne-pengene-er-stor","denne-pengene-er-varm","denne-store-pengene-er-god","denne-tingen-er-god","denne-tingen-er-ny","denne-varme-tiden-er-god","der","der-drikker-du-vannet","der-kjoper-du-bilen","der-kjoper-han-bilen","der-ser-han-boka","det-er-billetter-her","det-er-en-bil","det-er-en-bil-der","det-er-en-billett-der","det-er-en-bok-her","det-er-en-by","det-er-en-gate","det-er-en-gate-der","det-er-en-katt-der","det-er-en-kvinne-her","det-er-en-mann","det-er-en-natt","det-er-et-barn","det-er-et-barn-der","det-er-et-brod-her","det-er-et-hotell-der","det-er-et-hus-der","det-er-et-hus-her","det-er-et-tog-her","det-er-gater-her","det-er-hunder-her","det-er-ikke-en-ting","det-er-ikke-et-ar","det-er-ikke-et-egg","det-er-katter-der","det-er-katter-her","det-er-kvinner-her","dette-barnet-er-godt","dette-brodet-er-godt","dette-brodet-er-stort","dette-gode-brodet-er-stort","dette-huset","dette-huset-er-stort","dette-store-brodet-er-godt","dette-store-eplet-er-godt","dette-store-huset-er-godt","dette-varme-oyet-er-godt","do","drikker","du-apner-en-god-bok","du-betaler-billetten-og-ser-bilen","du-bor-i-byen","du-er","du-er-i-byen","du-er-i-flyet","du-er-pa-toalettet","du-finner-billetten","du-forstar-mannen-og-horer-hunden","du-gar-na","du-gir-meg-billetten","du-har-bilen-og-spiser-brodet","du-har-et-brod","du-har-et-hus","du-har-et-stort-hus","du-horer-hunden","du-kan-ikke-betale-fisken","du-kan-kjope-toget","du-kjoper-bilen-men-vi-ser-ikke-boka","du-kjoper-billetter","du-kjoper-boka-men-jeg-spiser-ikke-osten","du-kommer-i-dag","du-kommer-ikke-na-beklager","du-kommer-med-toget","du-liker-byen","du-liker-fisken","du-liker-osten","du-reiser-i-natt","du-reiser-med-flyet","du-reiser-med-toget","du-ser-bilen","du-ser-en-liten-ting","du-ser-en-mann","du-ser-ikke-katten","du-snakker-ikke","du-snakker-ikke-engelsk","du-spiser-brodet","du-spiser-et-brod","du-spiser-ikke-brodet","du-trenger-ikke-maten","du-vet-det","du-vet-ikke-hvor-fisken-er","du-vil-forsta-kvinnen-men-du-kan-ikke","du-vil-ha-egget","du-vil-ha-huset","du-vil-ikke-ha-brodet","du-vil-ikke-ha-huset","du-vil-ikke-se-huset","egg","eller","en","en-stor-bil","engelsk","eple","er-barnet-godt","er-bilen-god","er-bilen-liten","er-boka-ny","er-brodet-godt","er-brodet-lite","er-handen-stor","er-hunden-liten","er-huset-godt","er-huset-stort","er-katten-liten","er-kvinnen-god","er-mannen-stor","er-melken-gammel","er-melken-varm","er-toget-gammelt","er-vannet-godt","et","et-stort-hus","finner","finner-jeg-huset","fly","flyet-kommer-i-natt","flyet-reiser-i-dag","forstar","forstar-vi-boka","fot","ga-der","ga-her","ga-i-dag","gar-de","gar-han","gar-hun","gate","gaten-er-god","gaten-er-til-hoyre","gjor","god","god-morgen","god-morgen-kommer-han-i-dag","god-morgen-kommer-hun-i-dag","ha-det","han-drikker-melken-men-de-spiser-ikke-fisken","han-er","han-er-i-bilen","han-gar-i-dag","han-gar-ikke-i-natt-beklager","han-gar-na","han-gir-meg-boka","han-gir-meg-melken","han-har-barnet","han-har-en-mann","han-har-en-ny-ting","han-har-en-stor-bil","han-har-ikke-kvinnen","han-har-mannen","han-hjelper-meg","han-kan-kjope-brodet","han-kan-se-hunden","han-kan-se-mannen","han-kjoper-boka-men-de-drikker-ikke-melken","han-kjoper-ikke-boka","han-kommer-i-dag","han-liker-boka","han-liker-hunden","han-liker-osten","han-ma-se-bilen","han-reiser-fra-hotellet","han-reiser-ikke-i-natt-beklager","han-ser-boka","han-ser-en-varm-bil","han-ser-et-barn","han-ser-kvinner","han-snakker-ikke","han-snakker-ikke-engelsk","han-spiser-brodet","han-spiser-et-brod","han-spiser-et-godt-brod","han-spiser-ikke-brodet","han-tar-en-billett","han-tar-et-tog","han-vet-det","han-vet-ikke-hvor-flyet-er","han-vil-finne-gaten","han-vil-ikke-apne-toalettet","han-vil-ikke-ha-bilen","han-vil-ikke-ha-brodet","han-vil-ikke-ha-mannen","han-vil-ikke-ha-toget","han-vil-kjope-boka-men-han-kan-ikke","han-vil-spise-brodet-men-han-kan-ikke","hand","har","har-du-en-bil","har-du-en-billett","har-du-en-bok","har-du-en-katt","har-du-en-ost","har-du-en-ting","har-du-et-eple","har-du-et-hus","har-du-huset","har-han-huset","har-hun-huset","har-hun-tingen","hei","hei-har-du-en-bil","hei-har-du-et-brod","hei-hvor-er-boka","hei-hvor-er-brodet","hei-hvor-er-dagen","hei-hvor-er-flyet","hei-hvor-er-gaten","hei-hvor-er-hunden","hei-hvor-er-mannen","hei-hvor-er-pengene","hei-hvor-er-toget","her-har-han-boka","her-ser-vi-bilen","her-spiser-hun-brodet","horer","hotell","hotellet-er-til-hoyre","hun","hun-bor-her","hun-bor-i-byen","hun-er-i-huset","hun-er-i-toget","hun-er-pa-toalettet","hun-gar-ikke-i-dag-beklager","hun-gir-deg-boka","hun-har-bilen","hun-har-brodet","hun-har-en-god-bil","hun-har-en-mann","hun-har-et-godt-brod","hun-har-et-godt-tog","hun-har-et-hus","hun-har-ikke-bilen","hun-har-ikke-brodet","hun-har-ikke-huset","hun-horer-menn","hun-kan-ikke-se-boka","hun-kan-ikke-ta-bilen","hun-kjoper-en-ting","hun-kjoper-fisker","hun-kjoper-toget","hun-kommer-med-bilen","hun-kommer-med-toget","hun-liker-boka","hun-reiser-i-natt","hun-reiser-med-bilen","hun-reiser-med-flyet","hun-ser-en-kvinne","hun-ser-en-ost","hun-ser-kvinner","hun-snakker-ikke-norsk","hun-snakker-norsk","hun-spiser-brodet","hun-spiser-et-stort-egg","hun-spiser-fisken-men-vi-ser-ikke-boka","hun-spiser-ikke-brodet","hun-vet-ikke-hvor-pengene-er","hun-vil-ha-boka-men-hun-kan-ikke","hun-vil-ha-flyet","hun-vil-kjope-boka-men-hun-kan-ikke","hun-vil-spise-brodet","hun-vil-spise-fisken-men-hun-kan-ikke","hunden-er-god","hunden-er-stor","hunden-finner-et-fly","hunden-har-ikke-katten","hunden-har-ikke-kvinnen","hunden-kjoper-ikke-brodet","hunden-ser-et-brod","hunden-ser-ikke-katten","hunden-tar-ikke-boka","huset","huset-er-gammelt","huset-er-godt","huset-er-til-hoyre","huset-er-til-venstre","hva","hva-betaler-jeg","hva-drikker-du","hva-drikker-hun","hva-finner-han","hva-finner-jeg","hva-finner-vi","hva-gjor-vi","hva-har-jeg","hva-heter-han","hva-kjoper-hun","hva-kjoper-vi","hva-lukker-de","hva-ser-vi","hva-sier-de","hva-sier-du","hva-trenger-jeg","hvor","hvor-er-barnet","hvor-er-boka","hvor-er-brodet","hvor-er-dagen","hvor-er-hotellet","hvor-er-hunden","hvor-er-huset","hvor-er-mannen","hvor-er-pengene","hvor-er-tiden","hvor-er-vannet","hvor-mye","hvor-mye-koster-bilen","hvor-mye-koster-brodet","hvor-mye-koster-det","hvor-mye-koster-egget","hvor-mye-koster-hunden","hvor-mye-koster-huset","hvor-mye-koster-katten","i","i-dag","i-dag-reiser-vi","i-natt-ser-hun-tingen","i-natt-tar-de-toget","i-natt-trenger-han-bilen","ja-jeg-har-en-bil","ja-jeg-har-en-billett","ja-jeg-har-en-bok","ja-jeg-har-et-eple","ja-jeg-har-et-hus","ja-takk","jeg-betaler-bilen-og-spiser-osten","jeg-betaler-ikke-maten","jeg-bor-der","jeg-drikker-melken-og-ser-billetten","jeg-drikker-vannet-og-spiser-fisken","jeg-er","jeg-er-i-toget","jeg-er-pa-gaten","jeg-finner-billetten-og-lukker-boka","jeg-forstar-ikke-snakker-du-engelsk","jeg-gar-der","jeg-gar-ikke-i-dag-beklager","jeg-har-bilen-og-spiser-brodet","jeg-har-billetten-og-kjoper-bilen","jeg-har-brodet","jeg-har-et-godt-hus","jeg-har-huset","jeg-har-ikke-brodet","jeg-hjelper-deg","jeg-horer-et-gammelt-fly","jeg-horer-hunden-og-lukker-bilen","jeg-kjoper-bilen-men-du-drikker-ikke-vannet","jeg-kjoper-boka-men-de-drikker-ikke-vannet","jeg-kjoper-boka-men-du-spiser-ikke-osten","jeg-kjoper-fisker","jeg-kjoper-huset","jeg-kommer-ikke-na-beklager","jeg-liker-fisk","jeg-liker-fisken","jeg-liker-hunden","jeg-reiser-til-huset","jeg-ser-biler","jeg-ser-boka-men-de-drikker-ikke-melken","jeg-ser-ikke-tingen","jeg-snakker-engelsk","jeg-snakker-ikke","jeg-snakker-ikke-norsk-snakker-du-engelsk","jeg-snakker-norsk","jeg-spiser-en-gammel-fisk","jeg-spiser-ikke-brodet","jeg-tar-flyet","jeg-trenger-ikke-maten","jeg-vet-ikke","jeg-vet-ikke-hvor-billetten-er","jeg-vet-ikke-hvor-egget-er","jeg-vet-ikke-hvor-toalettet-er","jeg-vil-betale-takk","jeg-vil-forsta-boka-men-jeg-kan-ikke","jeg-vil-ha-brodet","jeg-vil-ha-denne","jeg-vil-ha-en-billett-vaer-sa-snill","jeg-vil-ha-et-brod-vaer-sa-snill","jeg-vil-ha-et-egg-vaer-sa-snill","jeg-vil-ha-et-eple-vaer-sa-snill","jeg-vil-ha-kvinnen","jeg-vil-ha-mannen","jeg-vil-ha-vannet-vaer-sa-snill","jeg-vil-ikke-ha-mannen","jeg-vil-ikke-se-brodet","jeg-vil-ikke-se-katten","jeg-vil-kjope-boka-men-jeg-kan-ikke","jeg-vil-kjope-en-ting","jeg-vil-kjope-tingen-men-jeg-kan-ikke","jeg-vil-ta-boka","kald","kan","kan-du-hjelpe-meg-vaer-sa-snill","kan-han-forsta-meg","kan-han-hore-deg","kan-hun-se-meg","kan-jeg-kjope-en-bil","kan-jeg-kjope-en-billett","kan-jeg-kjope-en-hund","kan-jeg-kjope-en-katt","kan-jeg-kjope-en-ost","kan-jeg-kjope-et-egg","kan-jeg-kjope-et-eple","kan-jeg-kjope-et-hus","katt","katten-betaler-en-billett","katten-bor-her","katten-gar-i-natt","katten-har-ikke-eplet","katten-har-ikke-flyet","katten-horer-kvinnen","katten-kjoper-et-brod","katten-reiser-i-natt","katter","kjop-en-billett","kjoper","kjoper-vi-bilen","kjoper-vi-boka","kjott","kommer-de","kommer-du","kommer-han","koster","kvinne","kvinnen-betaler-en-billett","kvinnen-er-stor","kvinnen-finner-et-eple","kvinnen-gar-na","kvinnen-har-en-bil","kvinnen-har-en-mann","kvinnen-har-en-ting","kvinnen-har-huset","kvinnen-har-ikke-brodet","kvinnen-har-ikke-huset","kvinnen-kjoper-fisken","kvinnen-kommer-i-dag","kvinnen-kommer-na","kvinnen-spiser-et-brod","liker","liten","ma","mann","mannen","mannen-bor-der","mannen-er-god","mannen-er-stor","mannen-har-brodet","mannen-har-en-bil","mannen-har-en-billett","mannen-har-et-brod","mannen-har-et-hus","mannen-har-ikke-brodet","mannen-spiser-et-brod","mannen-tar-en-bok","mannen-trenger-brodet","meg","melk","men","mye","na","na-apner-vi-bilen","na-kjoper-han-billetten","na-lukker-du-oyet","na-ser-hun-boka","nar-gar-barnet","nar-gar-flyet","nar-kommer-bilen","nar-kommer-katten","nar-kommer-mannen","nar-reiser-barnet","nar-reiser-katten","nar-reiser-mannen","nar-reiser-toget","nei","nei-jeg-har-ikke-en-billett","nei-jeg-har-ikke-en-bok","nei-jeg-har-ikke-et-brod","nei-jeg-har-ikke-et-eple","nei-jeg-har-ikke-et-hus","og","ost","osten-er-stor","oyet-er-varmt","pa","pengene-er-stor","reiser-du","reiser-han","reiser-jeg","se-billetten","se-brodet","se-byen","se-her","se-hunden","se-huset","ser","ser-vi-bilen","ser-vi-boka","snakker","snakker-du","snakker-du-engelsk","snakker-jeg","snakker-vi","space-mono","spiser-de-brodet","spiser-du-brodet","spiser-han-brodet","stor","ta-billetten","ta-toget","takk-for-boka","takk-for-eplet","takk-for-maten","tar","tar-de-toget","tar-jeg-toget","til","ting","tingen-er-stor","toalettet-er-til-venstre","tog","toget","toget-er-til-venstre","toget-gar-na","toget-kommer","tusen-takk","unnskyld","unnskyld-hva-er-dette","unnskyld-hvor-er-byen","unnskyld-hvor-er-egget","unnskyld-hvor-er-flyet","unnskyld-hvor-er-kvinnen","unnskyld-hvor-er-maten","unnskyld-hvor-er-osten","vaer-sa-god-her-er-billetten","vaer-sa-god-her-er-boka","vaer-sa-god-her-er-eplet","vaer-sa-snill","vann","vannet-er-godt","vet","vi","vi-apner-et-hus","vi-drikker-melken-men-jeg-kjoper-ikke-boka","vi-drikker-vannet-men-han-ser-ikke-bilen","vi-drikker-vannet-og-har-boka","vi-er","vi-er-i-huset","vi-finner-en-kald-ost","vi-forstar-kvinnen-og-kjoper-bilen","vi-gar-her","vi-gar-ikke-i-dag-beklager","vi-gir-deg-pengene","vi-gir-meg-eplet","vi-gir-meg-pengene","vi-har-toget","vi-horer-et-tog","vi-horer-hunden-og-ser-boka","vi-kjoper-biler","vi-kjoper-boka-men-hun-drikker-ikke-melken","vi-kjoper-en-bil","vi-kjoper-ikke-brodet","vi-kjoper-ikke-egget","vi-kommer-ikke-i-natt-beklager","vi-liker-egget","vi-liker-huset","vi-liker-kjottet","vi-reiser-i-dag","vi-reiser-ikke-i-dag-beklager","vi-reiser-ikke-i-natt-beklager","vi-reiser-til-huset","vi-ser-boka-men-de-spiser-ikke-fisken","vi-ser-brodet","vi-ser-katter","vi-snakker-ikke","vi-snakker-ikke-engelsk","vi-tar-toget-og-apner-boka","vi-trenger-tiden","vi-vil-ha-boka","vi-vil-ha-kjottet-vaer-sa-snill","vi-vil-ha-maten-vaer-sa-snill","vi-vil-ha-melken-vaer-sa-snill","vi-vil-se-bilen-men-vi-kan-ikke","vi-vil-trenge-bilen-men-vi-kan-ikke","vil","vil-du-ha-bilen-eller-eplet","vil-du-ha-bilen-eller-fisken","vil-du-ha-bilen-eller-vannet","vil-du-ha-boka-eller-fisken","vil-du-ha-boka-eller-kjottet","vil-du-ha-boka-eller-melken","vil-du-ha-brodet-eller-egget","vil-du-ha-brodet-eller-eplet","vil-du-ha-brodet-eller-fisken","vil-du-ha-eplet-eller-vannet","vil-du-ha-fisken-eller-osten","vil-du-ha-kjottet-eller-osten"];
+
 /* =====================  UTILIDADES  ===================== */
 const $ = s => document.querySelector(s);
 const rnd = a => a[Math.floor(Math.random()*a.length)];
@@ -1889,7 +1893,7 @@ function slug(t){
 }
 const audioCache = {};
 let autoSound = true, curAudio = null, lastSay = {k:'',t:0};
-function say(text, btn, slow){
+function say(text, btn, slow, voz){
   if(!text) return;
   // si la misma palabra se pide dos veces seguidas, ignorar la segunda
   const now = Date.now();
@@ -1900,13 +1904,20 @@ function say(text, btn, slow){
   document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
   // la versión lenta es una grabación aparte, con pausa entre palabras:
   // estirar la normal no ayuda a segmentar, y eso es lo que cuesta entender
-  const key = slug(text) + (slow ? '-lento' : '');
+  const base = slug(text);
+  // voz 1 = Google si está bajada; voz 2 = la grabación propia de Piper.
+  // La lenta con pausas solo existe en Piper.
+  const g1 = (voz !== 2) && !slow && googleKeys().has(base);
+  const key = g1 ? base + '-g' : base + (slow ? '-lento' : '');
   let a = audioCache[key];
   if(!a){ a = new Audio('audio/'+key+'.mp3'); a.preload='auto'; audioCache[key]=a; }
   curAudio = a;
   if(btn){ btn.classList.add('playing'); a.onended = a.onpause = ()=>btn.classList.remove('playing'); }
   a.currentTime = 0;
   a.defaultPlaybackRate = 1; a.playbackRate = 1;
+  if(g1){
+    a.onerror = ()=>{ delete audioCache[key]; say(text, btn, false, 2); };
+  }
   if(slow){
     // si faltara la grabación lenta, se estira la normal como respaldo
     a.onerror = ()=>{
@@ -1932,6 +1943,11 @@ function say(text, btn, slow){
 function autoSay(text){ if(autoSound) say(text); }
 
 // qué grabaciones existen realmente
+let GOOGLE_KEYS = null;
+function googleKeys(){
+  if(!GOOGLE_KEYS) GOOGLE_KEYS = new Set(GOOGLE_LISTO);
+  return GOOGLE_KEYS;
+}
 let AUDIO_KEYS = null;
 function audioKeys(){
   if(!AUDIO_KEYS) AUDIO_KEYS = new Set([...W.map(w=>w.no), ...SENT.map(s=>s.no), ...SND.map(s=>s[0])].map(slug));
@@ -1986,39 +2002,11 @@ function playSeq(tokens, btn){
 }
 const ICON = '<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M0 0l12 7-12 7z"/></svg>';
 const ICON_SLOW = '<span style="font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:-.02em">½×</span>';
-// segunda voz, a pedido: se llama a Google solo cuando el usuario toca la G
-function googleBtn(text){
-  return `<button class="say mid g" data-google="${esc(text)}" title="Escuchar con la voz de Google" `+
-         `aria-label="Escuchar ${esc(text)} con la voz de Google">G</button>`;
-}
-function sayGoogle(text, btn){
-  if(!text) return;
-  if(curAudio){ curAudio.pause(); curAudio.currentTime = 0; }
-  document.querySelectorAll('.say.playing').forEach(b=>b.classList.remove('playing'));
-  if(btn) btn.classList.add('playing');
-  const fin  = ()=>{ if(btn) btn.classList.remove('playing'); };
-  const caer = ()=>{ fin(); say(text, btn); };   // último recurso: la voz propia
-  // 1) copia local de la voz de Google, si ya está bajada
-  const local = new Audio('audio/'+slug(text)+'-g.mp3');
-  local.onended = fin;
-  local.onerror = ()=>{
-    // 2) si no está, se le pide a Google en vivo
-    const remoto = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=no&q='+encodeURIComponent(text));
-    curAudio = remoto; remoto.onended = fin; remoto.onerror = caer;
-    remoto.play().catch(caer);
-  };
-  curAudio = local;
-  local.play().catch(()=>{});
-}
-function playBtn(text, cls, slow){
-  return `<button class="say ${cls||''}" data-say="${esc(text)}"${slow?' data-slow="1"':''} `+
-         `aria-label="Escuchar ${esc(text)}${slow?' despacio':''}">${slow?ICON_SLOW:ICON}</button>`;
-}
+const ICON_1 = ICON + '<i class="vz">1</i>';
+const ICON_2 = ICON + '<i class="vz">2</i>';
 document.addEventListener('click', e=>{
-  const g = e.target.closest('[data-google]');
-  if(g){ e.stopPropagation(); sayGoogle(g.dataset.google, g); return; }
   const b = e.target.closest('[data-say]');
-  if(b){ e.stopPropagation(); say(b.dataset.say, b, b.hasAttribute('data-slow')); }
+  if(b){ e.stopPropagation(); say(b.dataset.say, b, b.hasAttribute('data-slow'), +b.dataset.voz || 0); }
 });
 $('#snd-toggle').onclick = e=>{
   autoSound = !autoSound;
@@ -2375,7 +2363,7 @@ function soundSentence(){
   soundLock = false;
   $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
   $('#sound-q').innerHTML = `<span class="tag">escuchá la frase</span>`+
-    `<div class="say-row">${googleBtn(s[0])}${playBtn(s[0],'big')}${playBtn(s[0],'mid',true)}</div>`+
+    `<div class="say-row">${playBtn(s[0],'mid',false,2)}${playBtn(s[0],'big',false,1)}${playBtn(s[0],'mid',true)}</div>`+
     `<div id="sound-pron" class="heard" style="margin-top:14px;font-size:clamp(19px,4.4vw,26px);min-height:30px"></div>`+
     `<button class="btn ghost" id="sound-peek" style="margin-top:6px;font-size:13px;padding:7px 14px">Ver cómo se escribe</button>`;
   $('#sound-peek').onclick = e=>{ $('#sound-pron').textContent = s[0]; e.currentTarget.remove(); };
@@ -2409,7 +2397,7 @@ function soundNew(){
   soundW=pick('sound'); soundLock=false;
   $('#sound-fb').textContent=''; $('#sound-fb').className='fb';
   $('#sound-q').innerHTML=`<span class="tag">escuchá</span>`+
-    `<div class="say-row">${googleBtn(soundW.no)}${playBtn(soundW.no,'big')}${playBtn(soundW.no,'mid',true)}</div>`+
+    `<div class="say-row">${playBtn(soundW.no,'mid',false,2)}${playBtn(soundW.no,'big',false,1)}${playBtn(soundW.no,'mid',true)}</div>`+
     `<div id="sound-pron" class="pron" style="margin-top:14px;font-size:clamp(20px,5vw,32px);min-height:34px"></div>`+
     `<button class="btn ghost" id="sound-peek" style="margin-top:6px;font-size:13px;padding:7px 14px">Ver cómo suena escrito</button>`;
   $('#sound-peek').onclick=e=>{
