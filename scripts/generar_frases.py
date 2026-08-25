@@ -102,6 +102,7 @@ ADJ = [("ny","nytt","nuevo","nueva"),("god","godt","bueno","buena"),("stor","sto
 ADV = [("i dag","hoy",2),("i natt","esta noche",3),("nå","ahora",2),("her","acá",2),("der","allá",2)]
 LG  = [("norsk","noruego"),("engelsk","inglés")]
 CUERPO = {"hånd","fot","øye","munn"}
+SOLO_PLURAL = {"penger"}          # no tiene singular: ni artículo ni adjetivo en singular
 NO_TAM  = {"dag","natt","år","melk","vann","kjøtt"}
 NO_TEMP = ANIM | {"år","bok","billett","ting","by","gate","fly","tog","toalett","hotell"}
 COMIDA_N = {"melk","vann","kjøtt","brød","ost","fisk","egg","eple"}
@@ -188,7 +189,7 @@ def generar(vocab):
 
     # ---------- adjetivo predicativo ----------
     for n in nombres:
-        if n[0] in CUERPO and False: continue
+        if n[0] in SOLO_PLURAL: continue
         for a in adjs:
             if a[0] in ("stor","liten") and n[0] in NO_TAM: continue
             if a[0] in ("varm","kald") and n[0] in NO_TEMP: continue
@@ -352,7 +353,7 @@ def generar(vocab):
     for op,cl,fuerte in OBJ_PERS:
         if op not in vocab: continue
         for pi,(pno,pes) in enumerate(P):
-            if (pno,op) in (("jeg","meg"),("du","deg")): continue
+            if (pno,op) in (("jeg","meg"),("vi","meg"),("du","deg")): continue
             for v,es3 in (("ser","ve"),("hører","oye"),("hjelper","ayuda"),("forstår","entiende")):
                 if v not in vocab: continue
                 conj = {"ser":["veo","ves","ve","ve","vemos","ven"],
@@ -366,7 +367,7 @@ def generar(vocab):
                     add(f"kan {pno} {inf} {op}?", f"¿{pes} {cl} {MOD['kan'][pi]} {infes}?", 30)
         if "gir" in vocab:
             for pi,(pno,pes) in enumerate(P):
-                if (pno,op) in (("jeg","meg"),("du","deg")): continue
+                if (pno,op) in (("jeg","meg"),("vi","meg"),("du","deg")): continue
                 for o in ("bok","billett","eple","penger","melk"):
                     if o not in vocab: continue
                     d = ["doy","das","da","da","damos","dan"][pi]
@@ -478,6 +479,7 @@ def generar(vocab):
                         f"{pes} {esf[pi]} {art_es} {n[4].split(' ',1)[1]} {ades}", 43)
     # atributivo con demostrativo: la forma en -e
     for n in nombres:
+        if n[0] in SOLO_PLURAL: continue
         dem = "denne" if n[1]=="en" else "dette"
         if dem not in vocab: continue
         for a in adjs:
