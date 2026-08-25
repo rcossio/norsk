@@ -6,7 +6,7 @@ castellano.
 
 **En vivo:** https://rcossio.github.io/norsk/
 
-120 palabras en tres niveles · 1050 frases generadas · 1086 grabaciones · 10 juegos.
+170 palabras en cuatro niveles · 1450 frases generadas · 4401 grabaciones · 10 juegos.
 Un solo archivo HTML, sin dependencias, sin build, sin servidor.
 
 El detalle de **por qué la app es como es**, con el listado de decisiones y de las
@@ -66,8 +66,9 @@ palabras, frases, señuelos de opción múltiple, categorías y la lista.
 | 1 | 25 | 150 | 17 |
 | 2 | 61 | 450 | 36 |
 | 3 | 120 | 1050 | 50 |
+| 4 | 170 | 1450 | 61 |
 
-Reglas por nivel: 6, 13 y 22 acumuladas.
+Reglas por nivel: 6, 13, 22 y 26 acumuladas.
 
 Criterios de corte:
 
@@ -219,9 +220,6 @@ scripts/generar_audio.py    síntesis con Piper y control de calidad
 
 ## Pendiente
 
-- **Pasado** (*var* es la palabra 24 en frecuencia y no está) y **posesivos**
-  (*min*, *din*, con la particularidad de que el noruego los pone detrás:
-  *bilen min*). Son los dos huecos gramaticales más grandes que quedan.
-- Niveles 250 y 500, que exigen escribir unas 380 anclas nuevas a mano.
+- Niveles 250 y 400, que exigen escribir unas 230 anclas nuevas a mano.
 - Diálogo de dos turnos, única forma natural de practicar *tusen takk* y
   *vær så god*.

@@ -7,8 +7,8 @@ este explica el origen de cada uno.
 
 | | |
 |---|---|
-| Vocabulario | 120 palabras, tres niveles anidados (25 / 61 / 120) |
-| Frases | 1050 generadas, 50 plantillas, tope de 10% por plantilla |
+| Vocabulario | 170 palabras, cuatro niveles anidados (25 / 61 / 120 / 170) |
+| Frases | 1450 generadas, 61 plantillas, tope de 10% por plantilla |
 | Audio | 3301 mp3: Piper normal y lento, más la voz de Google, 41 MB |
 | Juegos | 10, más Reglas y la Lista |
 | Dependencias | ninguna; un archivo HTML |
@@ -120,6 +120,8 @@ las documenta como trabajo manual y no automatizable.
 56. Segunda voz de Google, bajada en cinco etapas para verificar que no bloquee → 1128 archivos, 0 fallos. Después, a pedido, Google pasa a voz principal (▶₁) y Piper a segunda (▶₂).
 57. ⚑ "El orden de la Lista desapareció y yo no lo pedí" → cierto: un borrado por rango se llevó el selector, y el JS huérfano cortaba la ejecución del script entero. El mismo error había borrado antes `playBtn`. Se restauran, `$()` se blinda y se agrega un simulador de DOM que corre el script completo, porque `node --check` solo valida sintaxis.
 58. Poder escuchar la propia grabación en Hablá, sin que quede guardada → se intentó con MediaRecorder en paralelo al reconocimiento. **No funcionó**: en Android los dos consumidores del micrófono se pisan y el reconocedor aborta sin avisar. Serializar la toma del micrófono tampoco alcanzó. Revertido a pedido del usuario; queda pendiente hasta tener el error de consola.
+
+59. Escalón de 50 palabras → nivel 4 (170). El tamaño se eligió por el cuello de botella real, que son las anclas escritas a mano. Composición pensada para desbloquear estructura, no vocabulario suelto: **pasado** (var, hadde), **posesivos** (min, din, que van detrás del sustantivo), subordinantes (at, som, hvis, fordi), preguntas (hvordan, hvorfor, hvem) y cuantificadores (mange, veldig, litt, to, tre).
 
 ### Documentación
 
