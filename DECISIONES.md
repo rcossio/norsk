@@ -7,10 +7,10 @@ este explica el origen de cada uno.
 
 | | |
 |---|---|
-| Vocabulario | 170 palabras, cuatro niveles anidados (25 / 61 / 120 / 170) |
+| Vocabulario | 226 palabras, cinco niveles anidados (25 / 61 / 120 / 170 / 226) |
 | Conversaciones | 121 escritas a mano (40 / 41 / 40 en los niveles 2, 3 y 4) |
 | Frases | 741, derivadas de las líneas de las conversaciones; el nivel 1 conserva 150 generadas |
-| Audio | 3201 mp3 sobre 1067 textos: Piper normal y lenta, más la voz de Google, 35 MB |
+| Audio | 3363 mp3 sobre 1121 textos: Piper normal y lenta, más la voz de Google, 36 MB |
 | Juegos | 11, más Reglas y la Lista |
 | Dependencias | ninguna; un archivo HTML |
 | Persistencia | ninguna; el nivel viaja en el hash de la URL |
@@ -19,7 +19,7 @@ este explica el origen de cada uno.
 **Funciona:** todo lo listado, verificado en producción.
 **Sabido y aceptado:** el contador de práctica se pierde al recargar; los endpoints
 de Google no son oficiales y pueden caerse (hay respaldo local).
-**Pendiente:** niveles 250/500, conversaciones para el nivel 1.
+**Pendiente:** frases para el nivel 5, nivel 400, conversaciones para el nivel 1.
 
 ---
 
@@ -161,6 +161,38 @@ las documenta como trabajo manual y no automatizable.
     *alltid*, *hjemme*, *selvfølgelig*). Se escribe un validador que replica en
     Python el reductor de flexiones de la app y se itera hasta cero. La lección es la
     de siempre acá: si no se midió, no está verificado.
+
+### El top-200 de frecuencia
+
+65. Pregunta por una lista oficial noruega de 350 palabras básicas → **no existe**.
+    Lo único con ese número es Malimo, una editorial privada. HK-dir dice explícito
+    que la Norskprøven no tiene temario, y el *Læreplan* define A1 por lo que el
+    alumno puede hacer, no por qué palabras sabe. A diferencia del alemán, que sí
+    tiene la *Wortliste* del Goethe-Institut, en noruego ese objeto no está. Queda
+    `wordfreq` como criterio, que es el que ya se usaba.
+
+66. "Agregá las palabras para llegar a un wordfreq de 200, pero para todo lo que no
+    incluya frases" → **56 entradas nuevas, nivel 5, total 226**. El vocabulario
+    cubría 118 de las 200; 21 de las que faltaban eran otra forma de una que ya
+    estaba (*ble*, *vært*, *fikk*, *dem*, *bedre*) y 7 eran ruido (cifras, *Norge*,
+    *Oslo*).
+
+    **El nivel suma palabras y no suma frases, a pedido.** Es la primera vez que un
+    nivel de la app hace eso, y hay que decirlo en pantalla o parece un bug: el
+    selector muestra una nota cuando estás en 226.
+
+67. ⚑ El validador propio daba por cubiertas tres palabras que no lo estaban: *så*
+    (lo reducía al pasado de *se*), *enn* (le sacaba la n final y daba *en*) y
+    *mener* (le sacaba *-er* y daba *men*). El reductor de flexiones acierta el
+    99.8% de los tokens del corpus pero produce falsos positivos justo donde una
+    palabra corta se parece a otra. Se detectaron comparando contra el top-200 por
+    string exacto, no por resolución.
+
+68. Cuatro pares quedaron homófonos: **og/å** (idénticos: la trampa ortográfica
+    número uno del noruego nativo), *man/mann*, *for/får*, *hus/hos*. En Sonido eso
+    haría preguntas sin respuesta posible, así que dos palabras con la misma
+    escritura fonética ya no pueden ser señuelo una de otra. El par se documenta en
+    el campo `sil`, que para eso está.
 
 ### Documentación
 
