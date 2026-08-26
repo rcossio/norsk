@@ -6,7 +6,7 @@ castellano.
 
 **En vivo:** https://rcossio.github.io/norsk/
 
-170 palabras en cuatro niveles · 1450 frases generadas · 4401 grabaciones · 10 juegos.
+170 palabras en cuatro niveles · 1450 frases generadas · 4401 grabaciones · 11 juegos.
 Un solo archivo HTML, sin dependencias, sin build, sin servidor.
 
 El detalle de **por qué la app es como es**, con el listado de decisiones y de las
@@ -121,6 +121,23 @@ lugar y movimiento con *i / på / til / fra / med*, presentativo con *det er*, y
 - ***gustar* invierte el sujeto**: *Jeg liker fisken* → "a mí me gusta el pescado",
   y hay que decir "a él" / "a ella" o *han* y *hun* darían traducciones idénticas.
 - **Movimiento pide *hit/dit*, no *her/der***: *kommer her* no existe.
+
+## Dúo
+
+Conversaciones orquestadas para dos personas y un solo teléfono. El chat se apila
+arriba, el turno actual abajo con su traducción al castellano siempre a la vista,
+audio en las dos voces y la versión lenta.
+
+No hay opciones que elegir: cada turno se desbloquea **diciendo la línea en voz
+alta**. El reconocedor compara lo escuchado con lo esperado y basta con acertar el
+**80% de las palabras**, así que la pronunciación imperfecta no traba el juego.
+Siempre hay un botón para seguir sin hablar, por si el micrófono no está disponible.
+
+Las 61 conversaciones salen de `scripts/generar_dialogos.py`: doce esqueletos
+escritos a mano, coherentes de punta a punta, instanciados con huecos (la bebida, el
+objeto, el lugar). Generar turnos sueltos por plantilla habría dado frases correctas
+pero conversaciones sin sentido. El nivel de cada conversación es el máximo de sus
+líneas, y se descartan las que usen una palabra fuera del vocabulario.
 
 ## Reglas
 

@@ -38,7 +38,8 @@ def textos():
     ejemplos = []
     for m in re.finditer(r'ej:\[([^\]]*)\]', html):
         ejemplos += re.findall(r'"([^"]+)"', m.group(1))
-    return palabras + frases + ejemplos
+    dialogos = re.findall(r'\["[AB]","([^"]+)","[^"]*"\]', html)
+    return palabras + frases + ejemplos + dialogos
 
 def main():
     voz = PiperVoice.load(VOZ, config_path=VOZ + ".json")

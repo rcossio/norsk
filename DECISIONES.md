@@ -10,7 +10,7 @@ este explica el origen de cada uno.
 | Vocabulario | 170 palabras, cuatro niveles anidados (25 / 61 / 120 / 170) |
 | Frases | 1450 generadas, 61 plantillas, tope de 10% por plantilla |
 | Audio | 3301 mp3: Piper normal y lento, más la voz de Google, 41 MB |
-| Juegos | 10, más Reglas y la Lista |
+| Juegos | 11, más Reglas y la Lista |
 | Dependencias | ninguna; un archivo HTML |
 | Persistencia | ninguna; el nivel viaja en el hash de la URL |
 | Externo | solo la pestaña Hablá (voz del navegador + Google) |
@@ -122,6 +122,8 @@ las documenta como trabajo manual y no automatizable.
 58. Poder escuchar la propia grabación en Hablá, sin que quede guardada → se intentó con MediaRecorder en paralelo al reconocimiento. **No funcionó**: en Android los dos consumidores del micrófono se pisan y el reconocedor aborta sin avisar. Serializar la toma del micrófono tampoco alcanzó. Revertido a pedido del usuario; queda pendiente hasta tener el error de consola.
 
 59. Escalón de 50 palabras → nivel 4 (170). El tamaño se eligió por el cuello de botella real, que son las anclas escritas a mano. Composición pensada para desbloquear estructura, no vocabulario suelto: **pasado** (var, hadde), **posesivos** (min, din, que van detrás del sustantivo), subordinantes (at, som, hvis, fordi), preguntas (hvordan, hvorfor, hvem) y cuantificadores (mange, veldig, litt, to, tre).
+
+60. Actividad para aprender de a dos en un solo teléfono → **Dúo**. Se descartó la versión con tres opciones por turno: 50 conversaciones ramificadas son incombinables a mano. Queda una conversación orquestada de 20 mensajes que avanza por reconocimiento de voz con umbral del 80%.
 
 ### Documentación
 
