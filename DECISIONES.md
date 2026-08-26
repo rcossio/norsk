@@ -8,8 +8,9 @@ este explica el origen de cada uno.
 | | |
 |---|---|
 | Vocabulario | 170 palabras, cuatro niveles anidados (25 / 61 / 120 / 170) |
-| Frases | 1450 generadas, 61 plantillas, tope de 10% por plantilla |
-| Audio | 3301 mp3: Piper normal y lento, más la voz de Google, 41 MB |
+| Conversaciones | 121 escritas a mano (40 / 41 / 40 en los niveles 2, 3 y 4) |
+| Frases | 741, derivadas de las líneas de las conversaciones; el nivel 1 conserva 150 generadas |
+| Audio | 3201 mp3 sobre 1067 textos: Piper normal y lenta, más la voz de Google, 35 MB |
 | Juegos | 11, más Reglas y la Lista |
 | Dependencias | ninguna; un archivo HTML |
 | Persistencia | ninguna; el nivel viaja en el hash de la URL |
@@ -18,7 +19,7 @@ este explica el origen de cada uno.
 **Funciona:** todo lo listado, verificado en producción.
 **Sabido y aceptado:** el contador de práctica se pierde al recargar; los endpoints
 de Google no son oficiales y pueden caerse (hay respaldo local).
-**Pendiente:** pasado, posesivos, niveles 250/500, diálogo de dos turnos.
+**Pendiente:** niveles 250/500, conversaciones para el nivel 1.
 
 ---
 
@@ -124,6 +125,42 @@ las documenta como trabajo manual y no automatizable.
 59. Escalón de 50 palabras → nivel 4 (170). El tamaño se eligió por el cuello de botella real, que son las anclas escritas a mano. Composición pensada para desbloquear estructura, no vocabulario suelto: **pasado** (var, hadde), **posesivos** (min, din, que van detrás del sustantivo), subordinantes (at, som, hvis, fordi), preguntas (hvordan, hvorfor, hvem) y cuantificadores (mange, veldig, litt, to, tre).
 
 60. Actividad para aprender de a dos en un solo teléfono → **Dúo**. Se descartó la versión con tres opciones por turno: 50 conversaciones ramificadas son incombinables a mano. Queda una conversación orquestada de 20 mensajes que avanza por reconocimiento de voz con umbral del 80%.
+
+### Conversaciones escritas a mano
+
+61. ⚑ "Las conversaciones las hizo un script y no tienen ni cerca el poder de un
+    LLM" → cierto y medible: las 61 salían de doce esqueletos con huecos, así que
+    había doce formas repetidas sesenta veces, todas de pregunta y respuesta y casi
+    todas terminadas en *ha det*. Se reemplazan por **121 escritas una por una**, de
+    ocho a diez turnos, con desacuerdos, insistencias y finales que no son despedida.
+    `scripts/generar_dialogos.py` se borra: dejarlo sería afirmar que las
+    conversaciones son reproducibles desde él, y no lo son.
+
+62. **La optimización de audio, pedida junto con lo anterior**: en vez de mantener
+    un corpus de frases y otro de diálogos, las líneas de las conversaciones **son**
+    las frases del juego Sonido. Una grabación sirve para las dos cosas y las líneas
+    repetidas entre conversaciones comparten archivo. El corpus baja de 1450 frases a
+    741, los textos grabados de 1757 a 1067 y el audio de 41 MB a 35.
+
+    Lo que costó la derivación no fue el volumen sino tres detalles que la rompían:
+    las líneas de una o dos palabras ("Ja", "Nå?") no sirven como opción múltiple
+    y se descartan; dos frases distintas no pueden compartir traducción castellana
+    dentro de un nivel; y los señuelos necesitan una **familia estructural** que
+    reemplace a la plantilla que antes venía del generador, porque si salen al azar
+    la respuesta se adivina por la forma sin escuchar.
+
+63. **El nivel 1 no tiene conversaciones y Dúo queda deshabilitado abajo de 60.**
+    Con 25 palabras no hay preposiciones, ni cortesía, ni pronombres de objeto: sale
+    un ejercicio, no una conversación. El respaldo que hacía caer al nivel 2 se saca,
+    porque contradecía el cartel de la propia pantalla. Las 150 frases generadas del
+    nivel 1 se conservan: sin ellas, Sonido se queda sin submodo de frases.
+
+64. Escribir a mano 983 líneas trae de vuelta el problema que las plantillas
+    evitaban: **el modelo inventa palabras que suenan bien y no están en la lista**.
+    En la primera pasada, 40 de 118 líneas usaban vocabulario de afuera (*da*, *bra*,
+    *alltid*, *hjemme*, *selvfølgelig*). Se escribe un validador que replica en
+    Python el reductor de flexiones de la app y se itera hasta cero. La lección es la
+    de siempre acá: si no se midió, no está verificado.
 
 ### Documentación
 

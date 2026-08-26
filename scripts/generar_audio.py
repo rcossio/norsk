@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Sintetiza un mp3 por palabra y por frase con Piper, y borra los huérfanos.
+"""Sintetiza un mp3 por palabra, por frase y por línea de diálogo, y borra los huérfanos.
 
 Uso:  python3 scripts/generar_audio.py
 Requiere: pip install piper-tts, ffmpeg, y el modelo no_NO-talesyntese-medium.
+
+De cada texto salen dos tomas: la normal y una `-lento` sintetizada aparte, con
+comas entre palabras (Piper las convierte en pausas reales). Estirar la normal no
+sirve: lo que cuesta al escuchar es segmentar, no la velocidad.
 
 Criterios de calidad aplicados a cada toma:
   - se rechaza y se vuelve a sintetizar si hay un silencio interno > 0.30 s
@@ -12,7 +16,7 @@ Criterios de calidad aplicados a cada toma:
 """
 import json, os, re, subprocess, sys, wave
 import numpy as np
-from piper import PiperVoice
+from piper import PiperVoice, SynthesisConfig
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VOZ  = os.environ.get("PIPER_VOICE", "voices/no.onnx")
@@ -39,7 +43,18 @@ def textos():
     for m in re.finditer(r'ej:\[([^\]]*)\]', html):
         ejemplos += re.findall(r'"([^"]+)"', m.group(1))
     dialogos = re.findall(r'\["[AB]","([^"]+)","[^"]*"\]', html)
-    return palabras + frases + ejemplos + dialogos
+    vistos, limpio = set(), []
+    for t in palabras + frases + ejemplos + dialogos:
+        if slug(t) in vistos: continue
+        vistos.add(slug(t)); limpio.append(t)
+    return limpio
+
+FILTRO = ("silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.05,"
+          "areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.25,areverse")
+
+def codifica(wav, salida):
+    subprocess.run(["ffmpeg","-y","-loglevel","error","-i",wav,"-af",FILTRO,
+        "-ac","1","-ar","22050","-codec:a","libmp3lame","-b:a","48k", salida], check=True)
 
 def main():
     voz = PiperVoice.load(VOZ, config_path=VOZ + ".json")
@@ -47,18 +62,24 @@ def main():
     os.makedirs(destino, exist_ok=True)
     usados, nuevos = set(), 0
     for t in textos():
-        s = slug(t); usados.add(s)
+        s = slug(t)
+        usados.update([s, s + "-lento", s + "-g"])   # la voz de Google la baja voz_google.py
         out = os.path.join(destino, s + ".mp3")
-        if os.path.exists(out): continue
-        for _ in range(6):
-            with wave.open("/tmp/_p.wav","wb") as f: voz.synthesize_wav(t, f)
-            neto, hueco = perfil("/tmp/_p.wav")
-            if hueco <= 0.40 and neto > 0.15: break
-        subprocess.run(["ffmpeg","-y","-loglevel","error","-i","/tmp/_p.wav","-af",
-            "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.05,"
-            "areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.25,areverse",
-            "-ac","1","-ar","22050","-codec:a","libmp3lame","-b:a","48k", out], check=True)
-        nuevos += 1
+        if not os.path.exists(out):
+            for _ in range(6):
+                with wave.open("/tmp/_p.wav","wb") as f: voz.synthesize_wav(t, f)
+                neto, hueco = perfil("/tmp/_p.wav")
+                if hueco <= 0.40 and neto > 0.15: break
+            codifica("/tmp/_p.wav", out)
+            nuevos += 1
+        lento = os.path.join(destino, s + "-lento.mp3")
+        if not os.path.exists(lento):
+            pal = t.split()
+            texto = ", ".join(pal) if len(pal) > 1 else t
+            cfg = SynthesisConfig(length_scale=1.35 if len(pal) > 1 else 1.6)
+            with wave.open("/tmp/_l.wav","wb") as f: voz.synthesize_wav(texto, f, syn_config=cfg)
+            codifica("/tmp/_l.wav", lento)
+            nuevos += 1
     borrados = 0
     for f in os.listdir(destino):
         if f.endswith(".mp3") and f[:-4] not in usados:

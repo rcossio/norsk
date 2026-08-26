@@ -6,7 +6,8 @@ castellano.
 
 **En vivo:** https://rcossio.github.io/norsk/
 
-170 palabras en cuatro niveles · 1450 frases generadas · 4401 grabaciones · 11 juegos.
+170 palabras en cuatro niveles · 121 conversaciones escritas a mano · 741 frases ·
+1067 textos con grabación · 11 juegos.
 Un solo archivo HTML, sin dependencias, sin build, sin servidor.
 
 El detalle de **por qué la app es como es**, con el listado de decisiones y de las
@@ -61,12 +62,15 @@ como nuestro "no" y significa "ahora").
 El vocabulario está partido en tres niveles **anidados**. El nivel filtra a la vez
 palabras, frases, señuelos de opción múltiple, categorías y la lista.
 
-| Nivel | Palabras | Frases | Plantillas |
+| Nivel | Palabras | Conversaciones | Frases |
 |---|---|---|---|
-| 1 | 25 | 150 | 17 |
-| 2 | 61 | 450 | 36 |
-| 3 | 120 | 1050 | 50 |
-| 4 | 170 | 1450 | 61 |
+| 1 | 25 | — | 150 |
+| 2 | 61 | 40 | 324 |
+| 3 | 120 | 81 | 509 |
+| 4 | 170 | 121 | 741 |
+
+Dúo empieza en el nivel 2: abajo de 60 palabras no alcanza para una conversación
+que no suene a ejercicio.
 
 Reglas por nivel: 6, 13, 22 y 26 acumuladas.
 
@@ -91,53 +95,69 @@ almacenamiento del navegador.
 
 ## Las frases
 
-Se generan por plantillas gramaticales, nunca a mano ni por muestreo libre del
-modelo: así se garantiza que sean correctas. `scripts/generar_frases.py` produce
-más de 20.000 frases posibles en nivel 3, de las que se seleccionan 1050.
+**Las frases del juego Sonido son las líneas de las conversaciones.** No hay dos
+corpus: cada línea que alguien dice en Dúo es también una frase que se escucha en
+Sonido, y una sola grabación sirve para las dos cosas. De ahí que 121
+conversaciones de nueve turnos den 741 frases con 1067 textos grabados, contra
+1757 de la versión anterior, que mantenía frases y diálogos por separado.
 
-Reglas de la selección:
+Reglas de la derivación:
 
-- **Ninguna plantilla puede pasar del 10%** del corpus. Sin este tope, cinco
-  estructuras de "pronombre + verbo transitivo" se comían el 46% del total.
-- **Ninguna traducción castellana se repite**, porque dos opciones idénticas
-  romperían el multiple choice.
-- Se filtra por plausibilidad semántica además de gramatical: hay matrices de qué
-  adjetivo admite qué sustantivo (nada de "el año está caliente"), qué se puede
-  comprar y qué se puede poseer.
+- **Se descartan las líneas de menos de tres palabras.** «Ja», «Nå?» o «Melk» ya
+  existen como palabras sueltas; como frase de opción múltiple no enseñan nada.
+- **Ninguna traducción castellana se repite dentro de un nivel**, porque dos
+  opciones idénticas romperían el multiple choice. La línea sí puede repetirse en
+  varias conversaciones: comparte grabación.
+- **El nivel de una frase es el más bajo en que aparece**, así que una línea
+  escrita para el nivel 2 sigue estando disponible en el 3 y el 4.
+- Los señuelos salen de la **familia estructural** de la frase: pregunta con
+  *hvor*, pregunta con *hva*, inversión sí/no, respuesta con *ja*, respuesta con
+  *nei*, subordinada, pasado, modal, cortesía, declarativa con pronombre,
+  declarativa con sustantivo. Quince familias, calculadas de la frase misma. Sin
+  esto, la respuesta correcta se adivina por la forma sin escuchar nada.
 
-Las 50 plantillas cubren, entre otras: sujeto pronominal y **nominal**, objeto
-definido e indefinido, negación, modales con infinitivo, adjetivo predicativo y
-**atributivo** (incluida la forma en `-e`), **plurales** con sus irregulares,
-**imperativo**, preguntas sí/no, preguntas con *hvor / hva / når*, **inversión
-V2**, coordinación con *og / men / eller*, **subordinadas** con el verbo al final,
-lugar y movimiento con *i / på / til / fra / med*, presentativo con *det er*, y
-**cortesía dentro de la frase** (*Jeg vil ha en ost, vær så snill*).
+El nivel 1 es la excepción: como no tiene conversaciones, conserva sus 150 frases
+generadas por plantillas con `scripts/generar_frases.py`.
 
-### Trampas del castellano que el generador respeta
+### Trampas del castellano que las traducciones respetan
 
 - **"a" personal** con objetos animados: *ver a la mujer*, no *ver la mujer*.
 - **ser vs estar**: temperatura y comida vieja piden *estar*.
 - ***må ikke* es prohibición**, no ausencia de obligación: "no debe", no "no tiene que".
-- ***gustar* invierte el sujeto**: *Jeg liker fisken* → "a mí me gusta el pescado",
-  y hay que decir "a él" / "a ella" o *han* y *hun* darían traducciones idénticas.
+- ***gustar* invierte el sujeto**: *Jeg liker fisken* → "a mí me gusta el pescado".
 - **Movimiento pide *hit/dit*, no *her/der***: *kommer her* no existe.
 
 ## Dúo
 
-Conversaciones orquestadas para dos personas y un solo teléfono. El chat se apila
-arriba, el turno actual abajo con su traducción al castellano siempre a la vista,
-audio en las dos voces y la versión lenta.
+Conversaciones para dos personas y un solo teléfono. El chat se apila arriba, el
+turno actual abajo con su traducción al castellano siempre a la vista, audio en
+las dos voces y la versión lenta.
 
 No hay opciones que elegir: cada turno se desbloquea **diciendo la línea en voz
 alta**. El reconocedor compara lo escuchado con lo esperado y basta con acertar el
 **80% de las palabras**, así que la pronunciación imperfecta no traba el juego.
 Siempre hay un botón para seguir sin hablar, por si el micrófono no está disponible.
 
-Las 61 conversaciones salen de `scripts/generar_dialogos.py`: doce esqueletos
-escritos a mano, coherentes de punta a punta, instanciados con huecos (la bebida, el
-objeto, el lugar). Generar turnos sueltos por plantilla habría dado frases correctas
-pero conversaciones sin sentido. El nivel de cada conversación es el máximo de sus
-líneas, y se descartan las que usen una palabra fuera del vocabulario.
+Las 121 conversaciones están **escritas a mano, una por una**, de ocho a diez
+turnos cada una. La versión anterior las instanciaba desde doce esqueletos con
+huecos y se notaba: doce formas repetidas sesenta veces. Un esqueleto no sabe
+interrumpir, contradecir ni dejar algo sin resolver.
+
+Criterios de escritura:
+
+- **No todas terminan en despedida.** Muchas cierran con un comentario al pasar,
+  una contradicción o algo que queda picando. *Ha det* es un final entre otros.
+- **No todas son pregunta y respuesta.** Hay desacuerdos, insistencias, alguien
+  que no contesta lo que le preguntaron y remates secos.
+- **Cada nivel usa solo su vocabulario**, verificado token por token contra la
+  lista con el mismo reductor de flexiones que usa la app.
+- **Cobertura completa**: toda palabra de un nivel aparece al menos en una línea
+  de ese nivel.
+
+Lo que el nivel deja afuera se nota en el tono, y está bien que así sea. El nivel 2
+no tiene preposiciones más allá de *i*, ni *meg* ni *deg*, así que sus
+conversaciones son cortas y concretas. El nivel 4 ya tiene pasado, subordinadas y
+posesivos, y puede permitirse ironía.
 
 ## Reglas
 
@@ -163,7 +183,8 @@ devolver 429 o bloquear la IP. Guardarla evita depender de la red en cada carta.
 ## Audio
 
 Generado con [Piper](https://github.com/rhasspy/piper), voz
-`no_NO-talesyntese-medium`. Un mp3 por palabra y por frase, mono 22050 Hz a 48 kbps.
+`no_NO-talesyntese-medium`. Un mp3 por texto, mono 22050 Hz a 48 kbps: 1067 textos,
+3201 archivos, 35 MB.
 
 Cada toma se valida midiendo su envolvente de amplitud: si tiene un silencio
 interno mayor a 0.30 s se descarta y se vuelve a sintetizar, porque ese es el
@@ -205,9 +226,12 @@ El resto de la app funciona sin conexión una vez cargada.
 ## Reproducir
 
 ```bash
-python3 scripts/generar_frases.py   # regenera el corpus de frases
 python3 scripts/generar_audio.py    # sintetiza lo que falte y borra huérfanos
+python3 scripts/voz_google.py 1     # segunda voz, cinco etapas
 ```
+
+Los dos leen los textos de `index.html`: palabras, frases, ejemplos de las reglas
+y líneas de diálogo. Agregar una conversación y correrlos deja el audio al día.
 
 `generar_frases.py` lee el vocabulario directamente de `index.html`, así que
 agregar una palabra ahí ya la hace elegible para las plantillas.
@@ -217,9 +241,10 @@ agregar una palabra ahí ya la hace elegible para las plantillas.
 ```
 index.html                  toda la app: datos, lógica y estilos
 DECISIONES.md               estado, y por qué la app es como es
-audio/*.mp3                 una grabación por palabra y por frase
-scripts/generar_frases.py   plantillas gramaticales y selección del corpus
-scripts/generar_audio.py    síntesis con Piper y control de calidad
+audio/*.mp3                 tres tomas por texto: Piper, Piper lenta y Google
+scripts/generar_frases.py   plantillas gramaticales, hoy solo para el nivel 1
+scripts/generar_audio.py    síntesis con Piper, toma lenta y control de calidad
+scripts/voz_google.py       segunda voz, bajada por etapas
 ```
 
 ## Decisiones que se tomaron y por qué
@@ -238,5 +263,4 @@ scripts/generar_audio.py    síntesis con Piper y control de calidad
 ## Pendiente
 
 - Niveles 250 y 400, que exigen escribir unas 230 anclas nuevas a mano.
-- Diálogo de dos turnos, única forma natural de practicar *tusen takk* y
-  *vær så god*.
+- Conversaciones para el nivel 1, si es que 25 palabras dan para alguna.

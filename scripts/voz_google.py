@@ -28,6 +28,7 @@ def textos():
     out += re.findall(r'\["([^"]+)","[^"]*",\d+,\d+\]', html)
     for m in re.finditer(r"ej:\[([^\]]*)\]", html):
         out += re.findall(r'"([^"]+)"', m.group(1))
+    out += re.findall(r'\["[AB]","([^"]+)","[^"]*"\]', html)
     vistos, limpio = set(), []
     for t in out:
         if slug(t) in vistos: continue
