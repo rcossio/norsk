@@ -7,10 +7,10 @@ este explica el origen de cada uno.
 
 | | |
 |---|---|
-| Vocabulario | 226 palabras, cinco niveles anidados (25 / 61 / 120 / 170 / 226) |
+| Vocabulario | 275 palabras, seis niveles anidados (25 / 61 / 120 / 170 / 226 / 275) |
 | Conversaciones | 121 escritas a mano (40 / 41 / 40 en los niveles 2, 3 y 4) |
 | Frases | 741, derivadas de las líneas de las conversaciones; el nivel 1 conserva 150 generadas |
-| Audio | 3363 mp3 sobre 1121 textos: Piper normal y lenta, más la voz de Google, 36 MB |
+| Audio | 3510 mp3 sobre 1170 textos: Piper normal y lenta, más la voz de Google, 37 MB |
 | Juegos | 11, más Reglas y la Lista |
 | Dependencias | ninguna; un archivo HTML |
 | Persistencia | ninguna; el nivel viaja en el hash de la URL |
@@ -19,7 +19,7 @@ este explica el origen de cada uno.
 **Funciona:** todo lo listado, verificado en producción.
 **Sabido y aceptado:** el contador de práctica se pierde al recargar; los endpoints
 de Google no son oficiales y pueden caerse (hay respaldo local).
-**Pendiente:** frases para el nivel 5, nivel 400, conversaciones para el nivel 1.
+**Pendiente:** frases para los niveles 5 y 6, flexiones, conversaciones para el nivel 1.
 
 ---
 
@@ -193,6 +193,26 @@ las documenta como trabajo manual y no automatizable.
     haría preguntas sin respuesta posible, así que dos palabras con la misma
     escritura fonética ya no pueden ser señuelo una de otra. El par se documenta en
     el campo `sil`, que para eso está.
+
+69. "Llevá las entradas a 275, solo palabras, frases inhabilitadas en ese nivel" →
+    **49 entradas nuevas, nivel 6**. Cubren el top-275 salvo *videre* y los
+    topónimos. La composición cambió respecto del escalón anterior: 11 verbos
+    (*skjer, kjenner, viser, holder, ligger, lager, betyr, sitter, synes, prøver,
+    håper*) y, sobre todo, un bloque de adverbios de matiz — *faktisk, egentlig,
+    virkelig, nesten, gjerne, ganske, altså, sånn, kun, heller* — que es el registro
+    que separa el habla de la lista de vocabulario. También entra **dårlig**, el
+    antónimo de *bra*, que hasta ahora no existía.
+
+70. Medido antes de decidir: el top-170 cubre 58,6% del texto corrido, el top-226
+    61,3% y el top-275 63,1%. Cada escalón cuesta lo mismo en anclas escritas a mano
+    y rinde la mitad que el anterior. Es la razón por la que 275 cierra la serie de
+    vocabulario y lo que sigue son flexiones, no palabras.
+
+71. Antes de aceptar el pedido se verificó qué significa "aparecer en las
+    actividades": las cartas salen de `W`, así que una flexión como *større* no
+    puede salir nunca; solo aparece dentro de una frase. De las 45 flexiones del
+    top-260, **8 están en el corpus y 37 no**. Agregar flexiones no es tocar la
+    lista: es escribir frases. Por eso el pedido fue de lemas y no de formas.
 
 ### Documentación
 

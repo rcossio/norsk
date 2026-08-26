@@ -6,8 +6,8 @@ castellano.
 
 **En vivo:** https://rcossio.github.io/norsk/
 
-226 palabras en cinco niveles · 121 conversaciones escritas a mano · 741 frases ·
-1121 textos con grabación · 11 juegos.
+275 palabras en seis niveles · 121 conversaciones escritas a mano · 741 frases ·
+1170 textos con grabación · 11 juegos.
 Un solo archivo HTML, sin dependencias, sin build, sin servidor.
 
 El detalle de **por qué la app es como es**, con el listado de decisiones y de las
@@ -59,7 +59,7 @@ como nuestro "no" y significa "ahora").
 
 ## Niveles
 
-El vocabulario está partido en cinco niveles **anidados**. El nivel filtra a la vez
+El vocabulario está partido en seis niveles **anidados**. El nivel filtra a la vez
 palabras, frases, señuelos de opción múltiple, categorías y la lista.
 
 | Nivel | Palabras | Conversaciones | Frases |
@@ -69,29 +69,37 @@ palabras, frases, señuelos de opción múltiple, categorías y la lista.
 | 3 | 120 | 81 | 509 |
 | 4 | 170 | 121 | 741 |
 | 5 | 226 | 121 | 741 |
+| 6 | 275 | 121 | 741 |
 
-**El nivel 5 suma vocabulario y no suma frases.** Sus 56 palabras completan el
-top-200 de frecuencia del bokmål según `wordfreq`: entran en las tarjetas, la
-lista y los juegos de palabras, pero las frases de Sonido y las conversaciones de
-Dúo siguen siendo las de 170. Es una decisión, no una deuda: escribir el corpus de
-frases cuesta mucho más que escribir 56 anclas, y el vocabulario reconocido sirve
-antes que el vocabulario producido.
+**Los niveles 5 y 6 suman vocabulario y no suman frases.** Sus 105 palabras
+completan el top-275 de frecuencia del bokmål según `wordfreq`: entran en las
+tarjetas, la lista y los juegos de palabras, pero las frases de Sonido y las
+conversaciones de Dúo siguen siendo las de 170. Es una decisión, no una deuda:
+escribir el corpus de frases cuesta un orden de magnitud más que escribir las
+anclas, y el vocabulario reconocido sirve antes que el producido.
 
-Por qué 226 y no 200: de las 170 que ya estaban, 78 quedan fuera del top-200
+Por qué 275 y no 200: de las 170 que ya estaban, 78 quedan fuera del top-200
 (*hund*, *katt*, *ost*, *toalett*, *flyplass*). Son la concesión pedagógica que
 hace que existan frases; con puros funcionales no se dice nada. La frecuencia sola
 nunca da un nivel jugable.
 
-Lo que el top-200 aportó y faltaba de verdad: **å**, el marcador de infinitivo, que
-estaba ausente y bloqueaba todo *jeg liker å lese*; las partículas de dirección
-completas (*ut, opp, inn, ned, over, under, rundt, gjennom, tilbake*); y una docena
-de conectores de alta frecuencia — *da, for, om, jo, bra, alltid, hele, samme* —
-que se echaban de menos al escribir las conversaciones y había que rodear.
+Lo que estos dos niveles aportaron y faltaba de verdad: **å**, el marcador de
+infinitivo, que estaba ausente y bloqueaba todo *jeg liker å lese*; las partículas
+de dirección completas (*ut, opp, inn, ned, over, under, rundt, gjennom, tilbake*);
+una docena de conectores de alta frecuencia — *da, for, om, jo, bra, alltid, hele,
+samme* — que se echaban de menos al escribir las conversaciones y había que rodear;
+y en el nivel 6, **dårlig**, que es el antónimo de *bra* y no estaba, más el registro
+de matiz que hace que el habla suene humana: *faktisk, egentlig, virkelig, nesten,
+gjerne, ganske, altså, sånn*.
+
+Rendimiento decreciente, medido: el top-170 cubre el 58,6% del texto corrido, el
+top-226 el 61,3% y el top-275 el 63,1%. Cada escalón cuesta lo mismo en anclas y
+rinde menos. Por eso el 275 es el último de esta serie.
 
 Dúo empieza en el nivel 2: abajo de 60 palabras no alcanza para una conversación
 que no suene a ejercicio.
 
-Reglas por nivel: 6, 13, 22, 26 y 26 acumuladas.
+Reglas por nivel: 6, 13, 22, 26, 26 y 26 acumuladas.
 
 Criterios de corte:
 
@@ -202,8 +210,8 @@ devolver 429 o bloquear la IP. Guardarla evita depender de la red en cada carta.
 ## Audio
 
 Generado con [Piper](https://github.com/rhasspy/piper), voz
-`no_NO-talesyntese-medium`. Un mp3 por texto, mono 22050 Hz a 48 kbps: 1121 textos,
-3363 archivos, 36 MB.
+`no_NO-talesyntese-medium`. Un mp3 por texto, mono 22050 Hz a 48 kbps: 1170 textos,
+3510 archivos, 37 MB.
 
 Cada toma se valida midiendo su envolvente de amplitud: si tiene un silencio
 interno mayor a 0.30 s se descarta y se vuelve a sintetizar, porque ese es el
@@ -281,6 +289,8 @@ scripts/voz_google.py       segunda voz, bajada por etapas
 
 ## Pendiente
 
-- Frases y conversaciones para el nivel 5, que hoy solo suma vocabulario.
-- Nivel 400, que exige escribir unas 175 anclas nuevas a mano.
+- Frases y conversaciones para los niveles 5 y 6, que hoy solo suman vocabulario.
+- Las flexiones: comparativos, plurales irregulares y los pronombres de objeto
+  completos (*ham* está, faltan *henne* y *dem*). No agrandan la lista pero
+  desbloquean frases que hoy no se pueden escribir.
 - Conversaciones para el nivel 1, si es que 25 palabras dan para alguna.
