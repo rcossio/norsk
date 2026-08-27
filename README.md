@@ -6,8 +6,8 @@ castellano.
 
 **En vivo:** https://rcossio.github.io/norsk/
 
-275 palabras en seis niveles · 121 conversaciones escritas a mano · 741 frases ·
-1170 textos con grabación · 11 juegos.
+275 palabras en seis niveles · 121 conversaciones escritas a mano · 742 frases ·
+1169 textos con grabación · 11 juegos.
 Un solo archivo HTML, sin dependencias, sin build, sin servidor.
 
 El detalle de **por qué la app es como es**, con el listado de decisiones y de las
@@ -65,11 +65,11 @@ palabras, frases, señuelos de opción múltiple, categorías y la lista.
 | Nivel | Palabras | Conversaciones | Frases |
 |---|---|---|---|
 | 1 | 25 | — | 150 |
-| 2 | 61 | 40 | 324 |
+| 2 | 61 | 40 | 325 |
 | 3 | 120 | 81 | 509 |
-| 4 | 170 | 121 | 741 |
-| 5 | 226 | 121 | 741 |
-| 6 | 275 | 121 | 741 |
+| 4 | 170 | 121 | 742 |
+| 5 | 226 | 121 | 742 |
+| 6 | 275 | 121 | 742 |
 
 **Los niveles 5 y 6 suman vocabulario y no suman frases.** Sus 105 palabras
 completan el top-275 de frecuencia del bokmål según `wordfreq`: entran en las
@@ -146,6 +146,30 @@ Reglas de la derivación:
 El nivel 1 es la excepción: como no tiene conversaciones, conserva sus 150 frases
 generadas por plantillas con `scripts/generar_frases.py`.
 
+### Trampas del noruego que la revisión corrigió
+
+Las conversaciones se auditaron preposición por preposición contra el sentido con
+que cada palabra está presentada en la lista. Lo que apareció:
+
+- **En tren, avión y hotel se va *på*, no *i***. *i bilen* sí, porque en el auto
+  entrás; en el tren vas encima. Eran once líneas.
+- ***fra her* no existe**: en noruego es *herfra*, una sola palabra. Las dos líneas
+  se reformularon en vez de agregar una palabra al vocabulario.
+- **Concordancia**: *barnet er lite*, no *liten*, porque *barn* es neutro. Y con
+  sustantivo femenino el posesivo es *mi*, no *min*: *boka mi*, *klokka mi*.
+- ***Det er godt* es «está bueno», no «está bien»**. Para asentir, el noruego usa
+  *bra* o *greit*, que recién aparecen en el nivel 5. Donde el castellano decía
+  «está bien» se corrigió la traducción; donde hacía falta asentir de verdad se usó
+  *som du vil*.
+- **Giros que no se dicen así**: *det gjør ikke noe* y no *det er ikke noe*;
+  *det er det jeg sier* y no *jeg sier det*.
+- **Traducciones que decían de más**: «siempre» donde el noruego decía *igjen*
+  (otra vez), «nada» donde solo había una negación, «todo el día» donde solo decía
+  *i dag*.
+
+*før* (antes) y *for* (para) se escriben casi igual y ahora conviven en la lista;
+la entrada de *før* lo advierte.
+
 ### Trampas del castellano que las traducciones respetan
 
 - **"a" personal** con objetos animados: *ver a la mujer*, no *ver la mujer*.
@@ -210,8 +234,8 @@ devolver 429 o bloquear la IP. Guardarla evita depender de la red en cada carta.
 ## Audio
 
 Generado con [Piper](https://github.com/rhasspy/piper), voz
-`no_NO-talesyntese-medium`. Un mp3 por texto, mono 22050 Hz a 48 kbps: 1170 textos,
-3510 archivos, 37 MB.
+`no_NO-talesyntese-medium`. Un mp3 por texto, mono 22050 Hz a 48 kbps: 1169 textos,
+3507 archivos, 37 MB.
 
 Cada toma se valida midiendo su envolvente de amplitud: si tiene un silencio
 interno mayor a 0.30 s se descarta y se vuelve a sintetizar, porque ese es el

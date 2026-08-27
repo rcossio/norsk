@@ -9,8 +9,8 @@ este explica el origen de cada uno.
 |---|---|
 | Vocabulario | 275 palabras, seis niveles anidados (25 / 61 / 120 / 170 / 226 / 275) |
 | Conversaciones | 121 escritas a mano (40 / 41 / 40 en los niveles 2, 3 y 4) |
-| Frases | 741, derivadas de las líneas de las conversaciones; el nivel 1 conserva 150 generadas |
-| Audio | 3510 mp3 sobre 1170 textos: Piper normal y lenta, más la voz de Google, 37 MB |
+| Frases | 742, derivadas de las líneas de las conversaciones; el nivel 1 conserva 150 generadas |
+| Audio | 3507 mp3 sobre 1169 textos: Piper normal y lenta, más la voz de Google, 37 MB |
 | Juegos | 11, más Reglas y la Lista |
 | Dependencias | ninguna; un archivo HTML |
 | Persistencia | ninguna; el nivel viaja en el hash de la URL |
@@ -213,6 +213,35 @@ las documenta como trabajo manual y no automatizable.
     puede salir nunca; solo aparece dentro de una frase. De las 45 flexiones del
     top-260, **8 están en el corpus y 37 no**. Agregar flexiones no es tocar la
     lista: es escribir frases. Por eso el pedido fue de lemas y no de formas.
+
+### La revisión de las frases
+
+72. ⚑ "Cuando leo las frases detecto diferencia entre cómo me presentaste la palabra
+    y cómo está usada" → auditoría preposición por preposición de las 983 líneas.
+    **19 problemas reales, 40 líneas tocadas.** El ejemplo que traía era una lectura
+    errónea suya (*før toget*, antes del tren, no *for*), pero el pedido era correcto
+    y encontró cosas.
+
+    Lo peor: **en tren, avión y hotel se va *på*, no *i***. Once líneas decían
+    *i toget*, *i flyet*, *i hotellet*. Es el error clásico del hispanohablante, que
+    traduce «en» por *i* siempre. Y ***fra her* no existe**: es *herfra*.
+
+73. **La preposición no se puede validar con el validador de vocabulario.** *i* es
+    una palabra del nivel 2 y *i toget* pasa todos los controles automáticos: cada
+    token está en la lista y en el nivel. Lo que falla es la colocación, que ningún
+    control de pertenencia detecta. Es el límite de la verificación que se venía
+    haciendo, y hoy no tiene reemplazo automático.
+
+74. ***Det er godt* apareció ocho veces traducido «está bien»**, y no significa eso:
+    es «está bueno». Para asentir el noruego usa *bra* o *greit*, y las dos están
+    recién en el nivel 5. Se corrigió el castellano en vez de forzar el noruego.
+    Queda una inconsistencia anotada: *bra* es la palabra 123 por frecuencia y vive
+    en el nivel 5, mientras que *eple* está en el 2. Bajarla al 2 arreglaría el
+    problema de raíz, pero mueve niveles y no se hizo sin pedido.
+
+75. El contador de práctica no sabía reducir los posesivos: *mitt*, *boka mi* y
+    *huset mitt* estaban en el corpus desde antes y no sumaban. Se agregó un mapa
+    `FORMAS` a `resolve()` con posesivos y plurales irregulares.
 
 ### Documentación
 
